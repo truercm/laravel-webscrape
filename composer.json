@@ -1,0 +1,80 @@
+{
+    "name": "truercm/laravel-webscrape",
+    "description": "Scrape web paged within Laravel application",
+    "keywords": [
+        "TrueRCM",
+        "laravel",
+        "laravel-webscrape"
+    ],
+    "homepage": "https://github.com/truercm/laravel-webscrape",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Purnendu Chandan",
+            "email": "purnendu@extreme-agile.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "spatie/laravel-package-tools": "^1.16",
+        "illuminate/contracts": "^10.0||^11.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.14",
+        "nunomaduro/collision": "^8.1.1||^7.10.0",
+        "orchestra/testbench": "^9.0.0||^8.22.0",
+        "pestphp/pest": "^2.34",
+        "pestphp/pest-plugin-arch": "^2.7",
+        "pestphp/pest-plugin-laravel": "^2.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "TrueRcm\\LaravelWebscrape\\": "src/",
+            "TrueRcm\\LaravelWebscrape\\Database\\Factories\\": "database/factories/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "TrueRcm\\LaravelWebscrape\\Tests\\": "tests/",
+            "Workbench\\App\\": "workbench/app/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": "@composer run prepare",
+        "clear": "@php vendor/bin/testbench package:purge-laravel-webscrape --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": [
+            "@composer run prepare",
+            "@php vendor/bin/testbench workbench:build --ansi"
+        ],
+        "start": [
+            "Composer\\Config::disableProcessTimeout",
+            "@composer run build",
+            "@php vendor/bin/testbench serve"
+        ],
+        "analyse": "vendor/bin/phpstan analyse",
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "format": "vendor/bin/pint"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "TrueRcm\\LaravelWebscrape\\LaravelWebscrapeServiceProvider"
+            ],
+            "aliases": {
+                "LaravelWebscrape": "TrueRcm\\LaravelWebscrape\\Facades\\LaravelWebscrape"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
