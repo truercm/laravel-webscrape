@@ -19,7 +19,12 @@ class LaravelWebscrapeServiceProvider extends PackageServiceProvider
             ->name('laravel-webscrape')
             ->hasConfigFile()
             ->hasViews()
-            ->hasMigration('create_laravel-webscrape_table')
+            ->hasMigrations([
+                '2024_04_17_000002_create_crawl_results_table',
+                '2024_04_17_000002_create_crawl_subjects_table',
+                '2024_04_17_000002_create_crawl_target_urls_table',
+                '2024_04_17_000002_create_crawl_targets_table',
+            ])
             ->hasCommand(LaravelWebscrapeCommand::class);
     }
 }
