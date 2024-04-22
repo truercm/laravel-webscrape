@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCrawlResultsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -18,7 +18,7 @@ class CreateCrawlResultsTable extends Migration
                 $table->string('url');
                 $table->string('handler');
                 $table->integer('status');
-                $table->mediumText('body')->nullable();
+                $table->longText('body')->nullable();
                 $table->dateTime('processed_at')->nullable();
                 $table->string('process_status')->index();
                 $table->json('result')->nullable();
@@ -34,4 +34,4 @@ class CreateCrawlResultsTable extends Migration
     {
         Schema::dropIfExists('crawl_results');
     }
-}
+};

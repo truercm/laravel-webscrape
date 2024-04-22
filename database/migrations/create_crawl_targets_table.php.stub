@@ -4,18 +4,17 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCrawlSubjectsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-            Schema::create('crawl_subjects', static function (Blueprint $table) {
+            Schema::create('crawl_targets', static function (Blueprint $table) {
                 $table->bigIncrements('id');
-                $table->unsignedBigInteger('crawl_target_id')->index();
-                $table->json('credentials')->nullable();
-                $table->dateTime('authenticated_at')->nullable();
+                $table->string('auth_url');
+                $table->string('crawling_job');
 
                 $table->timestamps();
                 $table->softDeletes();
@@ -27,6 +26,6 @@ class CreateCrawlSubjectsTable extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('crawl_subjects');
+        Schema::dropIfExists('crawl_targets');
     }
-}
+};
