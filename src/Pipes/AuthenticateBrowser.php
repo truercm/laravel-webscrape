@@ -32,7 +32,7 @@ class AuthenticateBrowser
         );
 
         $crawler = $this->browser
-            ->submitForm('Login', $traveller->getCrawlingCredentials());
+            ->submitForm($traveller->authButtonIdentifier(), $traveller->getCrawlingCredentials());
 
         throw_if(
             $crawler->getUri() == $traveller->authUrl() /* is not good*/,

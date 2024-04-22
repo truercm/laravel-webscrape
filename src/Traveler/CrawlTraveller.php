@@ -58,6 +58,13 @@ class CrawlTraveller
             ->auth_url ?? null;
     }
 
+    public function authButtonIdentifier(): ?string
+    {
+        return $this->subject
+            ->crawlTarget
+            ->auth_button_text ?? null;
+    }
+
     public function getCrawlingCredentials(): array
     {
         return $this->subject
