@@ -9,14 +9,13 @@ class StoreCrawlResult extends Action
 {
     public function __construct(
         protected CrawlResult $crawlResult
-    )
-    {
+    ) {
     }
 
     /**
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'crawl_target_url_id' => ['required'],
