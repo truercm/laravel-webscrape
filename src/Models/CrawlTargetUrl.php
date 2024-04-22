@@ -5,12 +5,11 @@ namespace TrueRcm\LaravelWebscrape\Models;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use TrueRcm\LaravelWebscrape\Models\Contracts\CrawlTargetUrl as Contract;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CrawlTargetUrl extends Model implements Contract
 {
-    use HasFactory;
+    use Concerns\HasFactory;
     use SoftDeletes;
 
     /** @var string[] */

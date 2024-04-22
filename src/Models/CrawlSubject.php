@@ -8,12 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Collection;
 use TrueRcm\LaravelWebscrape\Models\Contracts\CrawlSubject as Contract;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CrawlSubject extends Model implements Contract
 {
-    use HasFactory;
+    use Concerns\HasFactory;
     use SoftDeletes;
 
     /** @var string[] */
