@@ -2,12 +2,14 @@
 
 namespace TrueRcm\LaravelWebscrape\Database\Factories;
 
+use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
+use TrueRcm\LaravelWebscrape\Models\CrawlTargetUrl;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\TrueRcm\LaravelWebscrape\Models\CrawledPage>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\TrueRcm\LaravelWebscrape\Models\CrawlResult>
  */
-class CrawledPageFactory extends Factory
+class CrawlResultFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +19,8 @@ class CrawledPageFactory extends Factory
     public function definition(): array
     {
         return [
-            'source_id'=> $this->faker->randomDigit(),
+            'crawl_target_url_id'=> CrawlTargetUrl::factory(),
+            'crawl_subject_id'=> CrawlSubject::factory(),
             'url' => $this->faker->url(),
             'handler' => $this->faker->word(),
             'status' => $this->faker->randomDigit(),
