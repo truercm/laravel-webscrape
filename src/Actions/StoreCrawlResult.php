@@ -2,8 +2,8 @@
 
 namespace TrueRcm\LaravelWebscrape\Actions;
 
-use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 use Fls\Actions\Action;
+use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
 class StoreCrawlResult extends Action
 {
@@ -33,7 +33,7 @@ class StoreCrawlResult extends Action
 
     /**
      * @param array $attributes
-     * @return \TrueRcm\LaravelWebscrape\Models\Contracts\CrawlResult
+     * @return \TrueRcm\LaravelWebscrape\Contracts\CrawlResult
      */
     public function handle(array $attributes): CrawlResult
     {

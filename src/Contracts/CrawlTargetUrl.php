@@ -1,6 +1,6 @@
 <?php
 
-namespace TrueRcm\LaravelWebscrape\Models\Contracts;
+namespace TrueRcm\LaravelWebscrape\Contracts;
 
 /**
  * @mixin \Illuminate\Database\Eloquent\Model

@@ -18,7 +18,8 @@ class CrawlTargetFactory extends Factory
     {
         return [
             'auth_url' => fake()->url(),
-            'crawling_job' => fake()->word(),
+            'auth_button_text' => 'Login',
+            'crawling_job' => '\TrueRcm\LaravelWebscrape\Tests\Fixtures\FixtureJob',
         ];
     }
 }

@@ -2,13 +2,12 @@
 
 namespace TrueRcm\LaravelWebscrape\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Support\Collection;
-use TrueRcm\LaravelWebscrape\Models\Contracts\CrawlSubject as Contract;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
+use TrueRcm\LaravelWebscrape\Contracts\CrawlSubject as Contract;
 
 class CrawlSubject extends Model implements Contract
 {
@@ -35,8 +34,26 @@ class CrawlSubject extends Model implements Contract
      */
     public function crawlTarget(): BelongsTo
     {
-        return $this->belongsTo(CrawlTarget::class);
+        return $this->belongsTo(config('webscrape.models.target'));
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function targetUrls(): HasMany
+    {
+        return $this->hasMany(config('webscrape.models.target_url'), 'crawl_target_id', 'crawl_target_id');
+    }
+
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function crawlResults(): HasMany
+    {
+        return $this->hasMany(config('webscrape.models.result'));
+    }
+
 
     /**
      * @return \Illuminate\Support\Collection
@@ -46,13 +63,5 @@ class CrawlSubject extends Model implements Contract
         return $this->crawlTarget
             ->crawlTargetUrls
             ->map(fn(CrawlTargetUrl $crawlTargetUrl) => $crawlTargetUrl->setAttribute('url', $crawlTargetUrl->url_template));
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function crawlResults(): HasMany
-    {
-        return $this->hasMany(CrawlResult::class);
     }
 }

@@ -2,10 +2,10 @@
 
 namespace TrueRcm\LaravelWebscrape\Models;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use TrueRcm\LaravelWebscrape\Models\Contracts\CrawlTargetUrl as Contract;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use TrueRcm\LaravelWebscrape\Contracts\CrawlTargetUrl as Contract;
 
 class CrawlTargetUrl extends Model implements Contract
 {
@@ -18,19 +18,11 @@ class CrawlTargetUrl extends Model implements Contract
         'handler',
     ];
 
-    /** @var string[] */
-    protected function casts(): array
-    {
-        return [
-
-        ];
-    }
-
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function crawlTarget(): BelongsTo
     {
-        return $this->belongsTo(CrawlTarget::class);
+        return $this->belongsTo(config('webscrape.models.target'));
     }
 }

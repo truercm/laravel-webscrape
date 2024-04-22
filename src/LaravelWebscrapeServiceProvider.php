@@ -6,6 +6,10 @@ use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use TrueRcm\LaravelWebscrape\Commands\LaravelWebscrapeCommand;
+use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
+use TrueRcm\LaravelWebscrape\Contracts\CrawlSubject;
+use TrueRcm\LaravelWebscrape\Contracts\CrawlTarget;
+use TrueRcm\LaravelWebscrape\Contracts\CrawlTargetUrl;
 
 class LaravelWebscrapeServiceProvider extends PackageServiceProvider
 {
@@ -34,5 +38,21 @@ class LaravelWebscrapeServiceProvider extends PackageServiceProvider
                     ->publishMigrations()
                     ->askToRunMigrations();
             });
+    }
+
+    public function packageBooted()
+    {
+        $this->registerModelBindings();
+    }
+
+    /**
+     * Register contract bindings to models
+     */
+    protected function registerModelBindings(): void
+    {
+        $this->app->bind(CrawlResult::class, fn ($app) => $app->make($app->config['webscrape.models.result']));
+        $this->app->bind(CrawlSubject::class, fn ($app) => $app->make($app->config['webscrape.models.subject']));
+        $this->app->bind(CrawlTarget::class, fn ($app) => $app->make($app->config['webscrape.models.target']));
+        $this->app->bind(CrawlTargetUrl::class, fn ($app) => $app->make($app->config['webscrape.models.target_url']));
     }
 }

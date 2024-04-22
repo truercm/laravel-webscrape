@@ -2,18 +2,18 @@
 
 namespace TrueRcm\LaravelWebscrape\Actions;
 
-use TrueRcm\LaravelWebscrape\Models\Contracts\CrawlSubject;
-use TrueRcm\LaravelWebscrape\Models\Contracts\CrawlResult;
-use TrueRcm\LaravelWebscrape\Models\Contracts\CrawlTargetUrl;
 use Fls\Actions\Action;
+use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
+use TrueRcm\LaravelWebscrape\Contracts\CrawlSubject;
+use TrueRcm\LaravelWebscrape\Contracts\CrawlTargetUrl;
 
 class AddCrawlResult extends Action
 {
     /**
-     * @param \TrueRcm\LaravelWebscrape\Models\Contracts\CrawlSubject $subject
-     * @param \TrueRcm\LaravelWebscrape\Models\Contracts\CrawlTargetUrl $target
+     * @param \TrueRcm\LaravelWebscrape\Contracts\CrawlSubject $subject
+     * @param \TrueRcm\LaravelWebscrape\Contracts\CrawlTargetUrl $target
      * @param array $attributes
-     * @return \TrueRcm\LaravelWebscrape\Models\Contracts\CrawlResult
+     * @return \TrueRcm\LaravelWebscrape\Contracts\CrawlResult
      */
     public function handle(CrawlSubject $subject, CrawlTargetUrl $target, array $attributes): CrawlResult
     {

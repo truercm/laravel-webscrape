@@ -4,7 +4,7 @@ namespace TrueRcm\LaravelWebscrape\Traveler;
 
 use Illuminate\Support\Collection;
 use Symfony\Component\BrowserKit\HttpBrowser;
-use TrueRcm\LaravelWebscrape\Models\Contracts\CrawlResult;
+use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
 
 class CrawlTraveller
@@ -20,7 +20,7 @@ class CrawlTraveller
     }
 
     /**
-     * @param \TrueRcm\LaravelWebscrape\Models\Contracts\CrawlSubject $subject
+     * @param \TrueRcm\LaravelWebscrape\Contracts\CrawlSubject $subject
      * @return $this
      */
     public static function make(CrawlSubject $subject): self

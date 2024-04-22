@@ -2,11 +2,11 @@
 
 namespace TrueRcm\LaravelWebscrape\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use TrueRcm\LaravelWebscrape\Models\Contracts\CrawlTarget as Contract;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use TrueRcm\LaravelWebscrape\Contracts\CrawlTarget as Contract;
 
 class CrawlTarget extends Model implements Contract
 {
@@ -16,23 +16,16 @@ class CrawlTarget extends Model implements Contract
     /** @var string[] */
     protected $fillable = [
         'auth_url',
+        'auth_button_text',
         'crawling_job',
     ];
-
-    /** @var string[] */
-    protected function casts(): array
-    {
-        return [
-
-        ];
-    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function crawlSubject(): HasOne
     {
-        return $this->hasOne(CrawlSubject::class);
+        return $this->hasOne(config('webscrape.models.subject'));
     }
 
     /**
@@ -40,6 +33,6 @@ class CrawlTarget extends Model implements Contract
      */
     public function crawlTargetUrls(): HasMany
     {
-        return $this->hasMany(CrawlTargetUrl::class);
+        return $this->hasMany(config('webscrape.models.target_url'));
     }
 }

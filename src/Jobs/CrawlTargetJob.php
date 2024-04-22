@@ -17,7 +17,7 @@ use TrueRcm\LaravelWebscrape\Pipes\ParsePages;
 use TrueRcm\LaravelWebscrape\Pipes\ProcessParsingResults;
 use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 
-class CrawlCaqhJob implements ShouldQueue
+class CrawlTargetJob implements ShouldQueue
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -26,14 +26,12 @@ class CrawlCaqhJob implements ShouldQueue
 
     public function __construct(
         protected CrawlSubject $subject
-    )
-    {
+    ) {
     }
 
     /*
-     * "target" is CAQH
-     *
-     * "subject" is a single crowler run for a providler
+     * "target" is remote site
+     * "subject" is a single crawler run for a given target, parsed by a specific job
      * */
 
     public function handle()

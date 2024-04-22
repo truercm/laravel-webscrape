@@ -27,12 +27,6 @@ class CrawlPages
                 'body' => $crawler->filter('body')->html(), /* html*/
                 'handler' => $target->handler,
                 'process_status' => 'Pending',
-                /*
-                 * also has:
-                'processed_at',
-                'process_status', //[Pending, Queued, Failed, Success]
-                'result', nullable json
-                 * */
             ]);
 
             $traveller->addCrawledPage($page);

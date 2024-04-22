@@ -35,6 +35,6 @@ return [
         | Url Result model stores processed results
         |--------------------------------------------------------------------------
         */
-        'url_result' => TrueRcm\LaravelWebscrape\Models\CrawlResult::class,
+        'result' => TrueRcm\LaravelWebscrape\Models\CrawlResult::class,
     ],
 ];
