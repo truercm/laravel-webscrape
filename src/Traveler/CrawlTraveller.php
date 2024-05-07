@@ -6,6 +6,7 @@ use Illuminate\Support\Collection;
 use Symfony\Component\BrowserKit\HttpBrowser;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
+use TrueRcm\LaravelWebscrape\Models\CrawlTargetUrl;
 
 class CrawlTraveller
 {
@@ -38,7 +39,7 @@ class CrawlTraveller
         return $this->browser;
     }
 
-    public function setBrowser($bowser): self
+    public function setBrowser(HttpBrowser $bowser): self
     {
         $this->browser = $bowser;
 
@@ -48,7 +49,8 @@ class CrawlTraveller
     public function targets(): Collection
     {
         return $this->subject
-            ->getTargetUrls();
+           ->targetUrls
+            ->map(fn(CrawlTargetUrl $crawlTargetUrl) => $crawlTargetUrl->setAttribute('url', $crawlTargetUrl->url_template));
     }
 
     public function authUrl(): ?string

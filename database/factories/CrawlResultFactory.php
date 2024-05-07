@@ -2,6 +2,7 @@
 
 namespace TrueRcm\LaravelWebscrape\Database\Factories;
 
+use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
 use TrueRcm\LaravelWebscrape\Models\CrawlTargetUrl;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -11,6 +12,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class CrawlResultFactory extends Factory
 {
+    protected $model = CrawlResult::class;
+
     /**
      * Define the model's default state.
      *

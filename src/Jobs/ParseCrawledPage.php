@@ -31,6 +31,6 @@ class ParseCrawledPage implements ShouldQueue
 
     public function handle()
     {
-
+        resolve($this->crawlResult->handler)->dispatch($this->crawlResult);
     }
 }

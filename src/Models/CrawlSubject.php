@@ -60,8 +60,7 @@ class CrawlSubject extends Model implements Contract
      */
     public function getTargetUrls(): Collection
     {
-        return $this->crawlTarget
-            ->crawlTargetUrls
+        return $this->targetUrls
             ->map(fn(CrawlTargetUrl $crawlTargetUrl) => $crawlTargetUrl->setAttribute('url', $crawlTargetUrl->url_template));
     }
 }
