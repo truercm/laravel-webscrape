@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
 use Symfony\Component\DomCrawler\Crawler;
+use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
 
@@ -34,7 +35,7 @@ class ParseEmploymentInformationPage implements ShouldQueue
     public function handle()
     {
         $this->crawlResult->forceFill([
-            'process_status' => 'completed',
+            'process_status' => CrawlResultStatus::COMPLETED,
         ]);
         $result = [];
         $crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
@@ -114,7 +115,7 @@ class ParseEmploymentInformationPage implements ShouldQueue
             $error = __("Error :message at line :line", ['message' => $e->getMessage(), 'line' => $e->getLine()]);
             $result['error'] = $error;
             $this->crawlResult->forceFill([
-                'process_status' => 'error',
+                'process_status' => CrawlResultStatus::ERROR,
             ]);
         }
 

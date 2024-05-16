@@ -3,6 +3,7 @@
 namespace TrueRcm\LaravelWebscrape\Pipes;
 
 use TrueRcm\LaravelWebscrape\Actions\AddCrawlResult;
+use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 
 class CrawlPages
@@ -26,7 +27,7 @@ class CrawlPages
                 'status' => $response->getStatusCode(),
                 'body' => $crawler->filter('body')->html(), /* html*/
                 'handler' => $target->handler,
-                'process_status' => 'Pending',
+                'process_status' => CrawlResultStatus::PENDING,
             ]);
 
             $traveller->addCrawledPage($page);

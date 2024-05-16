@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Symfony\Component\DomCrawler\Crawler;
+use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
 
@@ -33,21 +34,44 @@ class ParseSpecialitiesPage implements ShouldQueue
     public function handle()
     {
         $this->crawlResult->forceFill([
-            'process_status' => 'completed',
+            'process_status' => CrawlResultStatus::COMPLETED,
         ]);
         $result = [];
         $crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
 
         try{
+            $specialties = [];
             $primarySpecialty = [];
             $primarySpecialtySection = $crawler->filter('div#PrimarySpecialityPlaceHolder');
-            $primarySpecialty['index'] =  $primarySpecialtySection->filter('input[name="SpecialityDetailsVM.index"]')->attr('value');
 
+            $primarySpecialty['is_primary'] = true;
             $input =  $primarySpecialtySection->filterXPath('//select[contains(@name, ".SpecialtyNameId")]/option[contains(@selected, "selected")]');
-            $primarySpecialty['specialty'] = [
+            $primarySpecialty['nucc_code'] = $input->count() ? $input->attr('value') : null;
+            $primarySpecialty['label'] = $input->count() ? $input->text() : null;
+            $primarySpecialty['certification_status'] = true;
+
+            $address = [];
+            $address['address_type'] = "office";
+            $input =  $primarySpecialtySection->filterXPath('//select[contains(@name, ".CountryId")]/option[contains(@selected, "selected")]');
+            $address['country'] = [
                 'key' => $input->count() ? $input->attr('value') : null,
                 'value' => $input->count() ? $input->text() : null
             ];
+
+            $input =  $primarySpecialtySection->filterXPath('//select[contains(@name, ".StateId")]/option[contains(@selected, "selected")]');
+            $address['state'] = [
+                'key' => $input->count() ? $input->attr('value') : null,
+                'value' => $input->count() ? $input->text() : null
+            ];
+
+            $address['line_1'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".Street1")]')->attr('value');
+            $address['line_2'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".Street2")]')->attr('value');
+            $address['city'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".City")]')->attr('value');
+            $address['province'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".Province")]')->attr('value');
+            $address['zip'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".ZipCode")]')->attr('value');
+            $address['zip_extension'] =  null;
+
+            $primarySpecialty['address'] = $address;
 
             $primarySpecialty['Percent of Practice'] = $crawler->filterXPath('//input[contains(@name, ".PercentOfPractice")]')->attr('value');
             $inputs = $primarySpecialtySection->filter('div#PrimaryBoardCertifiedDiv label.radio');
@@ -62,30 +86,11 @@ class ParseSpecialitiesPage implements ShouldQueue
             $primarySpecialty['boardCertified'] = $boardCertified;
 
             $input =  $primarySpecialtySection->filterXPath('//select[contains(@name, ".SpecialtyBoardId")]/option[contains(@selected, "selected")]');
-            $primarySpecialty['Name of Certifying Board'] = [
-                'key' => $input->count() ? $input->attr('value') : null,
-                'value' => $input->count() ? $input->text() : null
-            ];
+            $primarySpecialty['certification_board'] = $input->count() ? $input->text() : null;
 
-            $input =  $primarySpecialtySection->filterXPath('//select[contains(@name, ".CountryId")]/option[contains(@selected, "selected")]');
-            $primarySpecialty['Country'] = [
-                'key' => $input->count() ? $input->attr('value') : null,
-                'value' => $input->count() ? $input->text() : null
-            ];
 
-            $input =  $primarySpecialtySection->filterXPath('//select[contains(@name, ".StateId")]/option[contains(@selected, "selected")]');
-            $primarySpecialty['State'] = [
-                'key' => $input->count() ? $input->attr('value') : null,
-                'value' => $input->count() ? $input->text() : null
-            ];
-
-            $primarySpecialty['Street 1'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".Street1")]')->attr('value');
-            $primarySpecialty['Street 2'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".Street2")]')->attr('value');
-            $primarySpecialty['City'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".City")]')->attr('value');
-            $primarySpecialty['Province'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".Province")]')->attr('value');
-            $primarySpecialty['Zip Code'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".ZipCode")]')->attr('value');
-            $primarySpecialty['Certification Number'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".CertificationNumber")]')->attr('value');
-            $primarySpecialty['Initial Certification Date'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".CertificationDate")]')->attr('value');
+            $primarySpecialty['certification_number'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".CertificationNumber")]')->attr('value');
+            $primarySpecialty['certification_created_at'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".CertificationDate")]')->attr('value');
 
 
             $boardCertificationHaveExpirationDate = [];
@@ -100,10 +105,10 @@ class ParseSpecialitiesPage implements ShouldQueue
 
             });
 
-            $primarySpecialty['Does your board certification have an expiration date?'] = $boardCertificationHaveExpirationDate;
+            $primarySpecialty['certification_expires'] = $boardCertificationHaveExpirationDate['Yes'];
 
-            $primarySpecialty['Expiration Date'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".ExpirationDate")]')->attr('value');
-            $primarySpecialty['Last Recertification Date'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".RecertificationDate")]')->attr('value');
+            $primarySpecialty['certification_expires_at'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".ExpirationDate")]')->attr('value');
+            $primarySpecialty['certification_updated_at'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".RecertificationDate")]')->attr('value');
 
 
             $planningToCertificationOrReCertification = [];
@@ -118,9 +123,11 @@ class ParseSpecialitiesPage implements ShouldQueue
 
             });
 
-            $primarySpecialty['I am planning to pursue Board Certification or Re-Certification'] = $planningToCertificationOrReCertification;
+            $primarySpecialty['plans_to_update'] = $planningToCertificationOrReCertification['Yes'];
 
-            $result['primarySpecialty'] = $primarySpecialty;
+            $specialties[] = $primarySpecialty;
+
+            $result['specialties'] = $specialties;
 
             $secondarySpecialty = [];
             $secondarySpecialtySection = $crawler->filter('div#SecondarySpecialitySection');
@@ -157,7 +164,6 @@ class ParseSpecialitiesPage implements ShouldQueue
 
             $result['Other Interests'] = $crawler->filter('textarea[name="AreasOfProfessionalPracticeInterest"]')->text();
 
-            $specialExperienceSkills = [];
             $specialExperienceSkillsSection = $crawler->filter('div#SpecialExperienceSkillsAndTrainingPlaceHolder');
 
 
@@ -173,7 +179,7 @@ class ParseSpecialitiesPage implements ShouldQueue
                 $patientPopulations[$node->text()] = $checkbox->count() ? true : false;
 
             });
-            $specialExperienceSkills['patientPopulations'] = $patientPopulations;
+            $result['patient_populations'] = $patientPopulations;
 
             $physicalConditions = [];
             $inputs = $specialExperienceSkillsSection->filterXPath('//label[contains(@for, "Physical_Conditions")]')
@@ -187,7 +193,7 @@ class ParseSpecialitiesPage implements ShouldQueue
                 $physicalConditions[$node->text()] = $checkbox->count() ? true : false;
 
             });
-            $specialExperienceSkills['physicalConditions'] = $physicalConditions;
+            $result['physical_conditions'] = $physicalConditions;
 
             $areaOfExpertise = [];
             $inputs = $specialExperienceSkillsSection->filterXPath('//label[contains(@for, "Area_of_Expertise")]')
@@ -201,7 +207,7 @@ class ParseSpecialitiesPage implements ShouldQueue
                 $areaOfExpertise[$node->text()] = $checkbox->count() ? true : false;
 
             });
-            $specialExperienceSkills['areaOfExpertise'] = $areaOfExpertise;
+            $result['areas_of_expertise'] = $areaOfExpertise;
 
 
             $treatmentOptions = [];
@@ -216,14 +222,13 @@ class ParseSpecialitiesPage implements ShouldQueue
                 $treatmentOptions[$node->text()] = $checkbox->count() ? true : false;
 
             });
-            $specialExperienceSkills['treatmentOptions'] = $treatmentOptions;
+            $result['treatment_options'] = $treatmentOptions;
 
-            $result['specialExperienceSkills'] = $specialExperienceSkills;
         }catch(\Exception $e){
             $error = __("Error :message at line :line", ['message' => $e->getMessage(), 'line' => $e->getLine()]);
             $result['error'] = $error;
             $this->crawlResult->forceFill([
-                'process_status' => 'error',
+                'process_status' => CrawlResultStatus::ERROR,
             ]);
         }
 

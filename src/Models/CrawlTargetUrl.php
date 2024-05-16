@@ -16,7 +16,16 @@ class CrawlTargetUrl extends Model implements Contract
     protected $fillable = [
         'url_template',
         'handler',
+        'result_fields',
     ];
+
+    /** @var string[] */
+    protected function casts(): array
+    {
+        return [
+            'result_fields' => 'array',
+        ];
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

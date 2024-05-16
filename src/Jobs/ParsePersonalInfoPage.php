@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Symfony\Component\DomCrawler\Crawler;
+use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
 
@@ -33,7 +34,7 @@ class ParsePersonalInfoPage implements ShouldQueue
     public function handle()
     {
         $this->crawlResult->forceFill([
-            'process_status' => 'completed',
+            'process_status' => CrawlResultStatus::COMPLETED,
         ]);
         $result = [];
         $crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
@@ -71,22 +72,28 @@ class ParsePersonalInfoPage implements ShouldQueue
                 if($node->text() == 'Name'){
                     $nameNode = $node->nextAll()
                         ->filter('p[data-name="name-grid-header"]');
-                    $result['Name'] = $nameNode->text('');
+                    $result['name'] = $nameNode->text('');
                 }
             });
 
-            $result['Other Names'] = [];
+            $result['aliases'] = [];
 
-            $result['Address'] = [
-                'Home' => null,
-                'Mailing' => null,
+            $result['addresses'] = [
+
             ];
 
-            $nameSections->each(function ($node, $i) use(&$result){
+            $emails = [];
+            $nameSections->each(function ($node, $i) use(&$emails){
                 if($node->text() == 'Primary Email Address'){
                     $primaryEmailNode = $node->nextAll()
                         ->filter('p[data-name="name-grid-header"]');
-                    $result['Primary Email Address'] = $primaryEmailNode->text('');
+                    if($primaryEmailNode->count()){
+                        $emails[] = [
+                            "address" => $primaryEmailNode->text(''),
+                            "allows_notifications" => false,
+                            "is_primary" => true
+                        ];
+                    }
                 }
             });
 
@@ -94,46 +101,59 @@ class ParsePersonalInfoPage implements ShouldQueue
                 ->filter('input[type="text"]')
                 ->extract(['value']);
 
+            collect($additionalEmails)->each(function($email) use(&$emails){
+                $emails[] = [
+                    "address" => $email,
+                    "allows_notifications" => false,
+                    "is_primary" => false
+                ];
+            });
+            $result['emails'] = $emails;
+
             $result['Additional Emails'] = $additionalEmails;
 
-            $result['Social Security Number'] =  $crawler->filter('input[name="SSN"]')->attr('value');
+            $result['ssns'] =  ['number' => $crawler->filter('input[name="SSN"]')->attr('value')];
 
-            $result['NPI Number'] =  $crawler->filter('input[name="NPINumber"]')->attr('value');
+            $result['npis'] =  ['number' => $crawler->filter('input[name="NPINumber"]')->attr('value')];
 
             $input = $crawler->filterXPath('//select[@id="GenderCode"]/option[contains(@selected, "selected")]');
-            $result['Gender'] = [
-                'value' => $input->count() ? $input->attr('value') : null,
-                'text' => $input->count() ? $input->text() : null
-            ];
+            $result['gender'] = $input->count() ? $input->text() : null;
 
-            $result['Birth Date'] =  $crawler->filter('input[name="BirthDate"]')->attr('value');
+            $isTransgende = $crawler->filterXPath('//input[@name="IIdentifyAsTransgender"]')
+                ->filterXPath('//input[@checked="checked"]')
+                ->count() ? true : false;
+
+            if($isTransgende){
+                $result['gender'] = "Not Known";
+            }
+
+            $result['birth_date'] =  $crawler->filter('input[name="BirthDate"]')->attr('value');
 
             $input = $crawler->filterXPath('//select[@id="CitizenshipCountryId"]/option[contains(@selected, "selected")]');
-            $result['Citizenship Country'] = [
+            $result['citizenship_id'] = [
                 'value' => $input->count() ? $input->attr('value') : null,
                 'text' => $input->count() ? $input->text() : null
             ];
 
-            $result['Birth City'] =  $crawler->filter('input[name="BirthCity"]')->attr('value');
+            $result['birth_city'] =  $crawler->filter('input[name="BirthCity"]')->attr('value');
 
             $input = $crawler->filterXPath('//select[@id="BirthStateId"]/option[contains(@selected, "selected")]');
-            $result['Birth State'] = [
+            $result['birth_state'] = [
                 'value' => $input->count() ? $input->attr('value') : null,
                 'text' => $input->count() ? $input->text() : null
             ];
 
             $input = $crawler->filterXPath('//select[@id="BirthCountryId"]/option[contains(@selected, "selected")]');
-            $result['Birth Country'] = [
+            $result['birth_country_id'] = [
                 'value' => $input->count() ? $input->attr('value') : null,
                 'text' => $input->count() ? $input->text() : null
             ];
 
-            $result['Languages'] = null;
+            $result['languages'] = $crawler->filterXPath('//select[@id="LanguageSpoken_List"]/option[contains(@selected, "selected")]')->extract(['_text']);
 
             $raceEthnicity = [];
             $crawler->filterXPath('//input[contains(@name, "RaceAndEthnicity")]')
                 ->filterXPath('//input[@type="checkbox"]')
-                ->filterXPath('//input[@checked="checked"]')
                 ->each(function ($node, $i) use(&$raceEthnicity){
                     $labelNode = $node->closest('div.checker')
                         ->nextAll()
@@ -147,15 +167,15 @@ class ParsePersonalInfoPage implements ShouldQueue
                         $text .= ' '.$possilleTooltipNode->text();
                     }
 
-                    $raceEthnicity[] = $text;
+                    $raceEthnicity[$text] = $node->attr('checked') ? true : false;
                 });
 
-            $result['Race/Ethnicity'] = $raceEthnicity;
+            $result['demographic'] = $raceEthnicity;
         }catch(\Exception $e){
             $error = __("Error :message at line :line", ['message' => $e->getMessage(), 'line' => $e->getLine()]);
             $result['error'] = $error;
             $this->crawlResult->forceFill([
-                'process_status' => 'error',
+                'process_status' => CrawlResultStatus::ERROR,
             ]);
         }
 

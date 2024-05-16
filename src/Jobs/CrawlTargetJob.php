@@ -38,12 +38,14 @@ class CrawlTargetJob implements ShouldQueue
     {
         $traveller = CrawlTraveller::make($this->subject);
 
+        \TrueRcm\LaravelWebscrape\Models\CrawlResult::get()->each(fn($result) => $traveller->addCrawledPage($result));
+
         CrawlStarted::dispatch($this->subject);
 
         Pipeline::send($traveller)
             ->through([
-                AuthenticateBrowser::class,
-                CrawlPages::class,
+               /* AuthenticateBrowser::class,
+                CrawlPages::class,*/
                 ParsePages::class,
                 ProcessParsingResults::class,
             ])->then(fn(CrawlTraveller $traveller) => CrawlCompleted::dispatch($traveller->subject()));

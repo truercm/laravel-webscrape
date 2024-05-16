@@ -30,7 +30,7 @@ class CrawlResultFactory extends Factory
             'body' => $this->faker->optional()->sentence(),
             'processed_at'=> $this->faker->optional()->dateTime(),
             'process_status' => $this->faker->word(),
-            'result'=> $this->faker->optional()->shuffleArray(),
+            'result'=> $this->faker->shuffleArray(),
         ];
     }
 }

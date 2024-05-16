@@ -16,6 +16,7 @@ return new class extends Migration
                 $table->unsignedBigInteger('crawl_target_id')->index();
                 $table->json('credentials')->nullable();
                 $table->dateTime('authenticated_at')->nullable();
+                $table->json('result')->nullable();
 
                 $table->timestamps();
                 $table->softDeletes();

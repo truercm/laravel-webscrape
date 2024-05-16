@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlResult as Contract;
+use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 
 class CrawlResult extends Model implements Contract
 {
@@ -30,6 +31,7 @@ class CrawlResult extends Model implements Contract
         return [
             'processed_at' => 'datetime',
             'result' => 'array',
+            'process_status' => CrawlResultStatus::class,
         ];
     }
 

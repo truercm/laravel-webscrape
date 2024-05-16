@@ -18,6 +18,7 @@ class CrawlSubject extends Model implements Contract
     protected $fillable = [
         'credentials',
         'authenticated_at',
+        'result',
     ];
 
     /** @var string[] */
@@ -26,6 +27,7 @@ class CrawlSubject extends Model implements Contract
         return [
             'credentials' => 'array',
             'authenticated_at' => 'datetime',
+            'result' => 'array',
         ];
     }
 
