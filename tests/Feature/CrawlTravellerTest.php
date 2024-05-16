@@ -1,6 +1,79 @@
 <?php
 
+use Illuminate\Support\Collection;
+use Symfony\Component\BrowserKit\HttpBrowser;
+use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
+use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
+
 it('can create a crawl traveller', function () {
-    $subject = \TrueRcm\LaravelWebscrape\Models\CrawlSubject::factory()->create();
-    dd($subject);
+    $subject = CrawlSubject::factory()->make();
+    $traveller = CrawlTraveller::make($subject);
+    $this->assertInstanceOf(CrawlTraveller::class, $traveller);
 });
+
+it('can set and get browser on traveller', function () {
+    $traveller = resolve(CrawlTraveller::class);
+    $browser = new HttpBrowser();
+    $traveller->setBrowser($browser);
+    $this->assertSame($browser, $traveller->getBrowser());
+});
+
+it('can get target urls from traveller', function ($subject) {
+    $traveller = CrawlTraveller::make($subject);
+
+    $this->assertCount(3, $traveller->targets());
+    $this->assertInstanceOf(Collection::class, $traveller->targets());
+})->with('subject');
+
+it('can get auth url from traveller', function ($subject) {
+    $traveller = CrawlTraveller::make($subject);
+
+    $this->assertEquals('https://xerox.com/Login/Index', $traveller->authUrl());
+})->with('subject');
+
+it('can get auth button text from traveller', function ($subject) {
+    $traveller = CrawlTraveller::make($subject);
+
+    $this->assertEquals('Login now', $traveller->authButtonIdentifier());
+})->with('subject');
+
+dataset('subject', [
+    fn() => TrueRcm\LaravelWebscrape\Models\CrawlSubject::factory()
+        ->for(TrueRcm\LaravelWebscrape\Models\CrawlTarget::factory()
+            ->has(TrueRcm\LaravelWebscrape\Models\CrawlTargetUrl::factory()->sequence(
+                [
+                    'url_template' => 'https://smoodle.com',
+                    'handler' => 'Handler1',
+                    'result_fields' => [
+                        'name',
+                        'gender',
+                    ]
+                ],
+                [
+                    'url_template' => 'https://foodle.com',
+                    'handler' => 'Handler2',
+                    'result_fields' => [
+                        'medicaid',
+                        'medicare',
+                    ]
+                ],
+                [
+                    'url_template' => 'https://berry.com',
+                    'handler' => 'Handler3',
+                ],
+
+            )->count(3), 'crawlTargetUrls', 3)
+            ->create([
+                'auth_url' => 'https://xerox.com/Login/Index',
+                'crawling_job' => 'Job1',
+                'auth_button_text' => 'Login now'
+            ])
+        )
+        ->create([
+            'credentials' => [
+                'UserName' => 'alfa',
+                'Password' => '123456'
+            ],
+            'authenticated_at' => null,
+        ])
+]);
