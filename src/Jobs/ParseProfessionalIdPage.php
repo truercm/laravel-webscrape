@@ -55,7 +55,7 @@ class ParseProfessionalIdPage implements ShouldQueue
                 $colNodes = $node->filter('td');
                 $temp = [];
                 foreach($headers as $key=>$header){
-                    $temp[$header] = $colNodes->eq($key)->text();
+                    $temp[$header] = $colNodes->eq($key+1)->text();
                 }
                 $professionalLicenses[] = $temp;
             });
@@ -77,8 +77,9 @@ class ParseProfessionalIdPage implements ShouldQueue
                 $colNodes = $node->filter('td');
                 $temp = [];
                 foreach($headers as $key=>$header){
-                    $temp[$header] = $colNodes->eq($key)->text();
+                    $temp[$header] = $colNodes->eq($key+1)->text();
                 }
+
                 $cdsRegistrations[] = $temp;
             });
 

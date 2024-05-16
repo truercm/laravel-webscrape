@@ -53,16 +53,10 @@ class ParseSpecialitiesPage implements ShouldQueue
             $address = [];
             $address['address_type'] = "office";
             $input =  $primarySpecialtySection->filterXPath('//select[contains(@name, ".CountryId")]/option[contains(@selected, "selected")]');
-            $address['country'] = [
-                'key' => $input->count() ? $input->attr('value') : null,
-                'value' => $input->count() ? $input->text() : null
-            ];
+            $address['country'] = $input->count() ? $input->text() : null;
 
             $input =  $primarySpecialtySection->filterXPath('//select[contains(@name, ".StateId")]/option[contains(@selected, "selected")]');
-            $address['state'] = [
-                'key' => $input->count() ? $input->attr('value') : null,
-                'value' => $input->count() ? $input->text() : null
-            ];
+            $address['state'] = $input->count() ? $input->text() : null;
 
             $address['line_1'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".Street1")]')->attr('value');
             $address['line_2'] =  $primarySpecialtySection->filterXPath('//input[contains(@name, ".Street2")]')->attr('value');

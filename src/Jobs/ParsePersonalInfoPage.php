@@ -130,24 +130,15 @@ class ParsePersonalInfoPage implements ShouldQueue
             $result['birth_date'] =  $crawler->filter('input[name="BirthDate"]')->attr('value');
 
             $input = $crawler->filterXPath('//select[@id="CitizenshipCountryId"]/option[contains(@selected, "selected")]');
-            $result['citizenship_id'] = [
-                'value' => $input->count() ? $input->attr('value') : null,
-                'text' => $input->count() ? $input->text() : null
-            ];
+            $result['citizenship_id'] = $input->count() ? $input->text() : null;
 
             $result['birth_city'] =  $crawler->filter('input[name="BirthCity"]')->attr('value');
 
             $input = $crawler->filterXPath('//select[@id="BirthStateId"]/option[contains(@selected, "selected")]');
-            $result['birth_state'] = [
-                'value' => $input->count() ? $input->attr('value') : null,
-                'text' => $input->count() ? $input->text() : null
-            ];
+            $result['birth_state'] = $input->count() ? $input->text() : null;
 
             $input = $crawler->filterXPath('//select[@id="BirthCountryId"]/option[contains(@selected, "selected")]');
-            $result['birth_country_id'] = [
-                'value' => $input->count() ? $input->attr('value') : null,
-                'text' => $input->count() ? $input->text() : null
-            ];
+            $result['birth_country_id'] = $input->count() ? $input->text() : null;
 
             $result['languages'] = $crawler->filterXPath('//select[@id="LanguageSpoken_List"]/option[contains(@selected, "selected")]')->extract(['_text']);
 
