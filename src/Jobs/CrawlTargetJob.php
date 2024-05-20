@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Pipeline;
+use Illuminate\Pipeline\Pipeline;
 use TrueRcm\LaravelWebscrape\Events\CrawlCompleted;
 use TrueRcm\LaravelWebscrape\Events\CrawlStarted;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
@@ -40,7 +40,8 @@ class CrawlTargetJob implements ShouldQueue
 
         CrawlStarted::dispatch($this->subject);
 
-        Pipeline::send($traveller)
+        app(Pipeline::class)
+            ->send($traveller)
             ->through([
                 AuthenticateBrowser::class,
                 CrawlPages::class,

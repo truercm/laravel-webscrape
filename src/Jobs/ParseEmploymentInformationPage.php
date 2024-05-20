@@ -56,13 +56,13 @@ class ParseEmploymentInformationPage implements ShouldQueue
                 $temp['from'] = Str::of($contentNodes->eq(1)->filter('p')->text())
                     ->before('-')
                     ->trim()
-                    ->toString();
+                    ->__toString();
 
                 $after = Str::of($contentNodes->eq(1)->filter('p')->text())
                     ->after('-')
                     ->trim();
 
-                $temp['to'] = $after->is('Current Employment') ? null : $after->toString();
+                $temp['to'] = $after->is('Current Employment') ? null : $after->__toString();
 
                 $temp['currently_epmloyed'] = $after->is('Current Employment') ? true : false;
 

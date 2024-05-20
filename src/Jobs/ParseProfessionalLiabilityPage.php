@@ -53,18 +53,18 @@ class ParseProfessionalLiabilityPage implements ShouldQueue
 
                 $temp['insurance_company__name'] = $contentNodes->eq(0)->text();
 
-                $temp['policy_number'] = Str::of($contentNodes->eq(1)->filter('p')->text())->after(':')->toString();
+                $temp['policy_number'] = Str::of($contentNodes->eq(1)->filter('p')->text())->after(':')->__toString();
 
                 $temp['current_effective_date'] = Str::of($contentNodes->eq(1)->text())
                     ->after('Current Effective Date:')
                     ->before('Current Expiration Date:')
                     ->trim()
-                    ->toString();
+                    ->__toString();
 
                 $temp['current_expiration_date'] = Str::of($contentNodes->eq(1)->filter('text')->text())
                     ->after('Current Expiration Date:')
                     ->trim()
-                    ->toString();
+                    ->__toString();
 
                 $policyInfoMsg = $contentNodes->eq(1)->filter('div#policyInfoMsg');
 

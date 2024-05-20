@@ -22,8 +22,8 @@ class CrawlTargetUrlFactory extends Factory
     {
         return [
             'crawl_target_id' => CrawlTarget::factory(),
-            'url_template' => fake()->url(),
-            'handler' => fake()->word(),
+            'url_template' => $this->faker->url(),
+            'handler' => $this->faker->word(),
         ];
     }
 }

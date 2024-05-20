@@ -31,13 +31,13 @@ class LaravelWebscrapeServiceProvider extends PackageServiceProvider
                 'create_crawl_targets_table',
             ])
             ->hasCommand(LaravelWebscrapeCommand::class)
-            ->hasInstallCommand(function(InstallCommand $command) {
+           /* ->hasInstallCommand(function(InstallCommand $command) {
                 $command
                     ->publishConfigFile()
                     ->publishAssets()
                     ->publishMigrations()
                     ->askToRunMigrations();
-            });
+            })*/;
     }
 
     public function packageBooted()
