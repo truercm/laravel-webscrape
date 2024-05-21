@@ -20,8 +20,7 @@ class ParseDocumentsPage implements ShouldQueue
 
     public function __construct(
         protected CrawlResult $crawlResult
-    )
-    {
+    ) {
     }
 
     /*
@@ -40,12 +39,11 @@ class ParseDocumentsPage implements ShouldQueue
 
         $documents = [];
 
-        try{
+        try {
             $contentRows = $crawler->filter('div.e-gridcontent tr');
 
-            $contentRows->each(function ($node, $i) use(&$documents, $contentRows){
-
-                if($i < $contentRows->count()-1){
+            $contentRows->each(function ($node, $i) use (&$documents, $contentRows) {
+                if ($i < $contentRows->count() - 1) {
                     $colNodes = $node->filter('td');
                     $temp = [];
 
@@ -59,8 +57,8 @@ class ParseDocumentsPage implements ShouldQueue
                     $documents[] = $temp;
                 }
             });
-        }catch(\Exception $e){
-            $error = __("Error :message at line :line", ['message' => $e->getMessage(), 'line' => $e->getLine()]);
+        } catch (\Exception $e) {
+            $error = __('Error :message at line :line', ['message' => $e->getMessage(), 'line' => $e->getLine()]);
             $result['error'] = $error;
             $this->crawlResult->forceFill([
                 'process_status' => CrawlResultStatus::ERROR,
@@ -71,8 +69,7 @@ class ParseDocumentsPage implements ShouldQueue
 
         $this->crawlResult->forceFill([
             'processed_at' => now(),
-            'result' => $result
+            'result' => $result,
         ])->save();
-
     }
 }

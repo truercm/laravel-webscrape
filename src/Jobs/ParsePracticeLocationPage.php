@@ -11,7 +11,6 @@ use Symfony\Component\DomCrawler\Crawler;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
-
 class ParsePracticeLocationPage implements ShouldQueue
 {
     use Dispatchable;
@@ -21,8 +20,7 @@ class ParsePracticeLocationPage implements ShouldQueue
 
     public function __construct(
         protected CrawlResult $crawlResult
-    )
-    {
+    ) {
     }
 
     /*
@@ -39,13 +37,13 @@ class ParsePracticeLocationPage implements ShouldQueue
         $result = [];
         $crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
 
-        try{
+        try {
             $newLocationsForReview = [];
             $headers = array_filter($crawler->filter('div#healthplanPLGrid > div.e-gridheader div.e-headercelldiv div')
                 ->extract(['_text']));
 
             $contentRows = $crawler->filter('div#healthplanPLGrid > div.e-gridcontent tr');
-            $contentRows->each(function ($node, $i) use(&$newLocationsForReview, $headers){
+            $contentRows->each(function ($node, $i) use (&$newLocationsForReview, $headers) {
                 $colNodes = $node->filter('td');
                 $temp = [];
 
@@ -77,8 +75,7 @@ class ParsePracticeLocationPage implements ShouldQueue
 
             $contentRows = $crawler->filter('div#divActivePracticeLocation > div.divinnerrow');
 
-            $contentRows->each(function ($node, $i) use(&$activePracticeLocations, $headers){
-
+            $contentRows->each(function ($node, $i) use (&$activePracticeLocations, $headers) {
                 $temp = [];
 
                 $nameData = $node->filter('div.divname li');
@@ -102,8 +99,8 @@ class ParsePracticeLocationPage implements ShouldQueue
             });
 
             $result['activePracticeLocations'] = $activePracticeLocations;
-        }catch(\Exception $e){
-            $error = __("Error :message at line :line", ['message' => $e->getMessage(), 'line' => $e->getLine()]);
+        } catch (\Exception $e) {
+            $error = __('Error :message at line :line', ['message' => $e->getMessage(), 'line' => $e->getLine()]);
             $result['error'] = $error;
             $this->crawlResult->forceFill([
                 'process_status' => CrawlResultStatus::ERROR,
@@ -112,8 +109,7 @@ class ParsePracticeLocationPage implements ShouldQueue
 
         $this->crawlResult->forceFill([
             'processed_at' => now(),
-            'result' => $result
+            'result' => $result,
         ])->save();
-
     }
 }

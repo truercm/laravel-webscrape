@@ -5,9 +5,9 @@ namespace TrueRcm\LaravelWebscrape\Jobs;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Pipeline\Pipeline;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Pipeline\Pipeline;
 use TrueRcm\LaravelWebscrape\Events\CrawlCompleted;
 use TrueRcm\LaravelWebscrape\Events\CrawlStarted;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
@@ -47,6 +47,6 @@ class CrawlTargetJob implements ShouldQueue
                 CrawlPages::class,
                 ParsePages::class,
                 ProcessParsingResults::class,
-            ])->then(fn(CrawlTraveller $traveller) => CrawlCompleted::dispatch($traveller->subject()));
+            ])->then(fn (CrawlTraveller $traveller) => CrawlCompleted::dispatch($traveller->subject()));
     }
 }

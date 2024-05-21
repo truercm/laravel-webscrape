@@ -52,7 +52,7 @@ class LaravelWebscrapeServiceProvider extends PackageServiceProvider
     }
 
     /**
-     * Register contract bindings to models
+     * Register contract bindings to models.
      */
     protected function registerModelBindings(): void
     {
@@ -65,7 +65,7 @@ class LaravelWebscrapeServiceProvider extends PackageServiceProvider
     protected function registerInstances(): void
     {
         $this->app->singleton('text-extractor',
-            fn ($app) => $app->make( TextExtractorService::class)
+            fn ($app) => $app->make(TextExtractorService::class)
         );
     }
 }

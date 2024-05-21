@@ -11,7 +11,7 @@ use TrueRcm\LaravelWebscrape\Models\CrawlTargetUrl;
 class CrawlTraveller
 {
     protected CrawlSubject $subject;
-    protected ?HttpBrowser $browser=null;
+    protected ?HttpBrowser $browser = null;
 
     protected array $crawledPages = [];
 
@@ -50,7 +50,7 @@ class CrawlTraveller
     {
         return $this->subject
            ->targetUrls
-            ->map(fn(CrawlTargetUrl $crawlTargetUrl) => $crawlTargetUrl->setAttribute('url', $crawlTargetUrl->url_template));
+            ->map(fn (CrawlTargetUrl $crawlTargetUrl) => $crawlTargetUrl->setAttribute('url', $crawlTargetUrl->url_template));
     }
 
     public function authUrl(): ?string

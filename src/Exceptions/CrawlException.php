@@ -2,8 +2,8 @@
 
 namespace TrueRcm\LaravelWebscrape\Exceptions;
 
-use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 use Symfony\Component\BrowserKit\Response;
+use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 
 class CrawlException extends \Exception
 {

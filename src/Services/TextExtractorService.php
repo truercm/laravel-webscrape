@@ -14,8 +14,8 @@ class TextExtractorService implements TextExtractorInterface
         // Filter based on the XPath expression
         $filteredNode = $node->filterXPath($xpath);
         // Check if any node was found
-        if ($filteredNode->count() === 0) {
-            return ""; // Return empty string if no node found
+        if (0 === $filteredNode->count()) {
+            return ''; // Return empty string if no node found
         }
         // Extract the text content
         return $filteredNode->attr('value');
@@ -28,8 +28,8 @@ class TextExtractorService implements TextExtractorInterface
         // Filter based on the XPath expression
         $filteredNode = $node->filterXPath($xpath);
         // Check if any node was found
-        if ($filteredNode->count() === 0) {
-            return ""; // Return empty string if no node found
+        if (0 === $filteredNode->count()) {
+            return ''; // Return empty string if no node found
         }
         // Extract the text content
         return $filteredNode->text('');
@@ -52,11 +52,10 @@ class TextExtractorService implements TextExtractorInterface
     {
         $selectedOption = $node->filterXPath(sprintf('//select[@name="%s"]//option[@selected="selected"]', $fieldName));
 
-        if ($selectedOption->count() === 0) {
-            return ""; // Return empty string if no selected option found
+        if (0 === $selectedOption->count()) {
+            return ''; // Return empty string if no selected option found
         }
 
         return $selectedOption->text('');
     }
-
 }

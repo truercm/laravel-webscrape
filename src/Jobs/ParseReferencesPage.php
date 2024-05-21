@@ -11,7 +11,6 @@ use Symfony\Component\DomCrawler\Crawler;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
-
 class ParseReferencesPage implements ShouldQueue
 {
     use Dispatchable;
@@ -21,8 +20,7 @@ class ParseReferencesPage implements ShouldQueue
 
     public function __construct(
         protected CrawlResult $crawlResult
-    )
-    {
+    ) {
     }
 
     /*
@@ -39,10 +37,10 @@ class ParseReferencesPage implements ShouldQueue
         $result = [];
         $crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
 
-        try{
+        try {
             $items = $crawler->filter('div#ProfessionalReferencePlaceHolder div.collection-item');
 
-            $items->each(function ($node, $i) use(&$result) {
+            $items->each(function ($node, $i) use (&$result) {
                 $temp = [];
 
                 $temp['provider_type'] = $node->filterXPath('//select[contains(@name, ".ProviderTypeId")]/option[contains(@selected, "selected")]')->text('');
@@ -64,8 +62,8 @@ class ParseReferencesPage implements ShouldQueue
 
                 $result[] = $temp;
             });
-        }catch(\Exception $e){
-            $error = __("Error :message at line :line", ['message' => $e->getMessage(), 'line' => $e->getLine()]);
+        } catch (\Exception $e) {
+            $error = __('Error :message at line :line', ['message' => $e->getMessage(), 'line' => $e->getLine()]);
             $result['error'] = $error;
             $this->crawlResult->forceFill([
                 'process_status' => CrawlResultStatus::ERROR,
@@ -74,8 +72,7 @@ class ParseReferencesPage implements ShouldQueue
 
         $this->crawlResult->forceFill([
             'processed_at' => now(),
-            'result' => $result
+            'result' => $result,
         ])->save();
-
     }
 }

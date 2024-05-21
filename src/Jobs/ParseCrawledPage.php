@@ -9,7 +9,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
-
 class ParseCrawledPage implements ShouldQueue
 {
     use Dispatchable;
@@ -19,8 +18,7 @@ class ParseCrawledPage implements ShouldQueue
 
     public function __construct(
         protected CrawlResult $crawlResult
-    )
-    {
+    ) {
     }
 
     /*

@@ -1,9 +1,9 @@
 <?php
 
+use Illuminate\Support\Facades\Bus;
 use TrueRcm\LaravelWebscrape\Jobs\ParseCrawledPage;
 use TrueRcm\LaravelWebscrape\Jobs\ParsePersonalInfoPage;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
-use Illuminate\Support\Facades\Bus;
 
 it('will handle dispatching the job to parse crawled page', function () {
     Bus::fake();

@@ -11,7 +11,6 @@ use Symfony\Component\DomCrawler\Crawler;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
-
 class ParseHospitalAffiliationPage implements ShouldQueue
 {
     use Dispatchable;
@@ -21,8 +20,7 @@ class ParseHospitalAffiliationPage implements ShouldQueue
 
     public function __construct(
         protected CrawlResult $crawlResult
-    )
-    {
+    ) {
     }
 
     /*
@@ -39,13 +37,13 @@ class ParseHospitalAffiliationPage implements ShouldQueue
         $result = [];
         $crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
 
-        try{
+        try {
             $result['admitting_privileges'] = [];
 
-            $admittingArrangements  = [];
+            $admittingArrangements = [];
             $items = $crawler->filter('div#edit-admitting-arrangements');
 
-            $items->each(function ($node, $i) use(&$admittingArrangements){
+            $items->each(function ($node, $i) use (&$admittingArrangements) {
                 $temp = [];
                 $container = $node->filterXPath('//div[contains(@id, "SummaryPageGridEditRecord")]');
 
@@ -64,8 +62,8 @@ class ParseHospitalAffiliationPage implements ShouldQueue
 
             $result['admitting_arrangements'] = $admittingArrangements;
             $result['non_admitting_affiliations'] = [];
-        }catch(\Exception $e){
-            $error = __("Error :message at line :line", ['message' => $e->getMessage(), 'line' => $e->getLine()]);
+        } catch (\Exception $e) {
+            $error = __('Error :message at line :line', ['message' => $e->getMessage(), 'line' => $e->getLine()]);
             $result['error'] = $error;
             $this->crawlResult->forceFill([
                 'process_status' => CrawlResultStatus::ERROR,
@@ -74,8 +72,7 @@ class ParseHospitalAffiliationPage implements ShouldQueue
 
         $this->crawlResult->forceFill([
             'processed_at' => now(),
-            'result' => $result
+            'result' => $result,
         ])->save();
-
     }
 }

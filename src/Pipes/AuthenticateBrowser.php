@@ -3,7 +3,6 @@
 namespace TrueRcm\LaravelWebscrape\Pipes;
 
 use Symfony\Component\BrowserKit\HttpBrowser;
-use Throwable;
 use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 
@@ -14,7 +13,6 @@ class AuthenticateBrowser
     ) {
     }
 
-
     /**
      * @param \TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller $traveller
      * @param \Closure $next
@@ -22,12 +20,11 @@ class AuthenticateBrowser
      */
     public function handle(CrawlTraveller $traveller, \Closure $next)
     {
-
         $this->browser
                 ->request('GET', $traveller->authUrl());
 
         throw_if(
-            $this->browser->getResponse()->getStatusCode() != 200 /* is not good*/,
+            200 != $this->browser->getResponse()->getStatusCode() /* is not good */,
             CrawlException::browsingFailed($traveller, $this->browser->getResponse())
         );
 
@@ -35,7 +32,7 @@ class AuthenticateBrowser
             ->submitForm($traveller->authButtonIdentifier(), $traveller->getCrawlingCredentials());
 
         throw_if(
-            $crawler->getUri() == $traveller->authUrl() /* is not good*/,
+            $crawler->getUri() == $traveller->authUrl() /* is not good */,
             CrawlException::authenticationFailed($traveller, $this->browser->getResponse())
         );
 

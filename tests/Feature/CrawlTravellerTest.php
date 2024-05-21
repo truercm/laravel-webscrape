@@ -4,7 +4,6 @@ use Illuminate\Support\Collection;
 use Symfony\Component\BrowserKit\HttpBrowser;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
-use TrueRcm\LaravelWebscrape\Models\CrawlTargetUrl;
 use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 
 it('can create a crawl traveller', function () {
@@ -44,7 +43,7 @@ it('can get credentials from traveller', function ($subject) {
 
     $this->assertEquals([
         'UserName' => 'alfa',
-        'Password' => '123456'
+        'Password' => '123456',
     ], $traveller->getCrawlingCredentials());
 })->with('subject');
 
@@ -59,7 +58,7 @@ it('can add crawl result page to traveller', function () {
 });
 
 dataset('subject', [
-    fn() => TrueRcm\LaravelWebscrape\Models\CrawlSubject::factory()
+    fn () => TrueRcm\LaravelWebscrape\Models\CrawlSubject::factory()
         ->for(TrueRcm\LaravelWebscrape\Models\CrawlTarget::factory()
             ->has(TrueRcm\LaravelWebscrape\Models\CrawlTargetUrl::factory()->sequence(
                 [
@@ -68,7 +67,7 @@ dataset('subject', [
                     'result_fields' => json_encode([
                         'name',
                         'gender',
-                    ])
+                    ]),
                 ],
                 [
                     'url_template' => 'https://foodle.com',
@@ -76,25 +75,24 @@ dataset('subject', [
                     'result_fields' => json_encode([
                         'medicaid',
                         'medicare',
-                    ])
+                    ]),
                 ],
                 [
                     'url_template' => 'https://berry.com',
                     'handler' => 'Handler3',
                 ],
-
             )->count(3), 'crawlTargetUrls', 3)
             ->create([
                 'auth_url' => 'https://xerox.com/Login/Index',
                 'crawling_job' => 'Job1',
-                'auth_button_text' => 'Login now'
+                'auth_button_text' => 'Login now',
             ])
         )
         ->create([
             'credentials' => json_encode([
                 'UserName' => 'alfa',
-                'Password' => '123456'
+                'Password' => '123456',
             ]),
             'authenticated_at' => null,
-        ])
+        ]),
 ]);
