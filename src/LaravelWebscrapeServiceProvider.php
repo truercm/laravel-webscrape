@@ -10,6 +10,7 @@ use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlSubject;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlTarget;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlTargetUrl;
+use TrueRcm\LaravelWebscrape\Services\TextExtractorService;
 
 class LaravelWebscrapeServiceProvider extends PackageServiceProvider
 {
@@ -45,6 +46,11 @@ class LaravelWebscrapeServiceProvider extends PackageServiceProvider
         $this->registerModelBindings();
     }
 
+    public function packageRegistered()
+    {
+        $this->registerInstances();
+    }
+
     /**
      * Register contract bindings to models
      */
@@ -54,5 +60,12 @@ class LaravelWebscrapeServiceProvider extends PackageServiceProvider
         $this->app->bind(CrawlSubject::class, fn ($app) => $app->make($app->config['webscrape.models.subject']));
         $this->app->bind(CrawlTarget::class, fn ($app) => $app->make($app->config['webscrape.models.target']));
         $this->app->bind(CrawlTargetUrl::class, fn ($app) => $app->make($app->config['webscrape.models.target_url']));
+    }
+
+    protected function registerInstances(): void
+    {
+        $this->app->singleton('text-extractor',
+            fn ($app) => $app->make( TextExtractorService::class)
+        );
     }
 }

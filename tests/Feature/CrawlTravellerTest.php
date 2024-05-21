@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Collection;
 use Symfony\Component\BrowserKit\HttpBrowser;
+use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
+use TrueRcm\LaravelWebscrape\Models\CrawlTargetUrl;
 use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 
 it('can create a crawl traveller', function () {
@@ -37,6 +39,25 @@ it('can get auth button text from traveller', function ($subject) {
     $this->assertEquals('Login now', $traveller->authButtonIdentifier());
 })->with('subject');
 
+it('can get credentials from traveller', function ($subject) {
+    $traveller = CrawlTraveller::make($subject);
+
+    $this->assertEquals([
+        'UserName' => 'alfa',
+        'Password' => '123456'
+    ], $traveller->getCrawlingCredentials());
+})->with('subject');
+
+it('can add crawl result page to traveller', function () {
+    $traveller = resolve(CrawlTraveller::class);
+
+    $result = CrawlResult::factory()->create();
+    $stub = $traveller->addCrawledPage($result);
+
+    $this->assertSame($traveller, $stub);
+    $this->assertInstanceOf(Collection::class, $traveller->getCrawledPages());
+});
+
 dataset('subject', [
     fn() => TrueRcm\LaravelWebscrape\Models\CrawlSubject::factory()
         ->for(TrueRcm\LaravelWebscrape\Models\CrawlTarget::factory()
@@ -44,18 +65,18 @@ dataset('subject', [
                 [
                     'url_template' => 'https://smoodle.com',
                     'handler' => 'Handler1',
-                    'result_fields' => [
+                    'result_fields' => json_encode([
                         'name',
                         'gender',
-                    ]
+                    ])
                 ],
                 [
                     'url_template' => 'https://foodle.com',
                     'handler' => 'Handler2',
-                    'result_fields' => [
+                    'result_fields' => json_encode([
                         'medicaid',
                         'medicare',
-                    ]
+                    ])
                 ],
                 [
                     'url_template' => 'https://berry.com',
@@ -70,10 +91,10 @@ dataset('subject', [
             ])
         )
         ->create([
-            'credentials' => [
+            'credentials' => json_encode([
                 'UserName' => 'alfa',
                 'Password' => '123456'
-            ],
+            ]),
             'authenticated_at' => null,
         ])
 ]);

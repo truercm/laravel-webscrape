@@ -34,13 +34,13 @@ class CrawlTargetJob implements ShouldQueue
      * "subject" is a single crawler run for a given target, parsed by a specific job
      * */
 
-    public function handle()
+    public function handle(Pipeline $pipeline)
     {
-        $traveller = CrawlTraveller::make($this->subject);
+        $traveller = resolve(CrawlTraveller::class, ['subject' => $this->subject]);
 
         CrawlStarted::dispatch($this->subject);
 
-        app(Pipeline::class)
+        $pipeline
             ->send($traveller)
             ->through([
                 AuthenticateBrowser::class,
