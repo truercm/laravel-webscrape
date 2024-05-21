@@ -54,8 +54,9 @@
             "@php vendor/bin/testbench serve"
         ],
         "analyse": "vendor/bin/phpstan analyse",
-        "test": "vendor/bin/pest",
-        "test-coverage": "vendor/bin/pest --coverage",
+        "pest": "vendor/bin/pest",
+        "test": "docker run --rm -v $(pwd):/app jitesoft/phpunit vendor/bin/pest",
+        "test-coverage": "docker run --rm -e XDEBUG_MODE=coverage -v $(pwd):/app jitesoft/phpunit -d xdebug.mode=coverage vendor/bin/pest --coverage-html build",
         "format": "vendor/bin/pint"
     },
     "config": {
