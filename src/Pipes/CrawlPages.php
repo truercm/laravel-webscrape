@@ -27,7 +27,7 @@ class CrawlPages
                 'status' => $response->getStatusCode(),
                 'body' => $crawler->filter('body')->html(), /* html*/
                 'handler' => $target->handler,
-                'process_status' => CrawlResultStatus::PENDING,
+                'process_status' => (CrawlResultStatus::PENDING)->value,
             ]);
 
             $traveller->addCrawledPage($page);
