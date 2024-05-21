@@ -168,8 +168,8 @@ DB::transaction(function () {
         )
         ->create([
             'credentials' => json_encode([
-                'UserName' => '14254304',
-                'Password' => 'Health28!'
+                'UserName' => 'someuser',
+                'Password' => 'mypassword'
             ]),
             'authenticated_at' => null,
         ]);
