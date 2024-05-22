@@ -1,8 +1,7 @@
 <?php
 
-
-use TrueRcm\LaravelWebscrape\Services\TextExtractorService;
 use Symfony\Component\DomCrawler\Crawler;
+use TrueRcm\LaravelWebscrape\Services\TextExtractorService;
 
 it('extracts text from input field', function () {
     $html = <<<HTML
@@ -16,12 +15,12 @@ HTML;
     $crawler = new Crawler($html);
 
     $node = $crawler->filterXPath('//body');
-    $fieldName = "myField";
+    $fieldName = 'myField';
 
     $textExtractor = new TextExtractorService();
     $extractedText = $textExtractor->getTextInput($node, $fieldName);
 
-    $this->assertEquals("This is some text", $extractedText);
+    $this->assertEquals('This is some text', $extractedText);
 });
 
 it('will get checked radio/checkbox options', function () {
@@ -37,13 +36,13 @@ HTML;
 
     $crawler = new Crawler($html);
     $node = $crawler->filterXPath('//body');
-    $containerClass = "inputDiv";
+    $containerClass = 'inputDiv';
 
     $textExtractor = new TextExtractorService();
     $extractedOptions = $textExtractor->getRadioOptions($node, $containerClass);
 
     $this->assertEquals([
-        "Option 1" => true,
-        "Option 2" => false,
+        'Option 1' => true,
+        'Option 2' => false,
     ], $extractedOptions);
 });

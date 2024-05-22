@@ -8,7 +8,6 @@ use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 
 class ProcessParsingResults
 {
-
     /**
      * @param \TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller $traveller
      * @param \Closure $next

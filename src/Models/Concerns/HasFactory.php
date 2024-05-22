@@ -14,12 +14,10 @@ trait HasFactory
      *
      * @return \Illuminate\Database\Eloquent\Factories\Factory
      */
-
     protected static function newFactory()
     {
         $factory = sprintf('TrueRcm\LaravelWebscrape\Database\Factories\%sFactory', class_basename(get_called_class()));
 
         return $factory::new();
     }
-
 }

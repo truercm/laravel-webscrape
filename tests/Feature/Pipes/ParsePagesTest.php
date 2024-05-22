@@ -1,11 +1,11 @@
 <?php
 
+use Illuminate\Support\Facades\Bus;
+use Mockery\MockInterface;
 use TrueRcm\LaravelWebscrape\Jobs\ParseCrawledPage;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 use TrueRcm\LaravelWebscrape\Pipes\ParsePages;
 use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
-use Illuminate\Support\Facades\Bus;
-use Mockery\MockInterface;
 
 it('will parse crawled pages html', function () {
     Bus::fake();

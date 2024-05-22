@@ -11,7 +11,6 @@ use Symfony\Component\DomCrawler\Crawler;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
-
 class ParseProfessionalIdPage implements ShouldQueue
 {
     use Dispatchable;
@@ -21,8 +20,7 @@ class ParseProfessionalIdPage implements ShouldQueue
 
     public function __construct(
         protected CrawlResult $crawlResult
-    )
-    {
+    ) {
     }
 
     /*
@@ -39,7 +37,7 @@ class ParseProfessionalIdPage implements ShouldQueue
         $result = [];
         $crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
 
-        try{
+        try {
             $professionalLicenses = [];
 
             $headers = array_filter($crawler->filter('div#ProfessionLicenseDetails > div.e-gridheader div.e-headercelldiv')
@@ -48,14 +46,14 @@ class ParseProfessionalIdPage implements ShouldQueue
                 'state',
                 'current',
                 'number',
-                'expires_at'
+                'expires_at',
             ];
             $contentRows = $crawler->filter('div#ProfessionLicenseDetails > div.e-gridcontent tr');
-            $contentRows->each(function ($node, $i) use(&$professionalLicenses, $headers){
+            $contentRows->each(function ($node, $i) use (&$professionalLicenses, $headers) {
                 $colNodes = $node->filter('td');
                 $temp = [];
-                foreach($headers as $key=>$header){
-                    $temp[$header] = $colNodes->eq($key+1)->text();
+                foreach ($headers as $key => $header) {
+                    $temp[$header] = $colNodes->eq($key + 1)->text();
                 }
                 $professionalLicenses[] = $temp;
             });
@@ -70,14 +68,14 @@ class ParseProfessionalIdPage implements ShouldQueue
                 'state',
                 'number',
                 'issued_at',
-                'expires_at'
+                'expires_at',
             ];
             $contentRows = $crawler->filter('div#CDSDetails > div.e-gridcontent tr');
-            $contentRows->each(function ($node, $i) use(&$cdsRegistrations, $headers){
+            $contentRows->each(function ($node, $i) use (&$cdsRegistrations, $headers) {
                 $colNodes = $node->filter('td');
                 $temp = [];
-                foreach($headers as $key=>$header){
-                    $temp[$header] = $colNodes->eq($key+1)->text();
+                foreach ($headers as $key => $header) {
+                    $temp[$header] = $colNodes->eq($key + 1)->text();
                 }
 
                 $cdsRegistrations[] = $temp;
@@ -85,13 +83,12 @@ class ParseProfessionalIdPage implements ShouldQueue
 
             $result['cdc'] = $cdsRegistrations;
 
-
             $medicaids = [];
             $medicaidItems = $crawler->filter('div#MedicaidPlaceHolder > div.collection-item');
-            $medicaidItems->each(function ($node, $i) use(&$medicaids){
+            $medicaidItems->each(function ($node, $i) use (&$medicaids) {
                 $temp = [];
-                $temp['number'] =  $node->filterXPath('//input[contains(@name, ".Number")]')->attr('value');
-                $temp['state'] =  $node->filterXPath('//select[contains(@name, ".StateId")]/option[contains(@selected, "selected")]')->text();
+                $temp['number'] = $node->filterXPath('//input[contains(@name, ".Number")]')->attr('value');
+                $temp['state'] = $node->filterXPath('//select[contains(@name, ".StateId")]/option[contains(@selected, "selected")]')->text();
                 $medicaids[] = $temp;
             });
 
@@ -100,16 +97,16 @@ class ParseProfessionalIdPage implements ShouldQueue
             $medicares = [];
 
             $medicareItems = $crawler->filter('div#MedicarePlaceHolder > div.collection-item');
-            $medicareItems->each(function ($node, $i) use(&$medicares){
+            $medicareItems->each(function ($node, $i) use (&$medicares) {
                 $temp = [];
-                $temp['number'] =  $node->filterXPath('//input[contains(@name, ".Number")]')->attr('value');
-                $temp['state'] =  $node->filterXPath('//select[contains(@name, ".StateId")]/option[contains(@selected, "selected")]')->text();
+                $temp['number'] = $node->filterXPath('//input[contains(@name, ".Number")]')->attr('value');
+                $temp['state'] = $node->filterXPath('//select[contains(@name, ".StateId")]/option[contains(@selected, "selected")]')->text();
                 $medicares[] = $temp;
             });
 
             $result['medicares'] = $medicares;
-        }catch(\Exception $e){
-            $error = __("Error :message at line :line", ['message' => $e->getMessage(), 'line' => $e->getLine()]);
+        } catch (\Exception $e) {
+            $error = __('Error :message at line :line', ['message' => $e->getMessage(), 'line' => $e->getLine()]);
             $result['error'] = $error;
             $this->crawlResult->forceFill([
                 'process_status' => CrawlResultStatus::ERROR,
@@ -118,8 +115,7 @@ class ParseProfessionalIdPage implements ShouldQueue
 
         $this->crawlResult->forceFill([
             'processed_at' => now(),
-            'result' => $result
+            'result' => $result,
         ])->save();
-
     }
 }

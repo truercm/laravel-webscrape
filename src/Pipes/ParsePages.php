@@ -8,7 +8,6 @@ use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 
 class ParsePages
 {
-
     /**
      * @param \TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller $traveller
      * @param \Closure $next
@@ -17,7 +16,7 @@ class ParsePages
     public function handle(CrawlTraveller $traveller, \Closure $next)
     {
         $traveller->getCrawledPages()
-            ->each(fn(CrawlResult $page) => ParseCrawledPage::dispatch($page));
+            ->each(fn (CrawlResult $page) => ParseCrawledPage::dispatch($page));
 
         return $next($traveller);
     }

@@ -7,11 +7,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Str;
 use Symfony\Component\DomCrawler\Crawler;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
-
 
 class ParseDisclosureMaPage implements ShouldQueue
 {
@@ -22,8 +20,7 @@ class ParseDisclosureMaPage implements ShouldQueue
 
     public function __construct(
         protected CrawlResult $crawlResult
-    )
-    {
+    ) {
     }
 
     /*
@@ -41,10 +38,10 @@ class ParseDisclosureMaPage implements ShouldQueue
         $crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
         $sections = [];
 
-        try{
+        try {
             $formSections = $crawler->filterXPath('//div[contains(@class, "form-main")]/div[contains(@class, "form-section")]');
 
-            $formSections->each(function ($formSection, $i) use(&$sections) {
+            $formSections->each(function ($formSection, $i) use (&$sections) {
                 $temp = [];
                 $temp['section'] = $formSection->filter('p.section-title')->text();
                 $questions = [];
@@ -71,16 +68,14 @@ class ParseDisclosureMaPage implements ShouldQueue
                         'answers' => $answers,
                         'explanation' => $explanation,
                     ];
-
                 });
 
                 $temp['questions'] = $questions;
 
                 $sections[] = $temp;
-
             });
-        }catch(\Exception $e){
-            $error = __("Error :message at line :line", ['message' => $e->getMessage(), 'line' => $e->getLine()]);
+        } catch (\Exception $e) {
+            $error = __('Error :message at line :line', ['message' => $e->getMessage(), 'line' => $e->getLine()]);
             $result['error'] = $error;
             $this->crawlResult->forceFill([
                 'process_status' => CrawlResultStatus::ERROR,
@@ -91,8 +86,7 @@ class ParseDisclosureMaPage implements ShouldQueue
 
         $this->crawlResult->forceFill([
             'processed_at' => now(),
-            'result' => $result
+            'result' => $result,
         ])->save();
-
     }
 }

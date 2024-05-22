@@ -1,14 +1,14 @@
 <?php
 
+use Illuminate\Support\Facades\Event;
+use Mockery\MockInterface;
+use Symfony\Component\BrowserKit\HttpBrowser;
+use Symfony\Component\BrowserKit\Response;
+use Symfony\Component\DomCrawler\Crawler;
 use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
 use TrueRcm\LaravelWebscrape\Pipes\AuthenticateBrowser;
 use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
-use Illuminate\Support\Facades\Event;
-use Symfony\Component\BrowserKit\HttpBrowser;
-use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\BrowserKit\Response;
-use Mockery\MockInterface;
 
 it('can authenticate the remote url', function () {
     Event::fake();
@@ -81,7 +81,7 @@ HTML;
 
     $subject = CrawlSubject::factory()->create(['id' => 111]);
 
-    $stub = $this->mock(CrawlTraveller::class, function (MockInterface $mock) use ($subject) {
+    $stub = $this->mock(CrawlTraveller::class, function (MockInterface $mock) {
         $mock->expects('authUrl')
             ->times(2)
             ->andReturn('http:://authenticate.test');
@@ -122,7 +122,7 @@ HTML;
 
     $subject = CrawlSubject::factory()->create(['id' => 111]);
 
-    $stub = $this->mock(CrawlTraveller::class, function (MockInterface $mock) use ($subject) {
+    $stub = $this->mock(CrawlTraveller::class, function (MockInterface $mock) {
         $mock->expects('authUrl')
             ->times(3)
             ->andReturn('http:://authenticate.test');

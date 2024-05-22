@@ -1,16 +1,16 @@
 <?php
 
+use Illuminate\Support\Facades\Event;
+use Mockery\MockInterface;
+use Symfony\Component\BrowserKit\HttpBrowser;
+use Symfony\Component\BrowserKit\Response;
+use Symfony\Component\DomCrawler\Crawler;
 use TrueRcm\LaravelWebscrape\Actions\AddCrawlResult;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
 use TrueRcm\LaravelWebscrape\Models\CrawlTargetUrl;
 use TrueRcm\LaravelWebscrape\Pipes\CrawlPages;
 use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
-use Illuminate\Support\Facades\Event;
-use Symfony\Component\BrowserKit\HttpBrowser;
-use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\BrowserKit\Response;
-use Mockery\MockInterface;
 
 it('will crawl remote url', function () {
     Event::fake();
@@ -38,9 +38,9 @@ HTML;
     $targetUrls = CrawlTargetUrl::factory()
         ->count(1)
         ->create()
-        ->map(fn(CrawlTargetUrl $crawlTargetUrl) => $crawlTargetUrl->setAttribute('url', 'http:://homepage.test'));
+        ->map(fn (CrawlTargetUrl $crawlTargetUrl) => $crawlTargetUrl->setAttribute('url', 'http:://homepage.test'));
 
-    $stub = $this->mock(CrawlTraveller::class, function (MockInterface $mock) use ($subject, $browser, $crawlResult, $targetUrls) {
+    $stub = $this->mock(CrawlTraveller::class, function (MockInterface $mock) use ($subject, $browser, $targetUrls) {
         $mock->expects('subject')
             ->andReturn($subject);
 
@@ -49,12 +49,11 @@ HTML;
             ->andReturn($browser);
 
         $mock->expects('addCrawledPage')
-            //->with($crawlResult)
+            // ->with($crawlResult)
             ->andReturnSelf();
 
         $mock->expects('targets')
             ->andReturn($targetUrls);
-
     });
 
     AddCrawlResult::shouldRun()
@@ -64,5 +63,4 @@ HTML;
         ->handle($stub, function (CrawlTraveller $traveller) use ($stub) {
             $this->assertSame($stub, $traveller);
         });
-
 });

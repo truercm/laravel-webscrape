@@ -12,6 +12,6 @@ enum CrawlResultStatus: string
 
     public function isComplete(): bool
     {
-        return $this === self::COMPLETED;
+        return self::COMPLETED === $this;
     }
 }
