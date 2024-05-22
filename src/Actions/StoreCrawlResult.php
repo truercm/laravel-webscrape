@@ -3,7 +3,6 @@
 namespace TrueRcm\LaravelWebscrape\Actions;
 
 use Fls\Actions\Action;
-use Illuminate\Contracts\Validation\Validator;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
 class StoreCrawlResult extends Action
@@ -11,20 +10,6 @@ class StoreCrawlResult extends Action
     public function __construct(
         protected CrawlResult $crawlResult
     ) {
-    }
-
-    /**
-     * @param \Illuminate\Contracts\Validation\Validator $validator
-     * @return string
-     */
-    public function getValidationErrorBag(Validator $validator): string
-    {
-        logger(get_called_class(), [
-            'errors' => dd($validator->errors()),
-            'input' => $this->all(),
-        ]);
-
-        return 'default';
     }
 
     /**
@@ -53,9 +38,14 @@ class StoreCrawlResult extends Action
     {
         $this->fill($attributes);
 
+        $this->validate();
+        if($this->get('result') !== null){
+            $this->set('result', json_encode($this->get('result')));
+        }
+
         return tap($this->crawlResult, function (CrawlResult $crawlResult) {
             $crawlResult
-                ->forceFill($this->validated())
+                ->forceFill($this->all())
                 ->save();
         });
     }

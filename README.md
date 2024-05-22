@@ -162,6 +162,7 @@ DB::transaction(function () {
                     
                 )->count(12), 'crawlTargetUrls', 12)
             ->create([
+                'auth_button_text' => 'Sign In',
                 'auth_url' => 'https://proview.caqh.org/Login/Index',
                 'crawling_job' => TrueRcm\LaravelWebscrape\Jobs\CrawlTargetJob::class,
             ])

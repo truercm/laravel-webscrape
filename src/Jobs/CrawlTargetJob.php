@@ -40,6 +40,8 @@ class CrawlTargetJob implements ShouldQueue
 
         CrawlStarted::dispatch($this->subject);
 
+        //\TrueRcm\LaravelWebscrape\Models\CrawlResult::get()->each(fn($page) => $traveller->addCrawledPage($page));
+
         $pipeline
             ->send($traveller)
             ->through([
