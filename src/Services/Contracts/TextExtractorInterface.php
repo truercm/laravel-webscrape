@@ -29,7 +29,7 @@ interface TextExtractorInterface
      *
      * @param \Symfony\Component\DomCrawler\Crawler $node the DOM node to extract the selected value from
      * @param string $fieldName the name of the select field to extract
-     * @return string the text content of the selected option, or empty string if none is selected
+     * @return array|string the text content of the selected option, or empty string if none is selected
      */
-    public function getSelect(Crawler $node, string $fieldName): string;
+    public function getSelect(Crawler $node, string $fieldName): array|string;
 }

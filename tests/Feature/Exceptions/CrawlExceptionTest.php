@@ -1,5 +1,6 @@
 <?php
 
+use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 use Symfony\Component\BrowserKit\Response;
@@ -32,6 +33,20 @@ it('will handle authenticationFailed exception', function () {
 
     $this->assertEquals(
         'Authentication failed for given credentials',
+        $stub->getMessage()
+    );
+});
+
+it('will handle parse failed exception', function () {
+
+    $crawlResult = CrawlResult::factory()->create(['url' => 'http:://some.site']);
+
+    $stub = CrawlException::parsingFailed($crawlResult);
+
+    $this->assertInstanceOf(CrawlException::class, $stub);
+
+    $this->assertEquals(
+        'Parsing failed for the page with url http:://some.site',
         $stub->getMessage()
     );
 });

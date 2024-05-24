@@ -7,18 +7,25 @@ use TrueRcm\LaravelWebscrape\Services\Contracts\TextExtractorInterface;
 
 class TextExtractorService implements TextExtractorInterface
 {
-    public function getTextInput(Crawler $node, string $fieldName): string
+    public function filterXPath(Crawler $node, string $htmlTag, string $fieldName, string $fieldValue, bool $exactMatch=true): Crawler
     {
-        // Build the XPath expression
-        $xpath = sprintf('//input[@name="%s"] | //textarea[@name="%s"]', $fieldName, $fieldName);
-        // Filter based on the XPath expression
-        $filteredNode = $node->filterXPath($xpath);
+        $xpath = sprintf('//%s[contains(@%s, "%s")]', $htmlTag, $fieldName, $fieldValue);
+
+        if($exactMatch){
+            $xpath = sprintf('//%s[@%s="%s"]', $htmlTag, $fieldName, $fieldValue);
+        }
+
+        return $node->filterXPath($xpath);
+    }
+
+    public function getTextInput(Crawler $node): ?string
+    {
         // Check if any node was found
-        if (0 === $filteredNode->count()) {
-            return ''; // Return empty string if no node found
+        if (0 === $node->count()) {
+            return null;
         }
         // Extract the text content
-        return $filteredNode->attr('value');
+        return $node->attr('value');
     }
 
     public function getText(Crawler $node, string $fieldName): string
@@ -38,9 +45,8 @@ class TextExtractorService implements TextExtractorInterface
     public function getRadioOptions(Crawler $node, string $containerClass): array
     {
         $values = [];
-        $options = $node->filterXPath(sprintf('//div[@class="%s"]', $containerClass));
 
-        $options->each(function ($node, $i) use (&$values) {
+        $node->each(function ($node, $i) use (&$values) {
             $isChecked = $node->filterXPath('//input[@checked="checked"]')->count() > 0;
             $values[$node->text()] = $isChecked;
         });
@@ -48,14 +54,14 @@ class TextExtractorService implements TextExtractorInterface
         return $values;
     }
 
-    public function getSelect(Crawler $node, string $fieldName): string
+    public function getSelect(Crawler $node, string $fieldName, $multiSelect=false): array|string
     {
-        $selectedOption = $node->filterXPath(sprintf('//select[@name="%s"]//option[@selected="selected"]', $fieldName));
+        $selectedOptions = $node->filterXPath(sprintf('//select[@name="%s"]//option[@selected="selected"]', $fieldName));
 
-        if (0 === $selectedOption->count()) {
-            return ''; // Return empty string if no selected option found
+        if($multiSelect){
+            return $selectedOptions->extract(['_text']);
         }
 
-        return $selectedOption->text('');
+        return $selectedOptions->text('');
     }
 }

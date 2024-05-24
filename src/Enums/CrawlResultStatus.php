@@ -8,7 +8,6 @@ enum CrawlResultStatus: string
     case IN_PROCESS = 'in_process';
     case ERROR = 'error';
     case COMPLETED = 'completed';
-    case YOUTUBE = 'youtube';
 
     public function isComplete(): bool
     {

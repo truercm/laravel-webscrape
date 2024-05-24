@@ -8,7 +8,9 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Symfony\Component\DomCrawler\Crawler;
+use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlResult;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
+use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
 class ParseHospitalAffiliationPage implements ShouldQueue
@@ -18,10 +20,17 @@ class ParseHospitalAffiliationPage implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
+    protected array $values = [];
+    protected CrawlResultStatus $process_status = CrawlResultStatus::COMPLETED;
+    protected Crawler $crawler;
+    protected ?string $error = null;
+
     public function __construct(
         protected CrawlResult $crawlResult
     ) {
+        $this->crawler =  new Crawler($crawlResult->body, $crawlResult->url);
     }
+
 
     /*
      * "target" is CAQH
@@ -31,48 +40,58 @@ class ParseHospitalAffiliationPage implements ShouldQueue
 
     public function handle()
     {
-        $this->crawlResult->forceFill([
-            'process_status' => CrawlResultStatus::COMPLETED,
-        ]);
-        $result = [];
-        $crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
-
         try {
-            $result['admitting_privileges'] = [];
+            $admittingArrangements = collect([]);
 
-            $admittingArrangements = [];
-            $items = $crawler->filter('div#edit-admitting-arrangements');
+            throw_if(
+                0 == $this->nodes()->count() /* is not good */,
+                CrawlException::parsingFailed($this->crawlResult)
+            );
 
-            $items->each(function ($node, $i) use (&$admittingArrangements) {
-                $temp = [];
-                $container = $node->filterXPath('//div[contains(@id, "SummaryPageGridEditRecord")]');
-
-                $id = $container->evaluate('substring-after(@id, "SummaryPageGridEditRecord_")');
-                $temp['id'] = $id[0];
-
-                $contentNodes = $container->filter('div.grid-inner');
-
-                $temp['name'] = $contentNodes->eq(0)->text();
-
-                $temp['status'] = $contentNodes->eq(1)->filter('p')->eq(0)->text();
-                $temp['location'] = $contentNodes->eq(1)->filter('p')->eq(1)->text();
-
-                $admittingArrangements[] = $temp;
+            $this->nodes()->each(function (Crawler $node, $i) use($admittingArrangements){
+                $admittingArrangements->push($this->handleNode($node));
             });
 
-            $result['admitting_arrangements'] = $admittingArrangements;
-            $result['non_admitting_affiliations'] = [];
+            $this->values['admitting_privileges'] = $admittingArrangements->toArray();
         } catch (\Exception $e) {
-            $error = __('Error :message at line :line', ['message' => $e->getMessage(), 'line' => $e->getLine()]);
-            $result['error'] = $error;
-            $this->crawlResult->forceFill([
-                'process_status' => CrawlResultStatus::ERROR,
-            ]);
+            $this->error = $e->getMessage();
+            $this->process_status = CrawlResultStatus::ERROR;
         }
 
-        $this->crawlResult->forceFill([
+        if($this->error){
+            $this->values['error'] = $this->error;
+        }
+
+        resolve(UpdateCrawlResult::class)->run($this->crawlResult, $this->toArray());
+    }
+
+    protected function toArray(): array
+    {
+        return [
             'processed_at' => now(),
-            'result' => $result,
-        ])->save();
+            'result' => $this->values,
+            'process_status' => $this->process_status->value,
+        ];
+    }
+
+    protected function nodes(): Crawler
+    {
+        return $this->crawler->filter('div#edit-admitting-arrangements');
+    }
+
+    protected function handleNode($node): array
+    {
+        $container = $node->filterXPath('//div[contains(@id, "SummaryPageGridEditRecord")]');
+
+        $id = $container->evaluate('substring-after(@id, "SummaryPageGridEditRecord_")');
+
+        $contentNodes = $container->filter('div.grid-inner');
+
+        return [
+            'id' => head($id),
+            'name' => $contentNodes->eq(0)->text(''),
+            'status' => $contentNodes->eq(1)->filter('p')->eq(0)->text(''),
+            'location' => $contentNodes->eq(1)->filter('p')->eq(1)->text(''),
+        ];
     }
 }
