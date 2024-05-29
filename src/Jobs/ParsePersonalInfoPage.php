@@ -109,9 +109,9 @@ class ParsePersonalInfoPage implements ShouldQueue
 
             $result['Additional Emails'] = $additionalEmails;
 
-            $result['ssns'] = ['number' => $crawler->filter('input[name="SSN"]')->attr('value')];
+            $result['ssns'] = [['number' => $crawler->filter('input[name="SSN"]')->attr('value')]];
 
-            $result['npis'] = ['number' => $crawler->filter('input[name="NPINumber"]')->attr('value')];
+            $result['npis'] = [['number' => $crawler->filter('input[name="NPINumber"]')->attr('value')]];
 
             $input = $crawler->filterXPath('//select[@id="GenderCode"]/option[contains(@selected, "selected")]');
             $result['gender'] = $input->count() ? $input->text() : null;

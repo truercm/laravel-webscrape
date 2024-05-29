@@ -24,10 +24,9 @@ class CrawlException extends \Exception
 
     /**
      * @param \TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller $traveller
-     * @param \Throwable $throwable
      * @return static
      */
-    public static function authenticationFailed(CrawlTraveller $traveller, Response $response)
+    public static function authenticationFailed(CrawlTraveller $traveller)
     {
         $message = __('Authentication failed for given credentials');
 

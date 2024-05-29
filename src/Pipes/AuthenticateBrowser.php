@@ -5,12 +5,14 @@ namespace TrueRcm\LaravelWebscrape\Pipes;
 use Symfony\Component\BrowserKit\HttpBrowser;
 use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
+use Symfony\Component\Panther\Client;
 
 class AuthenticateBrowser
 {
-    public function __construct(
-        protected HttpBrowser $browser
-    ) {
+    protected Client $browser;
+
+    public function __construct() {
+        $this->browser = Client::createSeleniumClient($_ENV['SELENIUM_DRIVER_URL']);
     }
 
     /**
@@ -23,17 +25,12 @@ class AuthenticateBrowser
         $this->browser
                 ->request('GET', $traveller->authUrl());
 
-        throw_if(
-            200 != $this->browser->getResponse()->getStatusCode() /* is not good */,
-            CrawlException::browsingFailed($traveller, $this->browser->getResponse())
-        );
-
         $crawler = $this->browser
             ->submitForm($traveller->authButtonIdentifier(), $traveller->getCrawlingCredentials());
 
         throw_if(
             $crawler->getUri() == $traveller->authUrl() /* is not good */,
-            CrawlException::authenticationFailed($traveller, $this->browser->getResponse())
+            CrawlException::authenticationFailed($traveller)
         );
 
         $traveller->subject()->touch('authenticated_at');

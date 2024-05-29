@@ -7,11 +7,12 @@ use Symfony\Component\BrowserKit\HttpBrowser;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
 use TrueRcm\LaravelWebscrape\Models\CrawlTargetUrl;
+use Symfony\Component\Panther\Client;
 
 class CrawlTraveller
 {
     protected CrawlSubject $subject;
-    protected ?HttpBrowser $browser = null;
+    protected ?Client $browser = null;
 
     protected array $crawledPages = [];
 
@@ -34,12 +35,12 @@ class CrawlTraveller
         return $this->subject;
     }
 
-    public function getBrowser(): HttpBrowser
+    public function getBrowser(): Client
     {
         return $this->browser;
     }
 
-    public function setBrowser(HttpBrowser $bowser): self
+    public function setBrowser(Client $bowser): self
     {
         $this->browser = $bowser;
 

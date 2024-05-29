@@ -5,6 +5,7 @@ namespace TrueRcm\LaravelWebscrape\Pipes;
 use TrueRcm\LaravelWebscrape\Actions\AddCrawlResult;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
+use Symfony\Component\DomCrawler\Crawler;
 
 class CrawlPages
 {
@@ -17,13 +18,14 @@ class CrawlPages
     {
         foreach ($traveller->targets() as $target) {
             /* it cannot be try/catch as we want to continue on fail to @todo extract into a sync job, possibly, if it does not serialize the browser */
-            $crawler = $traveller->getBrowser()->request('GET', $target->url);
-
-            $response = $traveller->getBrowser()->getResponse();
+            $traveller->getBrowser()->request('GET', $target->url);
+            $crawler = $traveller->getBrowser()->waitForInvisibility('div#loading');
+            $crawler = new Crawler($crawler->html());
+            $responseCode = $traveller->getBrowser()->executeScript('return window.performance.getEntries()[0].responseStatus');
 
             $page = AddCrawlResult::run($traveller->subject(), $target, [
                 'url' => $target->url,
-                'status' => $response->getStatusCode(),
+                'status' => $responseCode,
                 'body' => $crawler->filter('body')->html(), /* html */
                 'handler' => $target->handler,
                 'process_status' => CrawlResultStatus::PENDING->value,

@@ -28,7 +28,8 @@ class ParseHospitalAffiliationPage implements ShouldQueue
     public function __construct(
         protected CrawlResult $crawlResult
     ) {
-        $this->crawler =  new Crawler($crawlResult->body, $crawlResult->url);
+
+
     }
 
 
@@ -40,6 +41,8 @@ class ParseHospitalAffiliationPage implements ShouldQueue
 
     public function handle()
     {
+        $this->crawler =  new Crawler($this->crawlResult->body, $this->crawlResult->url);
+
         try {
             $admittingArrangements = collect([]);
 
