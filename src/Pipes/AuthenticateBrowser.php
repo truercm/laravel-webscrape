@@ -9,7 +9,7 @@ use Symfony\Component\Panther\Client;
 
 class AuthenticateBrowser
 {
-    protected Client $browser;
+    protected ?Client $browser=null;
 
     public function __construct() {
         $this->browser = Client::createSeleniumClient($_ENV['SELENIUM_DRIVER_URL']);
@@ -38,5 +38,13 @@ class AuthenticateBrowser
         $traveller->setBrowser($this->browser);
 
         return $next($traveller);
+    }
+
+    /**
+     * @return \Symfony\Component\Panther\Client
+     */
+    public function getBrowser(): Client
+    {
+        return $this->browser ?: Client::createSeleniumClient($_ENV['SELENIUM_DRIVER_URL']);
     }
 }

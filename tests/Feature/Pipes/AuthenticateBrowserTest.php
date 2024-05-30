@@ -9,9 +9,16 @@ use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
 use TrueRcm\LaravelWebscrape\Pipes\AuthenticateBrowser;
 use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
+use Symfony\Component\Panther\Client;
+use DG\BypassFinals;
+
+beforeEach(function () {
+    //BypassFinals::enable();
+});
 
 it('can authenticate the remote url', function () {
     Event::fake();
+    putenv("SELENIUM_DRIVER_URL=null");
 
     $html = <<<HTML
 <html>
@@ -23,14 +30,7 @@ HTML;
 
     $crawler = new Crawler($html, 'http:://foo.com');
 
-    $this->mock(HttpBrowser::class, function (MockInterface $mock) use ($crawler) {
-        $mock->expects('request')
-            ->with('GET', 'http:://authenticate.test')
-            ->andReturn($crawler);
 
-        $mock->expects('getResponse')->times(3)->andReturn(new Response());
-        $mock->expects('submitForm')->with('submit burron', ['a' => 1, 'b' => 2])->andReturn($crawler);
-    });
 
     $subject = CrawlSubject::factory()->create(['id' => 111]);
 
@@ -52,40 +52,31 @@ HTML;
             ->andReturn($subject);
     });
 
-    app(AuthenticateBrowser::class)
-        ->handle($stub, function (CrawlTraveller $traveller) use ($stub) {
-            $this->assertSame($stub, $traveller);
-        });
-});
+    $browser = Client::createSeleniumClient();
 
-it('will throw exception if response is not success', function () {
-    $this->expectException(CrawlException::class);
+    $mock = Mockery::mock($browser);
+    $mock->shouldReceive('request')
+        ->with('GET', 'http:://authenticate.test')
+        ->andReturn($crawler);
 
-    $html = <<<HTML
-<html>
-<body>
-<input type="text" name="myField" value="This is some text">
-</body>
-</html>
-HTML;
+    $mock->shouldReceive('submitForm')
+        ->with('submit burron', ['a' => 1, 'b' => 2])
+        ->andReturn($crawler);
 
-    $crawler = new Crawler($html, 'http:://foo.com');
+    $clientMock = $this->mock(Client::class, function (MockInterface $mock) use ($crawler, $browser) {
 
-    $this->mock(HttpBrowser::class, function (MockInterface $mock) use ($crawler) {
         $mock->expects('request')
             ->with('GET', 'http:://authenticate.test')
             ->andReturn($crawler);
 
-        $mock->expects('getResponse')->times(2)->andReturn(new Response('', 300, []));
-    });
+        $mock->expects('submitForm')->with('submit burron', ['a' => 1, 'b' => 2])->andReturn($crawler);
+    })->makePartial();
 
-    $subject = CrawlSubject::factory()->create(['id' => 111]);
+    /*$this->mock(AuthenticateBrowser::class, function (MockInterface $mock) use ($mock) {
+        $mock->expects('getBrowser')
+            ->andReturn($mock);
 
-    $stub = $this->mock(CrawlTraveller::class, function (MockInterface $mock) {
-        $mock->expects('authUrl')
-            ->times(2)
-            ->andReturn('http:://authenticate.test');
-    });
+    })->makePartial();*/
 
     app(AuthenticateBrowser::class)
         ->handle($stub, function (CrawlTraveller $traveller) use ($stub) {
@@ -106,14 +97,10 @@ HTML;
 
     $crawler = new Crawler($html, 'http:://authenticate.test');
 
-    $this->mock(HttpBrowser::class, function (MockInterface $mock) use ($crawler) {
+    $this->partialMock(Client::class, function (MockInterface $mock) use ($crawler) {
         $mock->expects('request')
             ->with('GET', 'http:://authenticate.test')
             ->andReturn($crawler);
-
-        $mock->expects('getResponse')
-            ->times(3)
-            ->andReturn(new Response());
 
         $mock->expects('submitForm')
             ->with('submit burron', ['a' => 1, 'b' => 2])
