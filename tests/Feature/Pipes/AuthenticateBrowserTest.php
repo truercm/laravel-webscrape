@@ -1,5 +1,6 @@
 <?php
 
+use Facebook\WebDriver\WebDriver;
 use Illuminate\Support\Facades\Event;
 use Mockery\MockInterface;
 use Symfony\Component\BrowserKit\HttpBrowser;
@@ -18,7 +19,6 @@ beforeEach(function () {
 
 it('can authenticate the remote url', function () {
     Event::fake();
-    putenv("SELENIUM_DRIVER_URL=null");
 
     $html = <<<HTML
 <html>
@@ -40,7 +40,7 @@ HTML;
             ->andReturn('http:://authenticate.test');
 
         $mock->expects('authButtonIdentifier')
-            ->andReturn('submit burron');
+            ->andReturn('submit button');
 
         $mock->expects('getCrawlingCredentials')
             ->andReturn(['a' => 1, 'b' => 2]);
@@ -52,26 +52,24 @@ HTML;
             ->andReturn($subject);
     });
 
-    $browser = Client::createSeleniumClient();
-
-    $mock = Mockery::mock($browser);
+    /*$mock = Mockery::mock(WebDriver::class);
     $mock->shouldReceive('request')
         ->with('GET', 'http:://authenticate.test')
         ->andReturn($crawler);
 
     $mock->shouldReceive('submitForm')
         ->with('submit burron', ['a' => 1, 'b' => 2])
-        ->andReturn($crawler);
+        ->andReturn($crawler);*/
 
-    $clientMock = $this->mock(Client::class, function (MockInterface $mock) use ($crawler, $browser) {
+    $clientMock = $this->mock(WebDriver::class, function (MockInterface $mock) use ($crawler) {
 
         $mock->expects('request')
             ->with('GET', 'http:://authenticate.test')
             ->andReturn($crawler);
 
-        $mock->expects('submitForm')->with('submit burron', ['a' => 1, 'b' => 2])->andReturn($crawler);
+        $mock->expects('submitForm')->with('submit button', ['a' => 1, 'b' => 2])->andReturn($crawler);
     })->makePartial();
-
+    $this->instance(Client::class, $clientMock);
     /*$this->mock(AuthenticateBrowser::class, function (MockInterface $mock) use ($mock) {
         $mock->expects('getBrowser')
             ->andReturn($mock);
@@ -103,7 +101,7 @@ HTML;
             ->andReturn($crawler);
 
         $mock->expects('submitForm')
-            ->with('submit burron', ['a' => 1, 'b' => 2])
+            ->with('submit button', ['a' => 1, 'b' => 2])
             ->andReturn($crawler);
     });
 
@@ -115,7 +113,7 @@ HTML;
             ->andReturn('http:://authenticate.test');
 
         $mock->expects('authButtonIdentifier')
-            ->andReturn('submit burron');
+            ->andReturn('submit button');
 
         $mock->expects('getCrawlingCredentials')
             ->andReturn(['a' => 1, 'b' => 2]);

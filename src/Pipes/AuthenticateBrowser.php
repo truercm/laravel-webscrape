@@ -12,7 +12,7 @@ class AuthenticateBrowser
     protected ?Client $browser=null;
 
     public function __construct() {
-        $this->browser = Client::createSeleniumClient($_ENV['SELENIUM_DRIVER_URL']);
+        $this->browser = Client::createSeleniumClient(config("webscrape.selenium_driver_url"));
     }
 
     /**
@@ -38,13 +38,5 @@ class AuthenticateBrowser
         $traveller->setBrowser($this->browser);
 
         return $next($traveller);
-    }
-
-    /**
-     * @return \Symfony\Component\Panther\Client
-     */
-    public function getBrowser(): Client
-    {
-        return $this->browser ?: Client::createSeleniumClient($_ENV['SELENIUM_DRIVER_URL']);
     }
 }

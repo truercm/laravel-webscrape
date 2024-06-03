@@ -37,4 +37,5 @@ return [
         */
         'result' => TrueRcm\LaravelWebscrape\Models\CrawlResult::class,
     ],
+    'selenium_driver_url' => env('SELENIUM_DRIVER_URL', null),
 ];
