@@ -7,11 +7,11 @@ use TrueRcm\LaravelWebscrape\Services\Contracts\TextExtractorInterface;
 
 class TextExtractorService implements TextExtractorInterface
 {
-    public function filterXPath(Crawler $node, string $htmlTag, string $fieldName, string $fieldValue, bool $exactMatch=true): Crawler
+    public function filterXPath(Crawler $node, string $htmlTag, string $fieldName, string $fieldValue, bool $exactMatch = true): Crawler
     {
         $xpath = sprintf('//%s[contains(@%s, "%s")]', $htmlTag, $fieldName, $fieldValue);
 
-        if($exactMatch){
+        if ($exactMatch) {
             $xpath = sprintf('//%s[@%s="%s"]', $htmlTag, $fieldName, $fieldValue);
         }
 
@@ -54,11 +54,11 @@ class TextExtractorService implements TextExtractorInterface
         return $values;
     }
 
-    public function getSelect(Crawler $node, string $fieldName, $multiSelect=false): array|string
+    public function getSelect(Crawler $node, string $fieldName, $multiSelect = false): array|string
     {
         $selectedOptions = $node->filterXPath(sprintf('//select[@name="%s"]//option[@selected="selected"]', $fieldName));
 
-        if($multiSelect){
+        if ($multiSelect) {
             return $selectedOptions->extract(['_text']);
         }
 

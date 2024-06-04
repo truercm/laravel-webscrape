@@ -38,7 +38,7 @@ class ParseDocumentsPage implements ShouldQueue
 
     public function handle()
     {
-        $this->crawler =  new Crawler($this->crawlResult->body, $this->crawlResult->url);
+        $this->crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
 
         try {
             $documents = collect([]);
@@ -47,7 +47,7 @@ class ParseDocumentsPage implements ShouldQueue
                 0 == $this->nodes()->count() /* is not good */,
                 CrawlException::parsingFailed($this->crawlResult)
             );
-            $this->nodes()->each(function (Crawler $node, $i) use($documents){
+            $this->nodes()->each(function (Crawler $node, $i) use ($documents) {
                 if ($i < $this->nodes()->count() - 1) {
                     $documents->push($this->handleNode($node));
                 }
@@ -59,7 +59,7 @@ class ParseDocumentsPage implements ShouldQueue
             $this->process_status = CrawlResultStatus::ERROR;
         }
 
-        if($this->error){
+        if ($this->error) {
             $this->values['error'] = $this->error;
         }
 

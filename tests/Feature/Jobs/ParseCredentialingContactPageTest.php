@@ -1,11 +1,11 @@
 <?php
 
+use Illuminate\Support\Carbon;
 use Mockery\MockInterface;
 use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlResult;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 use TrueRcm\LaravelWebscrape\Jobs\ParseCredentialingContactPage;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
-use Illuminate\Support\Carbon;
 
 beforeEach(function () {
     Carbon::setTestNow('May 17, 2023 2:13 PM');
@@ -71,33 +71,33 @@ HTML;
                 'processed_at' => now(),
                 'process_status' => CrawlResultStatus::COMPLETED->value,
                 'result' => [
-                    "credentialing_contacts" => [
+                    'credentialing_contacts' => [
                         [
-                            "is_primary" => true,
-                            "index" => "1234",
-                            "id" => "56",
-                            "first_name" => "Arun",
-                            "middle_name" => "Kr",
-                            "last_name" => "Singh",
-                            "line_1" => "Line 1",
-                            "line_2" => "Line 2",
-                            "city" => "Noida",
-                            "state" => "UP",
-                            "zip" => "201012",
-                            "country" => "India",
-                            "province" => "USA",
-                            "phone_number" => "234-1256",
-                            "fax_number" => "768-2346",
-                            "email_address" => "test@test.com",
-                            "location_type" => "Residence",
-                            "location" => [
-                                "Location 2",
-                                "Location 3",
+                            'is_primary' => true,
+                            'index' => '1234',
+                            'id' => '56',
+                            'first_name' => 'Arun',
+                            'middle_name' => 'Kr',
+                            'last_name' => 'Singh',
+                            'line_1' => 'Line 1',
+                            'line_2' => 'Line 2',
+                            'city' => 'Noida',
+                            'state' => 'UP',
+                            'zip' => '201012',
+                            'country' => 'India',
+                            'province' => 'USA',
+                            'phone_number' => '234-1256',
+                            'fax_number' => '768-2346',
+                            'email_address' => 'test@test.com',
+                            'location_type' => 'Residence',
+                            'location' => [
+                                'Location 2',
+                                'Location 3',
                             ],
-                            "contact_title" => "Avinash",
-                            "contact_hours_of_availability" => "after 2 pm",
+                            'contact_title' => 'Avinash',
+                            'contact_hours_of_availability' => 'after 2 pm',
                         ],
-                    ]
+                    ],
                 ],
             ])
             ->andReturn($crawlResult);
@@ -110,9 +110,7 @@ HTML;
     $job->handle();
 });
 
-
 it('will generate error if node not found', function () {
-
     $html = <<<HTML
 <html>
 <body>
@@ -130,7 +128,7 @@ HTML;
             ->with($crawlResult, [
                 'processed_at' => now(),
                 'process_status' => CrawlResultStatus::ERROR->value,
-                'result' => ['error' => "Parsing failed for the page with url http:://some.site"],
+                'result' => ['error' => 'Parsing failed for the page with url http:://some.site'],
             ])
             ->andReturn($crawlResult);
     });

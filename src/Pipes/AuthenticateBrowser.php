@@ -2,17 +2,15 @@
 
 namespace TrueRcm\LaravelWebscrape\Pipes;
 
-use Symfony\Component\BrowserKit\HttpBrowser;
+use TrueRcm\LaravelWebscrape\Contracts\BrowserClient;
 use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
-use Symfony\Component\Panther\Client;
 
 class AuthenticateBrowser
 {
-    protected ?Client $browser=null;
-
-    public function __construct() {
-        $this->browser = Client::createSeleniumClient(config("webscrape.selenium_driver_url"));
+    public function __construct(
+        protected BrowserClient $browser
+    ) {
     }
 
     /**
@@ -23,7 +21,7 @@ class AuthenticateBrowser
     public function handle(CrawlTraveller $traveller, \Closure $next)
     {
         $this->browser
-                ->request('GET', $traveller->authUrl());
+            ->request('GET', $traveller->authUrl());
 
         $crawler = $this->browser
             ->submitForm($traveller->authButtonIdentifier(), $traveller->getCrawlingCredentials());

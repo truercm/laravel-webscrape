@@ -19,7 +19,7 @@ it('will add a crawl result', function () {
                 'crawl_subject_id' => 111,
                 'crawl_target_url_id' => 222,
                 'arg1' => 'x',
-                'arg2' => 'z'
+                'arg2' => 'z',
             ])
             ->andReturn($crawledResult);
     });
@@ -29,5 +29,4 @@ it('will add a crawl result', function () {
     $result = AddCrawlResult::run($subject, $crawlTargetUrl, ['arg1' => 'x', 'arg2' => 'z']);
     $this->assertInstanceOf(CrawlResult::class, $result);
     $this->assertSame($crawledResult, $result);
-
 });

@@ -38,7 +38,7 @@ class ParseCredentialingContactPage implements ShouldQueue
 
     public function handle()
     {
-        $this->crawler =  new Crawler($this->crawlResult->body, $this->crawlResult->url);
+        $this->crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
 
         try {
             $credentialingContacts = collect([]);
@@ -47,7 +47,7 @@ class ParseCredentialingContactPage implements ShouldQueue
                 0 == $this->nodes()->count() /* is not good */,
                 CrawlException::parsingFailed($this->crawlResult)
             );
-            $this->nodes()->each(function (Crawler $node, $i) use($credentialingContacts){
+            $this->nodes()->each(function (Crawler $node, $i) use ($credentialingContacts) {
                 $credentialingContacts->push($this->handleNode($node));
             });
 
@@ -57,7 +57,7 @@ class ParseCredentialingContactPage implements ShouldQueue
             $this->process_status = CrawlResultStatus::ERROR;
         }
 
-        if($this->error){
+        if ($this->error) {
             $this->values['error'] = $this->error;
         }
 

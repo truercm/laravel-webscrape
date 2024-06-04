@@ -12,17 +12,17 @@ it('it will check all cases', function () {
     $values = array_column($cases, 'value');
 
     $this->assertSame([
-        "PENDING",
-        "IN_PROCESS",
-        "ERROR",
-        "COMPLETED",
+        'PENDING',
+        'IN_PROCESS',
+        'ERROR',
+        'COMPLETED',
     ], $names);
 
     $this->assertSame([
-        "pending",
-        "in_process",
-        "error",
-        "completed",
+        'pending',
+        'in_process',
+        'error',
+        'completed',
     ], $values);
 });
 

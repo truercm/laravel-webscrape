@@ -31,7 +31,7 @@ class CrawlResult extends Model implements Contract
         return [
             'processed_at' => 'datetime',
             'result' => 'array',
-            //'process_status' => CrawlResultStatus::class,
+            // 'process_status' => CrawlResultStatus::class,
         ];
     }
 

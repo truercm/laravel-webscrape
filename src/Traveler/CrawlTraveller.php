@@ -3,11 +3,10 @@
 namespace TrueRcm\LaravelWebscrape\Traveler;
 
 use Illuminate\Support\Collection;
-use Symfony\Component\BrowserKit\HttpBrowser;
+use Symfony\Component\Panther\Client;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
 use TrueRcm\LaravelWebscrape\Models\CrawlTargetUrl;
-use Symfony\Component\Panther\Client;
 
 class CrawlTraveller
 {

@@ -1,12 +1,12 @@
 <?php
 
+use Mockery\MockInterface;
 use TrueRcm\LaravelWebscrape\Actions\ParseFinalResult;
 use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlSubject;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
 use TrueRcm\LaravelWebscrape\Pipes\ProcessParsingResults;
 use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
-use Mockery\MockInterface;
 
 it('will call actions to process final result and update subject', function () {
     $subject = CrawlSubject::factory()->create(['id' => 111]);
@@ -44,7 +44,4 @@ it('will call actions to process final result and update subject', function () {
         ->handle($stub, function (CrawlTraveller $traveller) use ($stub) {
             $this->assertSame($stub, $traveller);
         });
-
 });
-
-

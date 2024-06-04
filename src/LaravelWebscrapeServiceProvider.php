@@ -2,10 +2,11 @@
 
 namespace TrueRcm\LaravelWebscrape;
 
-use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Symfony\Component\Panther\Client;
 use TrueRcm\LaravelWebscrape\Commands\LaravelWebscrapeCommand;
+use TrueRcm\LaravelWebscrape\Contracts\BrowserClient;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlSubject;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlTarget;
@@ -31,14 +32,7 @@ class LaravelWebscrapeServiceProvider extends PackageServiceProvider
                 'create_crawl_target_urls_table',
                 'create_crawl_targets_table',
             ])
-            ->hasCommand(LaravelWebscrapeCommand::class)
-           /* ->hasInstallCommand(function(InstallCommand $command) {
-                $command
-                    ->publishConfigFile()
-                    ->publishAssets()
-                    ->publishMigrations()
-                    ->askToRunMigrations();
-            })*/;
+            ->hasCommand(LaravelWebscrapeCommand::class);
     }
 
     public function packageBooted()
@@ -67,5 +61,11 @@ class LaravelWebscrapeServiceProvider extends PackageServiceProvider
         $this->app->singleton('text-extractor',
             fn ($app) => $app->make(TextExtractorService::class)
         );
+
+        $this->app->singleton(BrowserClient::class, function ($app) {
+            $driver = $app['config']->get('webscrape.selenium_driver_url');
+
+            return Client::createSeleniumClient($driver);
+        });
     }
 }

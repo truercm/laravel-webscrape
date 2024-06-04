@@ -15,21 +15,21 @@ it('will parse final result from result pages', function () {
                 'result_fields' => json_encode([
                     'name',
                     'gender',
-                ])
+                ]),
             ],
             [
                 'id' => 2,
                 'result_fields' => json_encode([
                     'medicaid',
                     'medicare',
-                ])
+                ]),
             ],
             [
                 'id' => 3,
                 'result_fields' => json_encode([
                     'university',
                     'degree',
-                ])
+                ]),
             ],
         ))
         ->count($items->count())
@@ -40,44 +40,42 @@ it('will parse final result from result pages', function () {
             [
                 'id' => 1,
                 'crawl_target_url_id' => 1,
-                'process_status' => (CrawlResultStatus::COMPLETED)->value,
+                'process_status' => CrawlResultStatus::COMPLETED->value,
                 'result' => json_encode([
-                    'name' => "Aman",
+                    'name' => 'Aman',
                     'gender' => 'Male',
                     'country' => 'US',
-                ])
+                ]),
             ],
             [
                 'id' => 2,
                 'crawl_target_url_id' => 2,
-                'process_status' => (CrawlResultStatus::COMPLETED)->value,
+                'process_status' => CrawlResultStatus::COMPLETED->value,
                 'result' => json_encode([
                     'medicaid' => [11, 22],
                     'medicare' => [33, 44],
                     'licences' => [55, 66],
-                ])
+                ]),
             ],
             [
                 'id' => 3,
                 'crawl_target_url_id' => 3,
-                'process_status' => (CrawlResultStatus::PENDING)->value,
+                'process_status' => CrawlResultStatus::PENDING->value,
                 'result' => json_encode([
                     'university' => 'Amsterdan',
                     'degree' => 'MD',
-                ])
+                ]),
             ],
         ))
         ->count($items->count())
         ->create();
 
-
     $result = ParseFinalResult::run($crawlResults);
     $this->assertInstanceOf(Collection::class, $result);
     $this->assertEquals(collect([
-        'name' => "Aman",
+        'name' => 'Aman',
         'gender' => 'Male',
         'medicaid' => [11, 22],
         'medicare' => [33, 44],
     ]), $result->collapse());
-
 });

@@ -1,11 +1,11 @@
 <?php
 
+use Illuminate\Support\Carbon;
 use Mockery\MockInterface;
 use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlResult;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 use TrueRcm\LaravelWebscrape\Jobs\ParseDisclosureMaPage;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
-use Illuminate\Support\Carbon;
 
 beforeEach(function () {
     Carbon::setTestNow('May 17, 2023 2:13 PM');
@@ -64,24 +64,24 @@ HTML;
                 'processed_at' => now(),
                 'process_status' => CrawlResultStatus::COMPLETED->value,
                 'result' => [
-                    "form_sections" => [
-                        "Section 1" => [
+                    'form_sections' => [
+                        'Section 1' => [
                             [
-                                "question" => "Question 1",
-                                "answers" => [
-                                    "No" => false,
-                                    "Yes" => true,
+                                'question' => 'Question 1',
+                                'answers' => [
+                                    'No' => false,
+                                    'Yes' => true,
                                 ],
-                              "explanation" => null,
+                              'explanation' => null,
                             ],
                             [
-                                "question" => "Question 2",
-                                "answers" => [
-                                    "No" => false,
-                                    "Yes" => true,
+                                'question' => 'Question 2',
+                                'answers' => [
+                                    'No' => false,
+                                    'Yes' => true,
                                 ],
-                              "explanation" => "My Explaination",
-                            ]
+                              'explanation' => 'My Explaination',
+                            ],
                         ],
                     ],
                 ],
@@ -96,9 +96,7 @@ HTML;
     $job->handle();
 });
 
-
 it('will generate error if node not found', function () {
-
     $html = <<<HTML
 <html>
 <body>
@@ -116,7 +114,7 @@ HTML;
             ->with($crawlResult, [
                 'processed_at' => now(),
                 'process_status' => CrawlResultStatus::ERROR->value,
-                'result' => ['error' => "Parsing failed for the page with url http:://some.site"],
+                'result' => ['error' => 'Parsing failed for the page with url http:://some.site'],
             ])
             ->andReturn($crawlResult);
     });

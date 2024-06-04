@@ -28,10 +28,7 @@ class ParseHospitalAffiliationPage implements ShouldQueue
     public function __construct(
         protected CrawlResult $crawlResult
     ) {
-
-
     }
-
 
     /*
      * "target" is CAQH
@@ -41,7 +38,7 @@ class ParseHospitalAffiliationPage implements ShouldQueue
 
     public function handle()
     {
-        $this->crawler =  new Crawler($this->crawlResult->body, $this->crawlResult->url);
+        $this->crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
 
         try {
             $admittingArrangements = collect([]);
@@ -51,7 +48,7 @@ class ParseHospitalAffiliationPage implements ShouldQueue
                 CrawlException::parsingFailed($this->crawlResult)
             );
 
-            $this->nodes()->each(function (Crawler $node, $i) use($admittingArrangements){
+            $this->nodes()->each(function (Crawler $node, $i) use ($admittingArrangements) {
                 $admittingArrangements->push($this->handleNode($node));
             });
 
@@ -61,7 +58,7 @@ class ParseHospitalAffiliationPage implements ShouldQueue
             $this->process_status = CrawlResultStatus::ERROR;
         }
 
-        if($this->error){
+        if ($this->error) {
             $this->values['error'] = $this->error;
         }
 

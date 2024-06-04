@@ -15,7 +15,7 @@ it('will update a crawl result', function () {
         'body' => 'some text',
         'processed_at' => 'November 9, 2022 6:00 PM',
         'process_status' => 'pending',
-        'result' => ['name' => 'Amit']
+        'result' => ['name' => 'Amit'],
     ];
 
     $result = UpdateCrawlResult::run($crawlResult, $attributes);
@@ -32,7 +32,7 @@ it('will update a crawl result', function () {
         'body' => 'some text',
         'processed_at' => 'November 9, 2022 6:00 PM',
         'process_status' => 'pending',
-        'result' => json_encode(['name' => 'Amit'])
+        'result' => json_encode(['name' => 'Amit']),
     ]);
 });
 

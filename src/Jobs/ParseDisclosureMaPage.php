@@ -38,7 +38,7 @@ class ParseDisclosureMaPage implements ShouldQueue
 
     public function handle()
     {
-        $this->crawler =  new Crawler($this->crawlResult->body, $this->crawlResult->url);
+        $this->crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
 
         try {
             $sections = collect([]);
@@ -47,22 +47,21 @@ class ParseDisclosureMaPage implements ShouldQueue
                 0 == $this->formSections()->count() /* is not good */,
                 CrawlException::parsingFailed($this->crawlResult)
             );
-            $this->formSections()->each(function (Crawler $sectionNode, $i) use($sections){
+            $this->formSections()->each(function (Crawler $sectionNode, $i) use ($sections) {
                 $questions = collect([]);
-                $this->questionItems($sectionNode)->each(function (Crawler $node, $j) use($questions){
+                $this->questionItems($sectionNode)->each(function (Crawler $node, $j) use ($questions) {
                     $questions->push($this->handleNode($node));
                 });
                 $sections->put($sectionNode->filter('p.section-title')->text(), $questions->toArray());
             });
 
             $this->values['form_sections'] = $sections->toArray();
-
         } catch (\Exception $e) {
             $this->error = $e->getMessage();
             $this->process_status = CrawlResultStatus::ERROR;
         }
 
-        if($this->error){
+        if ($this->error) {
             $this->values['error'] = $this->error;
         }
 

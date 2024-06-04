@@ -1,11 +1,11 @@
 <?php
 
+use Illuminate\Support\Carbon;
 use Mockery\MockInterface;
 use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlResult;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 use TrueRcm\LaravelWebscrape\Jobs\ParseDocumentsPage;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
-use Illuminate\Support\Carbon;
 
 beforeEach(function () {
     Carbon::setTestNow('May 17, 2023 2:13 PM');
@@ -62,14 +62,14 @@ HTML;
                 'processed_at' => now(),
                 'process_status' => CrawlResultStatus::COMPLETED->value,
                 'result' => [
-                    "documents" => [
+                    'documents' => [
                         [
-                            "name" => "Document Link",
-                            "link" => "http:://test.com",
-                            "state" => "MA",
-                            "uploaded_date" => "12/12/2022",
-                            "expiration_date" => "12/12/2023",
-                            "status" => "Active",
+                            'name' => 'Document Link',
+                            'link' => 'http:://test.com',
+                            'state' => 'MA',
+                            'uploaded_date' => '12/12/2022',
+                            'expiration_date' => '12/12/2023',
+                            'status' => 'Active',
                         ],
                     ],
                 ],
@@ -84,9 +84,7 @@ HTML;
     $job->handle();
 });
 
-
 it('will generate error if node not found', function () {
-
     $html = <<<HTML
 <html>
 <body>
@@ -104,7 +102,7 @@ HTML;
             ->with($crawlResult, [
                 'processed_at' => now(),
                 'process_status' => CrawlResultStatus::ERROR->value,
-                'result' => ['error' => "Parsing failed for the page with url http:://some.site"],
+                'result' => ['error' => 'Parsing failed for the page with url http:://some.site'],
             ])
             ->andReturn($crawlResult);
     });

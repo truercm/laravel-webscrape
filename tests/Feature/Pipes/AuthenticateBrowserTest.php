@@ -1,20 +1,18 @@
 <?php
 
+use DG\BypassFinals;
 use Facebook\WebDriver\WebDriver;
 use Illuminate\Support\Facades\Event;
 use Mockery\MockInterface;
-use Symfony\Component\BrowserKit\HttpBrowser;
-use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\Panther\Client;
 use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
 use TrueRcm\LaravelWebscrape\Pipes\AuthenticateBrowser;
 use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
-use Symfony\Component\Panther\Client;
-use DG\BypassFinals;
 
 beforeEach(function () {
-    //BypassFinals::enable();
+    // BypassFinals::enable();
 });
 
 it('can authenticate the remote url', function () {
@@ -29,8 +27,6 @@ it('can authenticate the remote url', function () {
 HTML;
 
     $crawler = new Crawler($html, 'http:://foo.com');
-
-
 
     $subject = CrawlSubject::factory()->create(['id' => 111]);
 
@@ -62,7 +58,6 @@ HTML;
         ->andReturn($crawler);*/
 
     $clientMock = $this->mock(WebDriver::class, function (MockInterface $mock) use ($crawler) {
-
         $mock->expects('request')
             ->with('GET', 'http:://authenticate.test')
             ->andReturn($crawler);

@@ -1,11 +1,11 @@
 <?php
 
+use Illuminate\Support\Carbon;
 use Mockery\MockInterface;
 use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlResult;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 use TrueRcm\LaravelWebscrape\Jobs\ParseHospitalAffiliationPage;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
-use Illuminate\Support\Carbon;
 
 beforeEach(function () {
     Carbon::setTestNow('May 17, 2023 2:13 PM');
@@ -52,18 +52,17 @@ HTML;
                 'result' => [
                     'admitting_privileges' => [
                         [
-                            'id' => "1234",
-                            'name' => "Aman",
-                            'status' => "Completed",
-                            'location' => "Delhi",
+                            'id' => '1234',
+                            'name' => 'Aman',
+                            'status' => 'Completed',
+                            'location' => 'Delhi',
                         ],
                         [
-                            'id' => "5678",
-                            'name' => "Sumit",
-                            'status' => "Initiated",
-                            'location' => "Noida",
-
-                        ]
+                            'id' => '5678',
+                            'name' => 'Sumit',
+                            'status' => 'Initiated',
+                            'location' => 'Noida',
+                        ],
                     ],
                 ],
             ])
@@ -77,9 +76,7 @@ HTML;
     $job->handle();
 });
 
-
 it('will generate error if node not found', function () {
-
     $html = <<<HTML
 <html>
 <body>
@@ -97,7 +94,7 @@ HTML;
             ->with($crawlResult, [
                 'processed_at' => now(),
                 'process_status' => CrawlResultStatus::ERROR->value,
-                'result' => ['error' => "Parsing failed for the page with url http:://some.site"],
+                'result' => ['error' => 'Parsing failed for the page with url http:://some.site'],
             ])
             ->andReturn($crawlResult);
     });

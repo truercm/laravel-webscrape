@@ -2,7 +2,6 @@
 
 namespace TrueRcm\LaravelWebscrape\Exceptions;
 
-use Symfony\Component\BrowserKit\Response;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
 use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 

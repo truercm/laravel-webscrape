@@ -39,7 +39,7 @@ class StoreCrawlResult extends Action
         $this->fill($attributes);
 
         $this->validate();
-        if($this->get('result') !== null){
+        if (null !== $this->get('result')) {
             $this->set('result', json_encode($this->get('result')));
         }
 

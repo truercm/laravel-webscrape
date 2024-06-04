@@ -2,10 +2,10 @@
 
 namespace TrueRcm\LaravelWebscrape\Pipes;
 
+use Symfony\Component\DomCrawler\Crawler;
 use TrueRcm\LaravelWebscrape\Actions\AddCrawlResult;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
-use Symfony\Component\DomCrawler\Crawler;
 
 class CrawlPages
 {

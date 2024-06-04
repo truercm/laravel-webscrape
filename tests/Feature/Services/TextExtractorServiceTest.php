@@ -4,7 +4,7 @@ use Symfony\Component\DomCrawler\Crawler;
 use TrueRcm\LaravelWebscrape\Services\TextExtractorService;
 
 it('filters elements with xpath', function () {
-        $html = <<<HTML
+    $html = <<<HTML
 <html>
 <body>
 <input type="text" name="myField" value="This is some text">
@@ -14,20 +14,20 @@ it('filters elements with xpath', function () {
 </html>
 HTML;
 
-        $crawler = new Crawler($html);
+    $crawler = new Crawler($html);
 
-        $node = $crawler->filterXPath('//body');
+    $node = $crawler->filterXPath('//body');
 
-        $textExtractor = new TextExtractorService();
-        $elements = $textExtractor->filterXPath($node,'input', 'name', 'myField');
+    $textExtractor = new TextExtractorService();
+    $elements = $textExtractor->filterXPath($node, 'input', 'name', 'myField');
 
-        $this->assertInstanceOf(Crawler::class, $elements);
-        $this->assertCount(1, $elements);
+    $this->assertInstanceOf(Crawler::class, $elements);
+    $this->assertCount(1, $elements);
 
-        $elements = $textExtractor->filterXPath($node,'input', 'name', 'myField', false);
+    $elements = $textExtractor->filterXPath($node, 'input', 'name', 'myField', false);
 
-        $this->assertInstanceOf(Crawler::class, $elements);
-        $this->assertCount(3, $elements);
+    $this->assertInstanceOf(Crawler::class, $elements);
+    $this->assertCount(3, $elements);
 });
 
 it('extracts text from input field', function () {

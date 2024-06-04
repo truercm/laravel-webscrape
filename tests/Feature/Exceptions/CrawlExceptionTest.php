@@ -1,13 +1,12 @@
 <?php
 
-use TrueRcm\LaravelWebscrape\Models\CrawlResult;
-use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
-use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
-use Symfony\Component\BrowserKit\Response;
 use Mockery\MockInterface;
+use Symfony\Component\BrowserKit\Response;
+use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
+use TrueRcm\LaravelWebscrape\Models\CrawlResult;
+use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 
 it('will handle browsingFailed exception', function () {
-
     $traveler = $this->mock(CrawlTraveller::class, function (MockInterface $mock) {
         $mock->expects('authUrl')
             ->andReturn('http:://wrong.site');
@@ -24,7 +23,6 @@ it('will handle browsingFailed exception', function () {
 });
 
 it('will handle authenticationFailed exception', function () {
-
     $traveler = resolve(CrawlTraveller::class);
 
     $stub = CrawlException::authenticationFailed($traveler, new Response());
@@ -38,7 +36,6 @@ it('will handle authenticationFailed exception', function () {
 });
 
 it('will handle parse failed exception', function () {
-
     $crawlResult = CrawlResult::factory()->create(['url' => 'http:://some.site']);
 
     $stub = CrawlException::parsingFailed($crawlResult);

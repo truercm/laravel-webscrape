@@ -15,12 +15,11 @@ it('will persist a crawl result', function () {
         'process_status' => 'pending',
     ];
 
-    $result = StoreCrawlResult::run(array_merge($attributes, ['result' => ['name' => 'Amit'],]));
+    $result = StoreCrawlResult::run(array_merge($attributes, ['result' => ['name' => 'Amit']]));
 
     $this->assertInstanceOf(CrawlResult::class, $result);
     $this->assertDatabaseCount('crawl_results', 1);
     $this->assertDatabaseHas('crawl_results', array_merge($attributes, ['result' => json_encode(['name' => 'Amit'])]));
-
 });
 
 it('will return consistent validation rule', function () {
