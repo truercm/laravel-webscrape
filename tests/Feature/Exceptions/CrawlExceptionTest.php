@@ -2,9 +2,9 @@
 
 use Mockery\MockInterface;
 use Symfony\Component\BrowserKit\Response;
+use TrueRcm\LaravelWebscrape\CrawlTraveller;
 use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
-use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 
 it('will handle browsingFailed exception', function () {
     $traveler = $this->mock(CrawlTraveller::class, function (MockInterface $mock) {

@@ -3,13 +3,13 @@
 namespace TrueRcm\LaravelWebscrape\Pipes;
 
 use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
+use TrueRcm\LaravelWebscrape\CrawlTraveller;
 use TrueRcm\LaravelWebscrape\Jobs\ParseCrawledPage;
-use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 
 class ParsePages
 {
     /**
-     * @param \TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller $traveller
+     * @param \TrueRcm\LaravelWebscrape\CrawlTraveller $traveller
      * @param \Closure $next
      * @return mixed
      */

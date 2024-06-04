@@ -3,12 +3,12 @@
 namespace TrueRcm\LaravelWebscrape\Exceptions;
 
 use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
-use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
+use TrueRcm\LaravelWebscrape\CrawlTraveller;
 
 class CrawlException extends \Exception
 {
     /**
-     * @param \TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller $traveller
+     * @param \TrueRcm\LaravelWebscrape\CrawlTraveller $traveller
      * @param \Throwable $throwable
      * @return static
      */
@@ -22,7 +22,7 @@ class CrawlException extends \Exception
     }
 
     /**
-     * @param \TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller $traveller
+     * @param \TrueRcm\LaravelWebscrape\CrawlTraveller $traveller
      * @return static
      */
     public static function authenticationFailed(CrawlTraveller $traveller)

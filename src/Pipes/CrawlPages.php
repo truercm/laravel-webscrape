@@ -4,13 +4,13 @@ namespace TrueRcm\LaravelWebscrape\Pipes;
 
 use Symfony\Component\DomCrawler\Crawler;
 use TrueRcm\LaravelWebscrape\Actions\AddCrawlResult;
+use TrueRcm\LaravelWebscrape\CrawlTraveller;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
-use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 
 class CrawlPages
 {
     /**
-     * @param \TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller $traveller
+     * @param \TrueRcm\LaravelWebscrape\CrawlTraveller $traveller
      * @param \Closure $next
      * @return mixed
      */

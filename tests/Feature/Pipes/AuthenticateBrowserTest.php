@@ -5,10 +5,10 @@ use Mockery\MockInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Panther\Client;
 use TrueRcm\LaravelWebscrape\Contracts\BrowserClient;
+use TrueRcm\LaravelWebscrape\CrawlTraveller;
 use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
 use TrueRcm\LaravelWebscrape\Pipes\AuthenticateBrowser;
-use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 
 beforeEach(function () {
     // BypassFinals::enable();

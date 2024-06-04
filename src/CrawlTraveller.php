@@ -1,6 +1,6 @@
 <?php
 
-namespace TrueRcm\LaravelWebscrape\Traveler;
+namespace TrueRcm\LaravelWebscrape;
 
 use Illuminate\Support\Collection;
 use TrueRcm\LaravelWebscrape\Contracts\BrowserClient;

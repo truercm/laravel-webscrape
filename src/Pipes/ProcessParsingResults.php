@@ -4,12 +4,12 @@ namespace TrueRcm\LaravelWebscrape\Pipes;
 
 use TrueRcm\LaravelWebscrape\Actions\ParseFinalResult;
 use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlSubject;
-use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
+use TrueRcm\LaravelWebscrape\CrawlTraveller;
 
 class ProcessParsingResults
 {
     /**
-     * @param \TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller $traveller
+     * @param \TrueRcm\LaravelWebscrape\CrawlTraveller $traveller
      * @param \Closure $next
      * @return mixed
      */

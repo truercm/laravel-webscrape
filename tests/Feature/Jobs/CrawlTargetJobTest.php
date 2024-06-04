@@ -3,6 +3,7 @@
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\Event;
 use Mockery\MockInterface;
+use TrueRcm\LaravelWebscrape\CrawlTraveller;
 use TrueRcm\LaravelWebscrape\Events\CrawlCompleted;
 use TrueRcm\LaravelWebscrape\Events\CrawlStarted;
 use TrueRcm\LaravelWebscrape\Jobs\CrawlTargetJob;
@@ -11,7 +12,6 @@ use TrueRcm\LaravelWebscrape\Pipes\AuthenticateBrowser;
 use TrueRcm\LaravelWebscrape\Pipes\CrawlPages;
 use TrueRcm\LaravelWebscrape\Pipes\ParsePages;
 use TrueRcm\LaravelWebscrape\Pipes\ProcessParsingResults;
-use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 
 it('can send traveller through pipelines', function () {
     Event::fake();

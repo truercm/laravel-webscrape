@@ -2,9 +2,9 @@
 
 use Illuminate\Support\Collection;
 use Symfony\Component\BrowserKit\HttpBrowser;
+use TrueRcm\LaravelWebscrape\CrawlTraveller;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
-use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 
 it('can create a crawl traveller', function () {
     $subject = CrawlSubject::factory()->make();

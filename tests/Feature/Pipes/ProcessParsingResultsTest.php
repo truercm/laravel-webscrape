@@ -3,10 +3,10 @@
 use Mockery\MockInterface;
 use TrueRcm\LaravelWebscrape\Actions\ParseFinalResult;
 use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlSubject;
+use TrueRcm\LaravelWebscrape\CrawlTraveller;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
 use TrueRcm\LaravelWebscrape\Pipes\ProcessParsingResults;
-use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 
 it('will call actions to process final result and update subject', function () {
     $subject = CrawlSubject::factory()->create(['id' => 111]);

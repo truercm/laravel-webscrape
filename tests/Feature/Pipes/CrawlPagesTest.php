@@ -6,11 +6,11 @@ use Symfony\Component\BrowserKit\HttpBrowser;
 use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\DomCrawler\Crawler;
 use TrueRcm\LaravelWebscrape\Actions\AddCrawlResult;
+use TrueRcm\LaravelWebscrape\CrawlTraveller;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
 use TrueRcm\LaravelWebscrape\Models\CrawlTargetUrl;
 use TrueRcm\LaravelWebscrape\Pipes\CrawlPages;
-use TrueRcm\LaravelWebscrape\Traveler\CrawlTraveller;
 
 it('will crawl remote url', function () {
     Event::fake();
