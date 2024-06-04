@@ -23,7 +23,7 @@ class CrawlPages
             $crawler = new Crawler($crawler->html());
             $responseCode = $traveller->getBrowser()->executeScript('return window.performance.getEntries()[0].responseStatus');
 
-            $page = AddCrawlResult::run($traveller->subject(), $target, [
+            $page = resolve(AddCrawlResult::class)->run($traveller->subject(), $target, [
                 'url' => $target->url,
                 'status' => $responseCode,
                 'body' => $crawler->filter('body')->html(), /* html */

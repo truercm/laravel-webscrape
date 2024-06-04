@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Support\Collection;
+use Mockery\MockInterface;
 use Symfony\Component\BrowserKit\HttpBrowser;
+use TrueRcm\LaravelWebscrape\Contracts\BrowserClient;
 use TrueRcm\LaravelWebscrape\CrawlTraveller;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
@@ -14,7 +16,7 @@ it('can create a crawl traveller', function () {
 
 it('can set and get browser on traveller', function () {
     $traveller = resolve(CrawlTraveller::class);
-    $browser = new HttpBrowser();
+    $browser = $this->mock(BrowserClient::class);
     $traveller->setBrowser($browser);
     $this->assertSame($browser, $traveller->getBrowser());
 });

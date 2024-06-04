@@ -3,16 +3,12 @@
 use Illuminate\Support\Facades\Event;
 use Mockery\MockInterface;
 use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\Panther\Client;
 use TrueRcm\LaravelWebscrape\Contracts\BrowserClient;
 use TrueRcm\LaravelWebscrape\CrawlTraveller;
 use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
+use TrueRcm\LaravelWebscrape\Models\CrawlTarget;
 use TrueRcm\LaravelWebscrape\Pipes\AuthenticateBrowser;
-
-beforeEach(function () {
-    // BypassFinals::enable();
-});
 
 it('can authenticate the remote url', function () {
     Event::fake();
@@ -60,29 +56,23 @@ HTML;
 
     $crawler = new Crawler($html, 'http:://authenticate.test');
 
-    $this->partialMock(Client::class, function (MockInterface $mock) use ($crawler) {
-        $mock->expects('request')
-            ->with('GET', 'http:://authenticate.test')
+    $this->mock(BrowserClient::class, function (MockInterface $mock) use ($crawler) {
+        $mock->shouldReceive('request')
             ->andReturn($crawler);
 
-        $mock->expects('submitForm')
-            ->with('submit button', ['a' => 1, 'b' => 2])
+        $mock->shouldReceive('submitForm')
             ->andReturn($crawler);
     });
 
-    $subject = CrawlSubject::factory()->create(['id' => 111]);
+    $subject = CrawlSubject::factory()
+        ->for(CrawlTarget::factory()->create([
+            'auth_button_text' => 'Sign In',
+            'auth_url' => 'http:://authenticate.test',
+            ])
+        )
+        ->create(['id' => 111]);
 
-    $stub = $this->mock(CrawlTraveller::class, function (MockInterface $mock) {
-        $mock->expects('authUrl')
-            ->times(3)
-            ->andReturn('http:://authenticate.test');
-
-        $mock->expects('authButtonIdentifier')
-            ->andReturn('submit button');
-
-        $mock->expects('getCrawlingCredentials')
-            ->andReturn(['a' => 1, 'b' => 2]);
-    });
+    $stub = new CrawlTraveller($subject);
 
     app(AuthenticateBrowser::class)
         ->handle($stub, function (CrawlTraveller $traveller) use ($stub) {

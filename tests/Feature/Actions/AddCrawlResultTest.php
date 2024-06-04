@@ -24,7 +24,7 @@ it('will add a crawl result', function () {
             ->andReturn($crawledResult);
     });
 
-    $this->instance(StoreCrawlResult::class, $storeCrawlResultMock);
+    //$this->instance(StoreCrawlResult::class, $storeCrawlResultMock);
 
     $result = AddCrawlResult::run($subject, $crawlTargetUrl, ['arg1' => 'x', 'arg2' => 'z']);
     $this->assertInstanceOf(CrawlResult::class, $result);

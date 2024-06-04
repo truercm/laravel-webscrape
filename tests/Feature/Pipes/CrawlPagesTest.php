@@ -2,13 +2,13 @@
 
 use Illuminate\Support\Facades\Event;
 use Mockery\MockInterface;
-use Symfony\Component\BrowserKit\HttpBrowser;
-use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\DomCrawler\Crawler;
 use TrueRcm\LaravelWebscrape\Actions\AddCrawlResult;
+use TrueRcm\LaravelWebscrape\Contracts\BrowserClient;
 use TrueRcm\LaravelWebscrape\CrawlTraveller;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
+use TrueRcm\LaravelWebscrape\Models\CrawlTarget;
 use TrueRcm\LaravelWebscrape\Models\CrawlTargetUrl;
 use TrueRcm\LaravelWebscrape\Pipes\CrawlPages;
 
@@ -25,42 +25,47 @@ HTML;
 
     $crawler = new Crawler($html, 'http:://foo.com');
 
-    $browser = $this->mock(HttpBrowser::class, function (MockInterface $mock) use ($crawler) {
-        $mock->expects('request')
-            ->with('GET', 'http:://homepage.test')
+    $mock = $this->mock(BrowserClient::class, function (MockInterface $mock) use ($crawler) {
+        $mock->shouldReceive('request')
             ->andReturn($crawler);
 
-        $mock->expects('getResponse')->andReturn(new Response());
+        $mock->shouldReceive('waitForInvisibility')
+            ->andReturn($crawler);
+
+        $mock->shouldReceive('executeScript')
+            ->andReturn(200);
+
     });
 
-    $subject = CrawlSubject::factory()->create(['id' => 111]);
+    $subject = CrawlSubject::factory()
+        ->for(CrawlTarget::factory()
+            ->create([
+                'id' => 111,
+            ])
+        )
+        ->create();
     $crawlResult = CrawlResult::factory()->create(['id' => 111]);
-    $targetUrls = CrawlTargetUrl::factory()
-        ->count(1)
-        ->create()
-        ->map(fn (CrawlTargetUrl $crawlTargetUrl) => $crawlTargetUrl->setAttribute('url', 'http:://homepage.test'));
+    $targetUrl = CrawlTargetUrl::factory()
+        ->create([
+            'crawl_target_id' => 111,
+            'url_template' => 'http:://homepage.test',
+            'handler' => 'MyHaandler',
+        ]);
 
-    $stub = $this->mock(CrawlTraveller::class, function (MockInterface $mock) use ($subject, $browser, $targetUrls) {
-        $mock->expects('subject')
-            ->andReturn($subject);
+    $stub = (new CrawlTraveller($subject))->setBrowser($mock);
 
-        $mock->expects('getBrowser')
-            ->times(2)
-            ->andReturn($browser);
-
-        $mock->expects('addCrawledPage')
-            // ->with($crawlResult)
-            ->andReturnSelf();
-
-        $mock->expects('targets')
-            ->andReturn($targetUrls);
+    $addCrawlResultMock = $this->mock(AddCrawlResult::class, function (MockInterface $mock) use ($crawlResult, $html, $subject, $targetUrl) {
+        $mock->shouldReceive('run')
+            ->once()
+            ->andReturn($crawlResult);
     });
 
-    AddCrawlResult::shouldRun()
-        ->andReturn($crawlResult);
 
     app(CrawlPages::class)
         ->handle($stub, function (CrawlTraveller $traveller) use ($stub) {
             $this->assertSame($stub, $traveller);
         });
+
+    $this->assertCount(1, $stub->getCrawledPages());
+    $this->assertTrue($stub->getCrawledPages()->contains($crawlResult));
 });
