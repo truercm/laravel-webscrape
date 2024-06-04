@@ -8,7 +8,9 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Symfony\Component\DomCrawler\Crawler;
+use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlResult;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
+use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
 class ParseDocumentsPage implements ShouldQueue
@@ -17,6 +19,11 @@ class ParseDocumentsPage implements ShouldQueue
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
+
+    protected array $values = [];
+    protected CrawlResultStatus $process_status = CrawlResultStatus::COMPLETED;
+    protected Crawler $crawler;
+    protected ?string $error = null;
 
     public function __construct(
         protected CrawlResult $crawlResult
@@ -31,45 +38,59 @@ class ParseDocumentsPage implements ShouldQueue
 
     public function handle()
     {
-        $this->crawlResult->forceFill([
-            'process_status' => CrawlResultStatus::COMPLETED,
-        ]);
-        $result = [];
-        $crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
-
-        $documents = [];
+        $this->crawler =  new Crawler($this->crawlResult->body, $this->crawlResult->url);
 
         try {
-            $contentRows = $crawler->filter('div.e-gridcontent tr');
+            $documents = collect([]);
 
-            $contentRows->each(function ($node, $i) use (&$documents, $contentRows) {
-                if ($i < $contentRows->count() - 1) {
-                    $colNodes = $node->filter('td');
-                    $temp = [];
-
-                    $temp['name'] = $colNodes->eq(0)->filter('a')->text();
-                    $temp['link'] = $colNodes->eq(0)->filter('a')->link()->getUri();
-                    $temp['state'] = $colNodes->eq(1)->filter('span')->text('');
-                    $temp['uploaded_date'] = $colNodes->eq(2)->filter('span')->text('');
-                    $temp['expiration_date'] = $colNodes->eq(3)->filter('span')->text('');
-                    $temp['status'] = $colNodes->eq(4)->filter('span')->text('');
-
-                    $documents[] = $temp;
+            throw_if(
+                0 == $this->nodes()->count() /* is not good */,
+                CrawlException::parsingFailed($this->crawlResult)
+            );
+            $this->nodes()->each(function (Crawler $node, $i) use($documents){
+                if ($i < $this->nodes()->count() - 1) {
+                    $documents->push($this->handleNode($node));
                 }
             });
+
+            $this->values['documents'] = $documents->toArray();
         } catch (\Exception $e) {
-            $error = __('Error :message at line :line', ['message' => $e->getMessage(), 'line' => $e->getLine()]);
-            $result['error'] = $error;
-            $this->crawlResult->forceFill([
-                'process_status' => CrawlResultStatus::ERROR,
-            ]);
+            $this->error = $e->getMessage();
+            $this->process_status = CrawlResultStatus::ERROR;
         }
 
-        $result['documents'] = $documents;
+        if($this->error){
+            $this->values['error'] = $this->error;
+        }
 
-        $this->crawlResult->forceFill([
+        resolve(UpdateCrawlResult::class)->run($this->crawlResult, $this->toArray());
+    }
+
+    protected function toArray(): array
+    {
+        return [
             'processed_at' => now(),
-            'result' => $result,
-        ])->save();
+            'result' => $this->values,
+            'process_status' => $this->process_status->value,
+        ];
+    }
+
+    protected function nodes(): Crawler
+    {
+        return $this->crawler->filter('div.e-gridcontent tr');
+    }
+
+    protected function handleNode($node): array
+    {
+        $colNodes = $node->filter('td');
+
+        return [
+            'name' => $colNodes->eq(0)->filter('a')->text(),
+            'link' => $colNodes->eq(0)->filter('a')->link()->getUri(),
+            'state' => $colNodes->eq(1)->filter('span')->text(''),
+            'uploaded_date' => $colNodes->eq(2)->filter('span')->text(''),
+            'expiration_date' => $colNodes->eq(3)->filter('span')->text(''),
+            'status' => $colNodes->eq(4)->filter('span')->text(''),
+        ];
     }
 }

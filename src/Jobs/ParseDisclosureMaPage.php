@@ -8,7 +8,9 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Symfony\Component\DomCrawler\Crawler;
+use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlResult;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
+use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
 class ParseDisclosureMaPage implements ShouldQueue
@@ -17,6 +19,11 @@ class ParseDisclosureMaPage implements ShouldQueue
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
+
+    protected array $values = [];
+    protected CrawlResultStatus $process_status = CrawlResultStatus::COMPLETED;
+    protected Crawler $crawler;
+    protected ?string $error = null;
 
     public function __construct(
         protected CrawlResult $crawlResult
@@ -31,62 +38,80 @@ class ParseDisclosureMaPage implements ShouldQueue
 
     public function handle()
     {
-        $this->crawlResult->forceFill([
-            'process_status' => CrawlResultStatus::COMPLETED,
-        ]);
-        $result = [];
-        $crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
-        $sections = [];
+        $this->crawler =  new Crawler($this->crawlResult->body, $this->crawlResult->url);
 
         try {
-            $formSections = $crawler->filterXPath('//div[contains(@class, "form-main")]/div[contains(@class, "form-section")]');
+            $sections = collect([]);
 
-            $formSections->each(function ($formSection, $i) use (&$sections) {
-                $temp = [];
-                $temp['section'] = $formSection->filter('p.section-title')->text();
-                $questions = [];
-                $questionItems = $formSection->filterXPath('child::*/div[@class="row"]');
-
-                $questionItems->each(function ($node, $i) use (&$questions) {
-                    $rows = $node->filter('div.col-xs-11 > div.row');
-
-                    $question = $rows->eq(0)->filter('label.control-label')->text();
-
-                    $answers = [];
-
-                    $rows->eq(0)->filter('label.radio')->each(function ($node, $i) use (&$answers) {
-                        $radio = $node->filterXPath('//input[@type="radio"]')
-                            ->filterXPath('//input[@checked="checked"]');
-                        $answers[$node->text()] = $radio->count() ? true : false;
-                    });
-                    $explanation = null;
-                    if ($rows->eq(1)->matches('.show')) {
-                        $explanation = $rows->eq(1)->filterXPath('//textarea[contains(@name, ".Explanation")]')->text('');
-                    }
-                    $questions[] = [
-                        'question' => $question,
-                        'answers' => $answers,
-                        'explanation' => $explanation,
-                    ];
+            throw_if(
+                0 == $this->formSections()->count() /* is not good */,
+                CrawlException::parsingFailed($this->crawlResult)
+            );
+            $this->formSections()->each(function (Crawler $sectionNode, $i) use($sections){
+                $questions = collect([]);
+                $this->questionItems($sectionNode)->each(function (Crawler $node, $j) use($questions){
+                    $questions->push($this->handleNode($node));
                 });
-
-                $temp['questions'] = $questions;
-
-                $sections[] = $temp;
+                $sections->put($sectionNode->filter('p.section-title')->text(), $questions->toArray());
             });
+
+            $this->values['form_sections'] = $sections->toArray();
+
         } catch (\Exception $e) {
-            $error = __('Error :message at line :line', ['message' => $e->getMessage(), 'line' => $e->getLine()]);
-            $result['error'] = $error;
-            $this->crawlResult->forceFill([
-                'process_status' => CrawlResultStatus::ERROR,
-            ]);
+            $this->error = $e->getMessage();
+            $this->process_status = CrawlResultStatus::ERROR;
         }
 
-        $result[] = $sections;
+        if($this->error){
+            $this->values['error'] = $this->error;
+        }
 
-        $this->crawlResult->forceFill([
+        resolve(UpdateCrawlResult::class)->run($this->crawlResult, $this->toArray());
+    }
+
+    protected function toArray(): array
+    {
+        return [
             'processed_at' => now(),
-            'result' => $result,
-        ])->save();
+            'result' => $this->values,
+            'process_status' => $this->process_status->value,
+        ];
+    }
+
+    protected function formSections(): Crawler
+    {
+        return $this->crawler->filterXPath('//div[contains(@class, "form-main")]/div[contains(@class, "form-section")]');
+    }
+
+    protected function questionItems($node): Crawler
+    {
+        return $node->filterXPath('child::*/div[@class="row"]');
+    }
+
+    protected function handleNode($node): array
+    {
+        $rows = $node->filter('div.col-xs-11 > div.row');
+
+        $question = $rows->eq(0)->filter('label.control-label')->text();
+
+        $answers = [];
+
+        $rows->eq(0)->filter('label.radio')->each(function ($node, $i) use (&$answers) {
+            $radio = $node->filterXPath('//input[@type="radio"]')
+                ->filterXPath('//input[@checked="checked"]');
+            $answers[$node->text()] = $radio->count() ? true : false;
+        });
+
+        $explanation = null;
+
+        if ($rows->count() > 0 and $rows->eq(1)->matches('.show')) {
+            $explanation = $rows->eq(1)->filterXPath('//textarea[contains(@name, ".Explanation")]')->text('');
+        }
+
+        return [
+            'question' => $question,
+            'answers' => $answers,
+            'explanation' => $explanation,
+        ];
     }
 }
