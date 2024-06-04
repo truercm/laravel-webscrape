@@ -3,7 +3,7 @@
 namespace TrueRcm\LaravelWebscrape\Traveler;
 
 use Illuminate\Support\Collection;
-use Symfony\Component\Panther\Client;
+use TrueRcm\LaravelWebscrape\Contracts\BrowserClient;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
 use TrueRcm\LaravelWebscrape\Models\CrawlTargetUrl;
@@ -11,7 +11,7 @@ use TrueRcm\LaravelWebscrape\Models\CrawlTargetUrl;
 class CrawlTraveller
 {
     protected CrawlSubject $subject;
-    protected ?Client $browser = null;
+    protected ?BrowserClient $browser = null;
 
     protected array $crawledPages = [];
 
@@ -34,12 +34,12 @@ class CrawlTraveller
         return $this->subject;
     }
 
-    public function getBrowser(): Client
+    public function getBrowser(): BrowserClient
     {
         return $this->browser;
     }
 
-    public function setBrowser(Client $bowser): self
+    public function setBrowser(BrowserClient $bowser): self
     {
         $this->browser = $bowser;
 
