@@ -9,7 +9,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
 use Symfony\Component\DomCrawler\Crawler;
+use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlResult;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
+use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
 class ParseProfessionalLiabilityPage implements ShouldQueue
@@ -18,6 +20,11 @@ class ParseProfessionalLiabilityPage implements ShouldQueue
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
+
+    protected array $values = [];
+    protected CrawlResultStatus $process_status = CrawlResultStatus::COMPLETED;
+    protected Crawler $crawler;
+    protected ?string $error = null;
 
     public function __construct(
         protected CrawlResult $crawlResult
@@ -32,65 +39,77 @@ class ParseProfessionalLiabilityPage implements ShouldQueue
 
     public function handle()
     {
-        $this->crawlResult->forceFill([
-            'process_status' => CrawlResultStatus::COMPLETED,
-        ]);
-        $result = [];
-        $crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
+        $this->crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
 
         try {
-            $currentInsurancePolicies = [];
-            $items = $crawler->filterXPath('//div[contains(@id, "SummaryPageGridEditRecord")]');
+            $policies = collect([]);
 
-            $items->each(function ($node, $i) use (&$currentInsurancePolicies) {
-                $temp = [];
-                $id = $node->evaluate('substring-after(@id, "SummaryPageGridEditRecord_")');
-                $temp['id'] = $id[0];
+            throw_if(
+                0 == $this->nodes()->count() /* is not good */,
+                CrawlException::parsingFailed($this->crawlResult)
+            );
 
-                $contentNodes = $node->filter('div.grid-inner');
-
-                $temp['insurance_company__name'] = $contentNodes->eq(0)->text();
-
-                $temp['policy_number'] = Str::of($contentNodes->eq(1)->filter('p')->text())->after(':')->__toString();
-
-                $temp['current_effective_date'] = Str::of($contentNodes->eq(1)->text())
-                    ->after('Current Effective Date:')
-                    ->before('Current Expiration Date:')
-                    ->trim()
-                    ->__toString();
-
-                $temp['current_expiration_date'] = Str::of($contentNodes->eq(1)->filter('text')->text())
-                    ->after('Current Expiration Date:')
-                    ->trim()
-                    ->__toString();
-
-                $policyInfoMsg = $contentNodes->eq(1)->filter('div#policyInfoMsg');
-
-                $temp['policy_info_msg'] = $policyInfoMsg->matches('.hide') ? '' : $policyInfoMsg->text();
-
-                $currentInsurancePolicies[] = $temp;
+            $this->nodes()->each(function (Crawler $node, $i) use ($policies) {
+                $policies->push($this->handleNode($node));
             });
 
-            $result['currentInsurancePolicies'] = $currentInsurancePolicies;
+            $this->values['current_insurance_policies'] = $policies->toArray();
 
-            $result['is_ftca_covered'] = $crawler->filterXPath('//input[@name="IsFTCACovered"]')
+            $this->values['is_ftca_covered'] = $this->crawler->filterXPath('//input[@name="IsFTCACovered"]')
                 ->filterXPath('//input[@checked="checked"]')
                 ->count() ? true : false;
 
-            $result['is_insured'] = $crawler->filterXPath('//input[@name="NotInsured"]')
+            $this->values['is_insured'] = $this->crawler->filterXPath('//input[@name="NotInsured"]')
                 ->filterXPath('//input[@checked="checked"]')
                 ->count() ? false : true;
         } catch (\Exception $e) {
-            $error = __('Error :message at line :line', ['message' => $e->getMessage(), 'line' => $e->getLine()]);
-            $result['error'] = $error;
-            $this->crawlResult->forceFill([
-                'process_status' => CrawlResultStatus::ERROR,
-            ]);
+            $this->error = $e->getMessage();
+            $this->process_status = CrawlResultStatus::ERROR;
         }
 
-        $this->crawlResult->forceFill([
+        if ($this->error) {
+            $this->values['error'] = $this->error;
+        }
+
+        resolve(UpdateCrawlResult::class)->run($this->crawlResult, $this->toArray());
+    }
+
+    protected function toArray(): array
+    {
+        return [
             'processed_at' => now(),
-            'result' => $result,
-        ])->save();
+            'result' => $this->values,
+            'process_status' => $this->process_status->value,
+        ];
+    }
+
+    protected function nodes(): Crawler
+    {
+        return $this->crawler->filterXPath('//div[contains(@id, "SummaryPageGridEditRecord")]');
+    }
+
+    protected function handleNode($node): array
+    {
+        $id = $node->evaluate('substring-after(@id, "SummaryPageGridEditRecord_")');
+
+        $contentNodes = $node->filter('div.grid-inner');
+
+        $policyInfoMsg = $contentNodes->eq(1)->filter('div#policyInfoMsg');
+
+        return [
+            'id' => head($id),
+            'insurance_company__name' => $contentNodes->eq(0)->text(),
+            'policy_number' => Str::of($contentNodes->eq(1)->filter('p')->text())->after(':')->__toString(),
+            'current_effective_date' => Str::of($contentNodes->eq(1)->text())
+                ->after('Current Effective Date:')
+                ->before('Current Expiration Date:')
+                ->trim()
+                ->__toString(),
+            'current_expiration_date' => Str::of($contentNodes->eq(1)->filter('text')->text())
+                ->after('Current Expiration Date:')
+                ->trim()
+                ->__toString(),
+            'policy_info_msg' => $policyInfoMsg->matches('.hide') ? '' : $policyInfoMsg->text(),
+        ];
     }
 }

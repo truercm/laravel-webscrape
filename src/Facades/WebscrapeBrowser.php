@@ -10,7 +10,7 @@ use TrueRcm\LaravelWebscrape\Contracts\BrowserClient;
  */
 class WebscrapeBrowser extends Facade
 {
-    protected static function getFacadeAccessor(): string
+    public static function getFacadeAccessor(): string
     {
         return BrowserClient::class;
     }

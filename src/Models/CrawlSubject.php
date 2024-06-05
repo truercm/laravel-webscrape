@@ -54,13 +54,4 @@ class CrawlSubject extends Model implements Contract
     {
         return $this->hasMany(config('webscrape.models.result'));
     }
-
-    /**
-     * @return \Illuminate\Support\Collection
-     */
-    public function getTargetUrls(): Collection
-    {
-        return $this->targetUrls
-            ->map(fn (CrawlTargetUrl $crawlTargetUrl) => $crawlTargetUrl->setAttribute('url', $crawlTargetUrl->url_template));
-    }
 }
