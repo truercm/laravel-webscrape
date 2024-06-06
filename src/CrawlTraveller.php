@@ -69,7 +69,7 @@ class CrawlTraveller
 
     public function getCrawlingCredentials(): array
     {
-        return json_decode($this->subject->credentials, true);
+        return $this->subject->credentials;
     }
 
     public function addCrawledPage(CrawlResult $page): self

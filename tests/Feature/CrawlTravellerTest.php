@@ -66,18 +66,18 @@ dataset('subject', [
                 [
                     'url_template' => 'https://smoodle.com',
                     'handler' => 'Handler1',
-                    'result_fields' => json_encode([
+                    'result_fields' => [
                         'name',
                         'gender',
-                    ]),
+                    ],
                 ],
                 [
                     'url_template' => 'https://foodle.com',
                     'handler' => 'Handler2',
-                    'result_fields' => json_encode([
+                    'result_fields' => [
                         'medicaid',
                         'medicare',
-                    ]),
+                    ],
                 ],
                 [
                     'url_template' => 'https://berry.com',
@@ -91,10 +91,10 @@ dataset('subject', [
             ])
         )
         ->create([
-            'credentials' => json_encode([
+            'credentials' => [
                 'UserName' => 'alfa',
                 'Password' => '123456',
-            ]),
+            ],
             'authenticated_at' => null,
         ]),
 ]);

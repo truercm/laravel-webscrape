@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Symfony\Component\DomCrawler\Crawler;
+use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlResult;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
@@ -17,6 +18,11 @@ class ParsePracticeLocationPage implements ShouldQueue
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
+
+    protected array $values = [];
+    protected CrawlResultStatus $process_status = CrawlResultStatus::COMPLETED;
+    protected Crawler $crawler;
+    protected ?string $error = null;
 
     public function __construct(
         protected CrawlResult $crawlResult
@@ -31,85 +37,88 @@ class ParsePracticeLocationPage implements ShouldQueue
 
     public function handle()
     {
-        $this->crawlResult->forceFill([
-            'process_status' => CrawlResultStatus::COMPLETED,
-        ]);
-        $result = [];
-        $crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
+        $this->crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
 
         try {
-            $newLocationsForReview = [];
-            $headers = array_filter($crawler->filter('div#healthplanPLGrid > div.e-gridheader div.e-headercelldiv div')
-                ->extract(['_text']));
-
-            $contentRows = $crawler->filter('div#healthplanPLGrid > div.e-gridcontent tr');
-            $contentRows->each(function ($node, $i) use (&$newLocationsForReview, $headers) {
-                $colNodes = $node->filter('td');
-                $temp = [];
-
-                $nameData = $colNodes->eq(0)->filterXPath('//div');
-                $name = $nameData->eq(0)->text();
-                $taxId = $nameData->eq(1)->filter('span')->text();
-                $temp[$headers[0]] = compact('name', 'taxId');
-
-                $addressData = $colNodes->eq(1)->filterXPath('//div[contains(@class, "grid-name-text")]/div')->extract(['_text']);
-                $temp[$headers[1]] = $addressData;
-
-                $notesData = $colNodes->eq(2)->filterXPath('//p[contains(@id, "pg-tooltiptext")]')->text('');
-                $temp[$headers[2]] = $notesData;
-
-                $daysElapsedData = $colNodes->eq(3)->filterXPath('//label[contains(@id, "lbl-text-color")]')->text();
-                $temp[$headers[3]] = $daysElapsedData;
-
-                $newLocationsForReview[] = $temp;
+            $values = collect([]);
+            $this->newLocationNodes()->each(function (Crawler $node, $i) use ($values) {
+                $values->push($this->handleNewLocation($node));
             });
+            $this->values['new_locations'] = $values->toArray();
 
-            $result['newLocationsForReview'] = $newLocationsForReview;
-
-            $activePracticeLocations = [];
-            $headers = collect($crawler->filter('div#PracticeLocationGrid > div#divPracticeLocation > div.borderstyle > div')
-                ->extract(['_text']))
-                ->forget(0)
-                ->values()
-                ->toArray();
-
-            $contentRows = $crawler->filter('div#divActivePracticeLocation > div.divinnerrow');
-
-            $contentRows->each(function ($node, $i) use (&$activePracticeLocations, $headers) {
-                $temp = [];
-
-                $nameData = $node->filter('div.divname li');
-                $name = $nameData->eq(0)->text();
-                $taxId = $nameData->eq(2)->text();
-                $temp[$headers[0]] = compact('name', 'taxId');
-
-                $addressData = $node->filter('div.divaddress p#practiceLocationAddress')->text('');
-                $temp[$headers[1]] = $addressData;
-
-                $affiliationData = $node->filter('div.divaffiliation p#practiceAffiliation')->text('');
-                $temp[$headers[2]] = $affiliationData;
-
-                $lastConfirmedDate = $node->filter('div.divlastconfirmeddate label')->text('');
-                $temp[$headers[3]] = $lastConfirmedDate;
-
-                $managedBy = $node->filter('div.divmanagedby span')->text('');
-                $temp[$headers[4]] = $managedBy;
-
-                $activePracticeLocations[] = $temp;
+            $values = collect([]);
+            $this->activeLocationNodes()->each(function (Crawler $node, $i) use ($values) {
+                $values->push($this->handleActiveLocation($node));
             });
-
-            $result['activePracticeLocations'] = $activePracticeLocations;
+            $this->values['active_locations'] = $values->toArray();
         } catch (\Exception $e) {
-            $error = __('Error :message at line :line', ['message' => $e->getMessage(), 'line' => $e->getLine()]);
-            $result['error'] = $error;
-            $this->crawlResult->forceFill([
-                'process_status' => CrawlResultStatus::ERROR,
-            ]);
+            $this->error = $e->getMessage();
+            $this->process_status = CrawlResultStatus::ERROR;
         }
 
-        $this->crawlResult->forceFill([
+        if ($this->error) {
+            $this->values['error'] = $this->error;
+        }
+
+        resolve(UpdateCrawlResult::class)->run($this->crawlResult, $this->toArray());
+    }
+
+    protected function toArray(): array
+    {
+        return [
             'processed_at' => now(),
-            'result' => $result,
-        ])->save();
+            'result' => $this->values,
+            'process_status' => $this->process_status->value,
+        ];
+    }
+
+    protected function newLocationNodes(): Crawler
+    {
+        return $this->crawler->filter('div#healthplanPLGrid > div.e-gridcontent tr');
+    }
+
+    protected function activeLocationNodes(): Crawler
+    {
+        return $this->crawler->filter('div#divActivePracticeLocation > div.divinnerrow');
+    }
+
+    protected function handleNewLocation($node): array
+    {
+        $colNodes = $node->filter('td');
+
+        $nameData = $colNodes->eq(0)->filterXPath('//div');
+        $name = $nameData->eq(0)->text();
+        $taxId = $nameData->eq(1)->filter('span')->text();
+        $addressData = $colNodes->eq(1)->filterXPath('//div[contains(@class, "grid-name-text")]/div')->extract(['_text']);
+        $notesData = $colNodes->eq(2)->filterXPath('//p[contains(@id, "pg-tooltiptext")]')->text('');
+        $daysElapsedData = $colNodes->eq(3)->filterXPath('//label[contains(@id, "lbl-text-color")]')->text();
+
+        return [
+            'name' => $name,
+            'tax_id' => $taxId,
+            'address' => $addressData,
+            'notes' => $notesData,
+            'days_elapsed' => $daysElapsedData,
+        ];
+    }
+
+    protected function handleActiveLocation($node): array
+    {
+        $nameData = $node->filter('div.divname li');
+        $name = $nameData->eq(0)->text();
+        $taxId = $nameData->eq(2)->text();
+        $addressData = $node->filter('div.divaddress p#practiceLocationAddress')->text('');
+        $affiliationData = $node->filter('div.divaffiliation p#practiceAffiliation')->text('');
+        $lastConfirmedDate = $node->filter('div.divlastconfirmeddate label')->text('');
+        $managedBy = $node->filter('div.divmanagedby span')->text('');
+
+        return [
+            'name' => $name,
+            'tax_id' => $taxId,
+            'address' => $addressData,
+            'affiliation_description' => $affiliationData,
+            'last_confirmed_date' => $lastConfirmedDate,
+            'managed_by' => $managedBy,
+        ];
     }
 }

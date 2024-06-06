@@ -22,7 +22,7 @@ class CrawlSubjectFactory extends Factory
     {
         return [
             'crawl_target_id' => CrawlTarget::factory(),
-            'credentials' => json_encode([]),
+            'credentials' => [],
             'authenticated_at' => null,
         ];
     }
