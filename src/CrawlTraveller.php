@@ -18,7 +18,7 @@ class CrawlTraveller
     protected CrawlSubject $subject;
 
     /**
-     * An implementation for the browser client
+     * An implementation for the browser client.
      * @var \TrueRcm\LaravelWebscrape\Contracts\BrowserClient|null
      */
     protected ?BrowserClient $browser = null;
