@@ -12,7 +12,19 @@ class CrawlException extends \Exception
      * @param \Throwable $throwable
      * @return static
      */
-    public static function browsingFailed(CrawlTraveller $traveller)
+    public static function noBrowserSetUp(CrawlTraveller $traveller): static
+    {
+        $message = __('Crawling traveller does not have a browser set up');
+
+        return new static($message);
+    }
+
+    /**
+     * @param \TrueRcm\LaravelWebscrape\CrawlTraveller $traveller
+     * @param \Throwable $throwable
+     * @return static
+     */
+    public static function browsingFailed(CrawlTraveller $traveller): static
     {
         $message = __('Browsing failed for url :url', [
             'url' => $traveller->authUrl(),
@@ -25,7 +37,7 @@ class CrawlException extends \Exception
      * @param \TrueRcm\LaravelWebscrape\CrawlTraveller $traveller
      * @return static
      */
-    public static function authenticationFailed(CrawlTraveller $traveller)
+    public static function authenticationFailed(CrawlTraveller $traveller): static
     {
         $message = __('Authentication failed for given credentials');
 
@@ -36,7 +48,7 @@ class CrawlException extends \Exception
      * @param \TrueRcm\LaravelWebscrape\Contracts\CrawlResult $crawlResult
      * @return static
      */
-    public static function parsingFailed(CrawlResult $crawlResult)
+    public static function parsingFailed(CrawlResult $crawlResult): static
     {
         $message = __('Parsing failed for the page with url :url', [
             'url' => $crawlResult->url,

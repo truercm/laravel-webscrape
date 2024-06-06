@@ -7,10 +7,20 @@ use TrueRcm\LaravelWebscrape\Contracts\BrowserClient;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlSubject;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlTargetUrl;
+use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 
 class CrawlTraveller
 {
+    /**
+     * An attempt to crawl the subject.
+     * @var \TrueRcm\LaravelWebscrape\Contracts\CrawlSubject
+     */
     protected CrawlSubject $subject;
+
+    /**
+     * An implementation for the browser client
+     * @var \TrueRcm\LaravelWebscrape\Contracts\BrowserClient|null
+     */
     protected ?BrowserClient $browser = null;
 
     /** @var \TrueRcm\LaravelWebscrape\Contracts\CrawlResult[] */
@@ -45,6 +55,8 @@ class CrawlTraveller
      */
     public function getBrowser(): BrowserClient
     {
+        throw_if(null === $this->browser, CrawlException::noBrowserSetUp($this));
+
         return $this->browser;
     }
 
