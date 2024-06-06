@@ -6,7 +6,6 @@ use Fls\Actions\Action;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
-use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 
 class ParseFinalResult extends Action
 {

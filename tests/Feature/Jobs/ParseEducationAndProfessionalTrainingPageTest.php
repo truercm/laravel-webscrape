@@ -54,7 +54,6 @@ HTML;
     $crawlResult = CrawlResult::factory()->create(['body' => $html]);
 
     $storeCrawlResultMock = $this->mock(UpdateCrawlResult::class, function (MockInterface $mock) use ($crawlResult) {
-
         $institute = <<<HTML
 Northeastern University\nAugust 2015 to August 2017\nBoston , MA
 HTML;
@@ -64,14 +63,14 @@ HTML;
                 'processed_at' => now(),
                 'process_status' => CrawlResultStatus::COMPLETED->value,
                 'result' => [
-                    "educations" => [
+                    'educations' => [
                         [
-                            "degree" => "Master of Science (MS)",
-                            "institution" => $institute
+                            'degree' => 'Master of Science (MS)',
+                            'institution' => $institute,
                         ],
                     ],
-                    "trainings" => [],
-                    "Completed cultural competency training" => true,
+                    'trainings' => [],
+                    'Completed cultural competency training' => true,
                 ],
             ])
             ->andReturn($crawlResult);

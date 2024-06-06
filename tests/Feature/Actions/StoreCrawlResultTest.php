@@ -13,7 +13,7 @@ it('will persist a crawl result', function () {
         'body' => 'some text',
         'processed_at' => '2022-11-09 18:00:00',
         'process_status' => 'pending',
-        'result' => ['name' => 'Amit']
+        'result' => ['name' => 'Amit'],
     ];
 
     $result = StoreCrawlResult::run($attributes);

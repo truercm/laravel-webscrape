@@ -34,7 +34,6 @@ HTML;
 
         $mock->shouldReceive('executeScript')
             ->andReturn(200);
-
     });
 
     $subject = CrawlSubject::factory()
@@ -54,12 +53,11 @@ HTML;
 
     $stub = (new CrawlTraveller($subject))->setBrowser($mock);
 
-    $addCrawlResultMock = $this->mock(AddCrawlResult::class, function (MockInterface $mock) use ($crawlResult, $html, $subject, $targetUrl) {
+    $addCrawlResultMock = $this->mock(AddCrawlResult::class, function (MockInterface $mock) use ($crawlResult) {
         $mock->shouldReceive('run')
             ->once()
             ->andReturn($crawlResult);
     });
-
 
     app(CrawlPages::class)
         ->handle($stub, function (CrawlTraveller $traveller) use ($stub) {

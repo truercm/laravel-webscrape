@@ -10,7 +10,6 @@ use Illuminate\Queue\SerializesModels;
 use Symfony\Component\DomCrawler\Crawler;
 use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlResult;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
-use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
 class ParseProfessionalIdPage implements ShouldQueue
@@ -117,12 +116,12 @@ class ParseProfessionalIdPage implements ShouldQueue
                 return $i > 0;
             });
 
-       return [
-            'state' => $colNodes->eq(0)->text(),
-            'current' => $colNodes->eq(1)->text(),
-            'number' => $colNodes->eq(2)->text(),
-            'expires_at' => $colNodes->eq(3)->text(),
-       ];
+        return [
+             'state' => $colNodes->eq(0)->text(),
+             'current' => $colNodes->eq(1)->text(),
+             'number' => $colNodes->eq(2)->text(),
+             'expires_at' => $colNodes->eq(3)->text(),
+        ];
     }
 
     protected function handleCds($node): array

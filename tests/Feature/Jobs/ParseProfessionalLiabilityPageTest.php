@@ -46,18 +46,18 @@ HTML;
                 'processed_at' => now(),
                 'process_status' => CrawlResultStatus::COMPLETED->value,
                 'result' => [
-                    "current_insurance_policies" => [
+                    'current_insurance_policies' => [
                         [
-                            "id" => "123",
-                            "insurance_company__name" => "Bridgeway Insurance Company",
-                            "policy_number" => "001MA000014641",
-                            "current_effective_date" => "3/1/2023",
-                            "current_expiration_date" => "6/30/2024",
-                            "policy_info_msg" => "This policy will expire before your next attestation.",
+                            'id' => '123',
+                            'insurance_company__name' => 'Bridgeway Insurance Company',
+                            'policy_number' => '001MA000014641',
+                            'current_effective_date' => '3/1/2023',
+                            'current_expiration_date' => '6/30/2024',
+                            'policy_info_msg' => 'This policy will expire before your next attestation.',
                         ],
                     ],
-                    "is_ftca_covered" => true,
-                    "is_insured" => false,
+                    'is_ftca_covered' => true,
+                    'is_insured' => false,
                 ],
             ])
             ->andReturn($crawlResult);

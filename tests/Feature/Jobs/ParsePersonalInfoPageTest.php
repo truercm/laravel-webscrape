@@ -105,69 +105,69 @@ HTML;
                 'processed_at' => now(),
                 'process_status' => CrawlResultStatus::COMPLETED->value,
                 'result' => [
-                    "nucc_grouping" => [
-                        "value" => "345",
-                        "text" => "Nurse",
+                    'nucc_grouping' => [
+                        'value' => '345',
+                        'text' => 'Nurse',
                     ],
-                    "provider_type" => [
-                        "value" => "345",
-                        "text" => "Nurse",
+                    'provider_type' => [
+                        'value' => '345',
+                        'text' => 'Nurse',
                     ],
-                    "practice_setting" => [
-                        "value" => "345",
-                        "text" => "Military",
+                    'practice_setting' => [
+                        'value' => '345',
+                        'text' => 'Military',
                     ],
-                    "primary_practice_state" => [
-                        "value" => "345",
-                        "text" => "DA",
+                    'primary_practice_state' => [
+                        'value' => '345',
+                        'text' => 'DA',
                     ],
-                    "additional_practice_states" => [
-                        "NY",
-                        "OP",
+                    'additional_practice_states' => [
+                        'NY',
+                        'OP',
                     ],
-                    "name" => "Robyn Kitchell",
-                    "aliases" => [],
-                    "addresses" => [],
-                    "emails" => [
+                    'name' => 'Robyn Kitchell',
+                    'aliases' => [],
+                    'addresses' => [],
+                    'emails' => [
                         [
-                            "address" => "rubyn@test.com",
-                            "allows_notifications" => false,
-                            "is_primary" => true,
+                            'address' => 'rubyn@test.com',
+                            'allows_notifications' => false,
+                            'is_primary' => true,
                         ],
                         [
-                            "address" => "second-email@test.com",
-                            "allows_notifications" => false,
-                            "is_primary" => false,
+                            'address' => 'second-email@test.com',
+                            'allows_notifications' => false,
+                            'is_primary' => false,
                         ],
                         [
-                            "address" => "third-email@test.com",
-                            "allows_notifications" => false,
-                            "is_primary" => false,
+                            'address' => 'third-email@test.com',
+                            'allows_notifications' => false,
+                            'is_primary' => false,
                         ],
                     ],
-                    "ssns" => [
+                    'ssns' => [
                         [
-                            "number" => "87631",
+                            'number' => '87631',
                         ],
                     ],
-                    "npis" => [
+                    'npis' => [
                         [
-                            "number" => "675312",
+                            'number' => '675312',
                         ],
                     ],
-                    "gender" => "Not Known",
-                    "birth_date" => "12/11/1990",
-                    "citizenship_id" => "India",
-                    "birth_city" => "Noida",
-                    "birth_state" => "UP",
-                    "birth_country_id" => "US",
-                    "race_ethnicity" => [
-                        "American Indian or Alaska Native" => true,
-                        "Black or African American (Black, African American, African...)" => false,
+                    'gender' => 'Not Known',
+                    'birth_date' => '12/11/1990',
+                    'citizenship_id' => 'India',
+                    'birth_city' => 'Noida',
+                    'birth_state' => 'UP',
+                    'birth_country_id' => 'US',
+                    'race_ethnicity' => [
+                        'American Indian or Alaska Native' => true,
+                        'Black or African American (Black, African American, African...)' => false,
                     ],
-                    "languages" => [
-                        "English",
-                        "French",
+                    'languages' => [
+                        'English',
+                        'French',
                     ],
                 ],
             ])

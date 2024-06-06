@@ -55,7 +55,6 @@ class ParseSpecialitiesPage implements ShouldQueue
 
             $this->values['specialties'] = $specialty->filter()->toArray();
 
-
             $haveCertifications = [];
             $inputs = $this->crawler->filterXPath('//label[contains(@for, "CertificationsVM_LifeSupportCertification")]')
                 ->siblings()
@@ -77,7 +76,6 @@ class ParseSpecialitiesPage implements ShouldQueue
                 $this->handleSkillsNode($node, $skills);
             });
             $this->values['skills'] = $skills->toArray();
-
         } catch (\Exception $e) {
             $this->error = $e->getMessage();
             $this->process_status = CrawlResultStatus::ERROR;
@@ -118,7 +116,7 @@ class ParseSpecialitiesPage implements ShouldQueue
     {
         $specialty = [];
 
-        $specialty['is_primary'] = $specialtySection->attr('id') == 'PrimarySpecialityPlaceHolder';
+        $specialty['is_primary'] = 'PrimarySpecialityPlaceHolder' == $specialtySection->attr('id');
         $input = $specialtySection->filterXPath('//select[contains(@name, ".SpecialtyNameId")]/option[contains(@selected, "selected")]');
         $specialty['nucc_code'] = $input->count() ? $input->attr('value') : null;
         $specialty['label'] = $input->count() ? $input->text() : null;
@@ -136,7 +134,7 @@ class ParseSpecialitiesPage implements ShouldQueue
 
         $specialty['certification_status'] = $boardCertified['Yes'];
 
-        if($boardCertified['Yes']){
+        if ($boardCertified['Yes']) {
             $address = [];
             $address['address_type'] = 'office';
             $input = $specialtySection->filterXPath('//select[contains(@name, ".CountryId")]/option[contains(@selected, "selected")]');
@@ -179,7 +177,7 @@ class ParseSpecialitiesPage implements ShouldQueue
             $planningToCertificationOrReCertification = [];
 
             $planToPursueBoardCertification = $specialtySection->filterXPath('//label[contains(@for, "PlanToPursueBoardCertification")]');
-            if($planToPursueBoardCertification->count()){
+            if ($planToPursueBoardCertification->count()) {
                 $inputs = $specialtySection->filterXPath('//label[contains(@for, "PlanToPursueBoardCertification")]')
                     ->siblings()
                     ->filter('label.radio');
@@ -193,7 +191,6 @@ class ParseSpecialitiesPage implements ShouldQueue
                 $specialty['plans_to_update'] = $planningToCertificationOrReCertification['Yes'];
             }
         }
-
 
         return $specialty;
     }
@@ -212,7 +209,7 @@ class ParseSpecialitiesPage implements ShouldQueue
             $haveSecondarySpecialty[$node->text()] = $radio->count() ? true : false;
         });
 
-        if($haveSecondarySpecialty['Yes']){
+        if ($haveSecondarySpecialty['Yes']) {
             $specialty = $this->handleSpecialty($secondarySpecialtySection);
         }
 

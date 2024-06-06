@@ -46,7 +46,6 @@ class ParsePersonalInfoPage implements ShouldQueue
                 ->handleContactInformation()
                 ->handlePersonalIdentificationNumbers()
                 ->handleDemographics();
-
         } catch (\Exception $e) {
             $this->error = $e->getMessage();
             $this->process_status = CrawlResultStatus::ERROR;
@@ -86,19 +85,19 @@ class ParsePersonalInfoPage implements ShouldQueue
             'text' => $providerTypeId->count() ? $providerTypeId->text() : null,
         ];
 
-       $this->values['practice_setting'] = [
-            'value' => $practiceSetting->count() ? $practiceSetting->attr('value') : null,
-            'text' => $practiceSetting->count() ? $practiceSetting->text() : null,
-       ];
+        $this->values['practice_setting'] = [
+             'value' => $practiceSetting->count() ? $practiceSetting->attr('value') : null,
+             'text' => $practiceSetting->count() ? $practiceSetting->text() : null,
+        ];
 
-       $this->values['primary_practice_state'] = [
-            'value' => $practiceStateDetails->count() ? $practiceStateDetails->attr('value') : null,
-            'text' => $practiceStateDetails->count() ? $practiceStateDetails->text() : null,
-       ];
+        $this->values['primary_practice_state'] = [
+             'value' => $practiceStateDetails->count() ? $practiceStateDetails->attr('value') : null,
+             'text' => $practiceStateDetails->count() ? $practiceStateDetails->text() : null,
+        ];
 
-       $this->values['additional_practice_states'] = $additionalPracticeStates->extract(['_text']);
+        $this->values['additional_practice_states'] = $additionalPracticeStates->extract(['_text']);
 
-       return $this;
+        return $this;
     }
 
     protected function handleAddress(): self
@@ -195,8 +194,6 @@ class ParsePersonalInfoPage implements ShouldQueue
 
         $input = $this->crawler->filterXPath('//select[@id="BirthCountryId"]/option[contains(@selected, "selected")]');
         $this->values['birth_country_id'] = $input->count() ? $input->text() : null;
-
-
 
         $raceEthnicity = collect([]);
         $this->crawler->filterXPath('//input[contains(@name, "RaceAndEthnicity")]')

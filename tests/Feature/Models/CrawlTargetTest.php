@@ -30,4 +30,3 @@ it('will relate crawlTargetUrl to model', function () {
     $this->assertInstanceOf(HasMany::class, $stub->crawlTargetUrls());
     $this->assertInstanceOf(CrawlTargetUrl::class, $stub->crawlTargetUrls()->getModel());
 });
-

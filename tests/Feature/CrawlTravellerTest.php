@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Support\Collection;
-use Mockery\MockInterface;
-use Symfony\Component\BrowserKit\HttpBrowser;
 use TrueRcm\LaravelWebscrape\Contracts\BrowserClient;
 use TrueRcm\LaravelWebscrape\CrawlTraveller;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;

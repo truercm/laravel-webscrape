@@ -97,7 +97,7 @@ HTML;
 });
 
 it('will generate error if node not found', function () {
-$html = <<<HTML
+    $html = <<<HTML
 <html>
 <body>
 <tr>

@@ -79,26 +79,26 @@ HTML;
                 'processed_at' => now(),
                 'process_status' => CrawlResultStatus::COMPLETED->value,
                 'result' => [
-                    "new_locations" => [
+                    'new_locations' => [
                         [
-                            "name" => "BOSTON UNIVERSITY GENERAL SURGICAL ASSOCIATES, INC.",
-                            "tax_id" => "043265008",
-                            "address" => [
-                                "88 East Newton St, H2707 ",
-                                "Boston, MA 02118",
+                            'name' => 'BOSTON UNIVERSITY GENERAL SURGICAL ASSOCIATES, INC.',
+                            'tax_id' => '043265008',
+                            'address' => [
+                                '88 East Newton St, H2707 ',
+                                'Boston, MA 02118',
                             ],
-                            "notes" => "This location has a different Tax ID.",
-                            "days_elapsed" => "1450 Days",
+                            'notes' => 'This location has a different Tax ID.',
+                            'days_elapsed' => '1450 Days',
                           ],
                     ],
-                    "active_locations" => [
+                    'active_locations' => [
                             [
-                                "name" => "Hathorne Hill",
-                                "tax_id" => "83-3973422",
-                                "address" => "15 Kirkbride DrDanvers, MA01923-6011",
-                                "affiliation_description" => "I see patients by appointment",
-                                "last_confirmed_date" => "3/26/2024",
-                                "managed_by" => "Mihir",
+                                'name' => 'Hathorne Hill',
+                                'tax_id' => '83-3973422',
+                                'address' => '15 Kirkbride DrDanvers, MA01923-6011',
+                                'affiliation_description' => 'I see patients by appointment',
+                                'last_confirmed_date' => '3/26/2024',
+                                'managed_by' => 'Mihir',
                             ],
                     ],
                 ],

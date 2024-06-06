@@ -61,25 +61,25 @@ HTML;
                 'processed_at' => now(),
                 'process_status' => CrawlResultStatus::COMPLETED->value,
                 'result' => [
-                    "employment_records" => [
+                    'employment_records' => [
                         [
-                            "id" => "123",
-                            "company_name" => "COMPREHENSIVE REHAB CONSULTANTS PLLC",
-                            "from" => "July 2023",
-                            "to" => null,
-                            "currently_epmloyed" => true,
+                            'id' => '123',
+                            'company_name' => 'COMPREHENSIVE REHAB CONSULTANTS PLLC',
+                            'from' => 'July 2023',
+                            'to' => null,
+                            'currently_epmloyed' => true,
                         ],
                         [
-                            "id" => "456",
-                            "company_name" => "MU INC",
-                            "from" => "March 2020",
-                            "to" => "September 2023",
-                            "currently_epmloyed" => false,
+                            'id' => '456',
+                            'company_name' => 'MU INC',
+                            'from' => 'March 2020',
+                            'to' => 'September 2023',
+                            'currently_epmloyed' => false,
                         ],
                     ],
-                    "Have you ever served or are you currently serving in the United States Military?" => true,
-                    "Are you currently on active military duty??" => true,
-                    "Are you currently in the Reserves or National Guard?" => true,
+                    'Have you ever served or are you currently serving in the United States Military?' => true,
+                    'Are you currently on active military duty??' => true,
+                    'Are you currently in the Reserves or National Guard?' => true,
                 ],
             ])
             ->andReturn($crawlResult);

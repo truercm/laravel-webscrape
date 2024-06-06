@@ -102,7 +102,7 @@ class ParseEmploymentInformationPage implements ShouldQueue
             ->filterXPath('//input[contains(@name, ".HaveYouEverServedInTheUSMilitary")]')
             ->filterXPath('//input[@type="radio"]')
             ->reduce(function ($node, $i) {
-                return $node->attr('checked') == 'checked' and $node->attr('value') == '100000000';
+                return 'checked' == $node->attr('checked') and '100000000' == $node->attr('value');
             })
             ->count();
 
@@ -110,7 +110,7 @@ class ParseEmploymentInformationPage implements ShouldQueue
             ->filterXPath('//input[contains(@name, ".AreYouCurrentlyOnActivemilitaryDuty")]')
             ->filterXPath('//input[@type="radio"]')
             ->reduce(function ($node, $i) {
-                return $node->attr('checked') == 'checked' and $node->attr('value') == '100000000';
+                return 'checked' == $node->attr('checked') and '100000000' == $node->attr('value');
             })
             ->count();
 
@@ -118,7 +118,7 @@ class ParseEmploymentInformationPage implements ShouldQueue
             ->filterXPath('//input[contains(@name, ".ReservesorNationalGuard")]')
             ->filterXPath('//input[@type="radio"]')
             ->reduce(function ($node, $i) {
-                return $node->attr('checked') == 'checked' and $node->attr('value') == '100000000';
+                return 'checked' == $node->attr('checked') and '100000000' == $node->attr('value');
             })
             ->count();
     }

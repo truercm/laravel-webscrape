@@ -52,11 +52,10 @@ class ParseEducationAndProfessionalTrainingPage implements ShouldQueue
             });
             $this->values['trainings'] = $values->toArray();
 
-
             $this->values['Completed cultural competency training'] = (bool) $this->crawler
                 ->filter('input#ProviderProfessionalDetails_isculturalcompetencytrainingcompleted')
                 ->reduce(function ($node, $i) {
-                    return $node->attr('checked') == 'checked' and $node->attr('value') == '100000000';
+                    return 'checked' == $node->attr('checked') and '100000000' == $node->attr('value');
                 })
                 ->count();
         } catch (\Exception $e) {
@@ -84,6 +83,7 @@ class ParseEducationAndProfessionalTrainingPage implements ShouldQueue
     {
         return $this->crawler->filterXPath('//div[@class="edu-main"]/div/div[contains(@id, "SummaryPageGridEditRecord")]');
     }
+
     protected function trainingNodes(): Crawler
     {
         return $this->crawler->filterXPath('//div[@class="profTraining-main"]/div/div[contains(@id, "SummaryPageGridEditRecord")]');
@@ -92,6 +92,7 @@ class ParseEducationAndProfessionalTrainingPage implements ShouldQueue
     protected function handleEducation($node): array
     {
         $colNodes = $node->filter('div.grid-inner');
+
         return [
             'degree' => $colNodes->eq(0)->text(),
             'institution' => collect($colNodes->eq(1)->filter('p')->extract(['_text']))
@@ -104,8 +105,8 @@ class ParseEducationAndProfessionalTrainingPage implements ShouldQueue
     protected function handleTraining($node): array
     {
         $colNodes = $node->filter('div.grid-inner');
-        return [
 
+        return [
         ];
     }
 }

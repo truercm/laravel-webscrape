@@ -69,32 +69,32 @@ HTML;
                 'processed_at' => now(),
                 'process_status' => CrawlResultStatus::COMPLETED->value,
                 'result' => [
-                    "licenses" => [
+                    'licenses' => [
                         [
-                            "state" => "MA",
-                            "current" => "Yes",
-                            "number" => "PA123",
-                            "expires_at" => "12/11/2023",
+                            'state' => 'MA',
+                            'current' => 'Yes',
+                            'number' => 'PA123',
+                            'expires_at' => '12/11/2023',
                         ],
                     ],
-                    "cds" => [
+                    'cds' => [
                         [
-                            "state" => "DA",
-                            "number" => "CD123",
-                            "issued_at" => "12/11/2021",
-                            "expires_at" => "12/11/2023",
+                            'state' => 'DA',
+                            'number' => 'CD123',
+                            'issued_at' => '12/11/2021',
+                            'expires_at' => '12/11/2023',
                         ],
                     ],
-                    "medicaids" => [
+                    'medicaids' => [
                         [
-                            "number" => "7654",
-                            "state" => "UP",
+                            'number' => '7654',
+                            'state' => 'UP',
                         ],
                     ],
-                    "medicares" => [
+                    'medicares' => [
                         [
-                            "number" => "1543",
-                            "state" => "Delhi",
+                            'number' => '1543',
+                            'state' => 'Delhi',
                         ],
                     ],
                 ],
