@@ -29,7 +29,7 @@ class CrawlResultFactory extends Factory
             'status' => $this->faker->randomDigit(),
             'body' => $this->faker->optional()->sentence(),
             'processed_at' => $this->faker->optional()->dateTime(),
-            'process_status' => $this->faker->word(),
+            'process_status' => 'pending',
             'result' => null,
         ];
     }

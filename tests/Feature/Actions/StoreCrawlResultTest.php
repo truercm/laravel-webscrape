@@ -11,11 +11,12 @@ it('will persist a crawl result', function () {
         'handler' => '\TrueRcm\LaravelWebscrape\Tests\Fixtures\FixtureJob',
         'status' => 200,
         'body' => 'some text',
-        'processed_at' => 'November 9, 2022 6:00 PM',
+        'processed_at' => '2022-11-09 18:00:00',
         'process_status' => 'pending',
+        'result' => ['name' => 'Amit']
     ];
 
-    $result = StoreCrawlResult::run(array_merge($attributes, ['result' => ['name' => 'Amit']]));
+    $result = StoreCrawlResult::run($attributes);
 
     $this->assertInstanceOf(CrawlResult::class, $result);
     $this->assertDatabaseCount('crawl_results', 1);

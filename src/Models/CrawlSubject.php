@@ -22,14 +22,11 @@ class CrawlSubject extends Model implements Contract
     ];
 
     /** @var string[] */
-    protected function casts(): array
-    {
-        return [
-            'credentials' => 'array',
-            'authenticated_at' => 'datetime',
-            'result' => 'array',
-        ];
-    }
+    protected $casts = [
+        'credentials' => 'array',
+        'authenticated_at' => 'datetime',
+        'result' => 'array',
+    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

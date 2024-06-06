@@ -39,9 +39,6 @@ class StoreCrawlResult extends Action
         $this->fill($attributes);
 
         $this->validate();
-        if (null !== $this->get('result')) {
-            $this->set('result', json_encode($this->get('result')));
-        }
 
         return tap($this->crawlResult, function (CrawlResult $crawlResult) {
             $crawlResult

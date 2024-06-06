@@ -19,7 +19,7 @@ it('will update a crawl subject', function () {
     $this->assertDatabaseCount('crawl_subjects', 1);
     $this->assertDatabaseHas('crawl_subjects', [
         'credentials' => json_encode(['user' => 'xear', 'password' => '12345']),
-        'authenticated_at' => 'November 9, 2022 6:00 PM',
+        'authenticated_at' => '2022-11-09 18:00:00',
         'result' => json_encode(['name' => 'Amit']),
     ]);
 });

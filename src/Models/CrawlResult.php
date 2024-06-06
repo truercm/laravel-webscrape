@@ -26,14 +26,11 @@ class CrawlResult extends Model implements Contract
     ];
 
     /** @var string[] */
-    protected function casts(): array
-    {
-        return [
-            'processed_at' => 'datetime',
-            'result' => 'array',
-            // 'process_status' => CrawlResultStatus::class,
-        ];
-    }
+    protected $casts = [
+        'processed_at' => 'datetime',
+        'result' => 'array',
+        'process_status' => CrawlResultStatus::class,
+    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

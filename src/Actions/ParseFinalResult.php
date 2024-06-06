@@ -19,11 +19,11 @@ class ParseFinalResult extends Action
         $finalResult = collect();
 
         $crawledPages
-            ->filter(fn (CrawlResult $page) => CrawlResultStatus::COMPLETED->value == $page->fresh()->process_status)
+            ->filter(fn (CrawlResult $page) => $page->fresh()->process_status->isComplete())
             ->reject(fn (CrawlResult $page) => empty($page->crawlTargetUrl->result_fields))
             ->each(function (CrawlResult $page) use ($finalResult) {
-                $resultFields = json_decode($page->crawlTargetUrl->result_fields, true);
-                $result = json_decode($page->fresh()->result, true);
+                $resultFields = $page->crawlTargetUrl->result_fields;
+                $result = $page->fresh()->result;
                 $finalResult->push(Arr::only($result, $resultFields));
             });
 

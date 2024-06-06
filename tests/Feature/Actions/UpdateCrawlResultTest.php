@@ -13,7 +13,7 @@ it('will update a crawl result', function () {
         'handler' => '\TrueRcm\LaravelWebscrape\Tests\Fixtures\FixtureJob',
         'status' => 200,
         'body' => 'some text',
-        'processed_at' => 'November 9, 2022 6:00 PM',
+        'processed_at' => '2022-11-09 18:00:00',
         'process_status' => 'pending',
         'result' => ['name' => 'Amit'],
     ];
@@ -30,7 +30,7 @@ it('will update a crawl result', function () {
         'handler' => '\TrueRcm\LaravelWebscrape\Tests\Fixtures\FixtureJob',
         'status' => 200,
         'body' => 'some text',
-        'processed_at' => 'November 9, 2022 6:00 PM',
+        'processed_at' => '2022-11-09 18:00:00',
         'process_status' => 'pending',
         'result' => json_encode(['name' => 'Amit']),
     ]);

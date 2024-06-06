@@ -20,12 +20,9 @@ class CrawlTargetUrl extends Model implements Contract
     ];
 
     /** @var string[] */
-    protected function casts(): array
-    {
-        return [
-            'result_fields' => 'array',
-        ];
-    }
+    protected $casts = [
+        'result_fields' => 'array',
+    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
