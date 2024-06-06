@@ -97,11 +97,14 @@ HTML;
 });
 
 it('will generate error if node not found', function () {
-    $html = <<<HTML
+$html = <<<HTML
 <html>
 <body>
-<div id="abc">
-</div>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
 </body>
 </html>
 HTML;

@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Symfony\Component\DomCrawler\Crawler;
+use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlResult;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
@@ -17,6 +18,11 @@ class ParseEducationAndProfessionalTrainingPage implements ShouldQueue
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
+
+    protected array $values = [];
+    protected CrawlResultStatus $process_status = CrawlResultStatus::COMPLETED;
+    protected Crawler $crawler;
+    protected ?string $error = null;
 
     public function __construct(
         protected CrawlResult $crawlResult
@@ -31,55 +37,75 @@ class ParseEducationAndProfessionalTrainingPage implements ShouldQueue
 
     public function handle()
     {
-        $this->crawlResult->forceFill([
-            'process_status' => CrawlResultStatus::COMPLETED,
-        ]);
-        $result = [];
-        $crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
+        $this->crawler = new Crawler($this->crawlResult->body, $this->crawlResult->url);
 
         try {
-            $educations = [];
-            $records = $crawler->filterXPath('//div[@class="edu-main"]/div/div[contains(@id, "SummaryPageGridEditRecord")]');
-            $records->each(function ($node, $i) use (&$educations) {
-                $temp = [];
-                $colNodes = $node->filter('div.grid-inner');
-                $temp['degree'] = $colNodes->eq(0)->text();
-                $temp['institution'] = collect($colNodes->eq(1)->filter('p')->extract(['_text']))
-                    ->map(fn ($string) => trim(preg_replace("/(?:[ \n\r\t\x0C]{2,}+|[\n\r\t\x0C])/", ' ', $string), " \n\r\t\x0C"))
-                    ->filter()
-                    ->implode(PHP_EOL);
-                $educations[] = $temp;
+            $values = collect([]);
+            $this->educationNodes()->each(function (Crawler $node, $i) use ($values) {
+                $values->push($this->handleEducation($node));
             });
+            $this->values['educations'] = $values->toArray();
 
-            $result['educations'] = $educations;
-
-            $professionalTrainings = [];
-            $records = $crawler->filterXPath('//div[@class="profTraining-main"]/div/div[contains(@id, "SummaryPageGridEditRecord")]');
-            $records->each(function ($node, $i) use (&$educations) {
-                $temp = [];
-                $colNodes = $node->filter('div.grid-inner');
-                $temp['degree'] = $colNodes->eq(0)->text();
-                $temp['university'] = collect($colNodes->eq(1)->filter('p')->extract(['_text']))
-                    ->map(fn ($string) => trim(preg_replace("/(?:[ \n\r\t\x0C]{2,}+|[\n\r\t\x0C])/", ' ', $string), " \n\r\t\x0C"))
-                    ->filter()
-                    ->implode(PHP_EOL);
-                $professionalTrainings[] = $temp;
+            $values = collect([]);
+            $this->trainingNodes()->each(function (Crawler $node, $i) use ($values) {
+                $values->push($this->handleTraining($node));
             });
+            $this->values['trainings'] = $values->toArray();
 
-            $result['trainings'] = $professionalTrainings;
 
-            $result['Completed cultural competency training'] = $crawler->filter('div.profTraining-main div.custom-radio-dev label.font-bold')->text();
+            $this->values['Completed cultural competency training'] = (bool) $this->crawler
+                ->filter('input#ProviderProfessionalDetails_isculturalcompetencytrainingcompleted')
+                ->reduce(function ($node, $i) {
+                    return $node->attr('checked') == 'checked' and $node->attr('value') == '100000000';
+                })
+                ->count();
         } catch (\Exception $e) {
-            $error = __('Error :message at line :line', ['message' => $e->getMessage(), 'line' => $e->getLine()]);
-            $result['error'] = $error;
-            $this->crawlResult->forceFill([
-                'process_status' => CrawlResultStatus::ERROR,
-            ]);
+            $this->error = $e->getMessage();
+            $this->process_status = CrawlResultStatus::ERROR;
         }
 
-        $this->crawlResult->forceFill([
+        if ($this->error) {
+            $this->values['error'] = $this->error;
+        }
+
+        resolve(UpdateCrawlResult::class)->run($this->crawlResult, $this->toArray());
+    }
+
+    protected function toArray(): array
+    {
+        return [
             'processed_at' => now(),
-            'result' => $result,
-        ])->save();
+            'result' => $this->values,
+            'process_status' => $this->process_status->value,
+        ];
+    }
+
+    protected function educationNodes(): Crawler
+    {
+        return $this->crawler->filterXPath('//div[@class="edu-main"]/div/div[contains(@id, "SummaryPageGridEditRecord")]');
+    }
+    protected function trainingNodes(): Crawler
+    {
+        return $this->crawler->filterXPath('//div[@class="profTraining-main"]/div/div[contains(@id, "SummaryPageGridEditRecord")]');
+    }
+
+    protected function handleEducation($node): array
+    {
+        $colNodes = $node->filter('div.grid-inner');
+        return [
+            'degree' => $colNodes->eq(0)->text(),
+            'institution' => collect($colNodes->eq(1)->filter('p')->extract(['_text']))
+                ->map(fn ($string) => trim(preg_replace("/(?:[ \n\r\t\x0C]{2,}+|[\n\r\t\x0C])/", ' ', $string), " \n\r\t\x0C"))
+                ->filter()
+                ->implode(PHP_EOL),
+        ];
+    }
+
+    protected function handleTraining($node): array
+    {
+        $colNodes = $node->filter('div.grid-inner');
+        return [
+
+        ];
     }
 }
