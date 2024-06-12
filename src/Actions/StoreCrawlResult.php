@@ -38,11 +38,9 @@ class StoreCrawlResult extends Action
     {
         $this->fill($attributes);
 
-        $this->validate();
-
         return tap($this->crawlResult, function (CrawlResult $crawlResult) {
             $crawlResult
-                ->forceFill($this->all())
+                ->forceFill($this->validated())
                 ->save();
         });
     }

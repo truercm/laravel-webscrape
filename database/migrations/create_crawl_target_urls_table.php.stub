@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
             Schema::create('crawl_target_urls', static function (Blueprint $table) {
-                $table->bigIncrements('id');
+                $table->id();
                 $table->unsignedBigInteger('crawl_target_id')->index();
                 $table->string('url_template');
                 $table->string('handler')->index();

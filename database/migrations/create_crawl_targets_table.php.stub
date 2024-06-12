@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
             Schema::create('crawl_targets', static function (Blueprint $table) {
-                $table->bigIncrements('id');
+                $table->id();
+                $table->string('url')->unique();
+                $table->string('name');
                 $table->string('auth_url');
                 $table->string('auth_button_text')->default('Login');
                 $table->string('crawling_job');

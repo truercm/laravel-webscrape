@@ -20,6 +20,8 @@ class CrawlTargetFactory extends Factory
     public function definition(): array
     {
         return [
+            'url' => $this->faker->url(),
+            'name' => $this->faker->company(),
             'auth_url' => $this->faker->url(),
             'auth_button_text' => 'Login',
             'crawling_job' => '\TrueRcm\LaravelWebscrape\Tests\Fixtures\FixtureJob',

@@ -15,9 +15,9 @@ class CrawlTarget extends Model implements Contract
 
     /** @var string[] */
     protected $fillable = [
+        'name',
         'auth_url',
         'auth_button_text',
-        'crawling_job',
     ];
 
     /**
