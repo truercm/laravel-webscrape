@@ -3,14 +3,23 @@
 use Illuminate\Support\Collection;
 use TrueRcm\LaravelWebscrape\Contracts\BrowserClient;
 use TrueRcm\LaravelWebscrape\CrawlTraveller;
+use TrueRcm\LaravelWebscrape\Jobs\CrawlTargetJob;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
+use Illuminate\Support\Facades\Bus;
 
 it('can create a crawl traveller', function () {
     $subject = CrawlSubject::factory()->make();
     $traveller = CrawlTraveller::make($subject);
     $this->assertInstanceOf(CrawlTraveller::class, $traveller);
 });
+
+it('can start the job from traveller', function ($subject) {
+    Bus::fake();
+    $traveller = CrawlTraveller::make($subject);
+    $traveller->start();
+    Bus::assertDispatched(CrawlTargetJob::class);
+})->with('subject');
 
 it('can set and get browser on traveller', function () {
     $traveller = resolve(CrawlTraveller::class);
@@ -84,7 +93,7 @@ dataset('subject', [
             )->count(3), 'crawlTargetUrls', 3)
             ->create([
                 'auth_url' => 'https://xerox.com/Login/Index',
-                'crawling_job' => 'Job1',
+                'crawling_job' => CrawlTargetJob::class,
                 'auth_button_text' => 'Login now',
             ])
         )
