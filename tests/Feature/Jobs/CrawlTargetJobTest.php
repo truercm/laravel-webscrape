@@ -17,14 +17,16 @@ it('can send traveller through pipelines', function () {
     Event::fake();
 
     $subject = CrawlSubject::factory()->create(['id' => 111]);
-    $traveller = resolve(CrawlTraveller::class, ['subject' => $subject]);
-    $this->app->singleton(CrawlTraveller::class, fn () => $traveller);
+
+    $traveller = new CrawlTraveller($subject);
 
     $pipeline = $this->mock(Pipeline::class, function (MockInterface $mock) use ($traveller) {
         $mock->expects('send')
             ->with($traveller)
-            ->andReturnSelf()
-            ->shouldReceive('through')
+            ->andReturnSelf();
+
+        $mock
+            ->expects('through')
             ->with([
                 AuthenticateBrowser::class,
                 CrawlPages::class,
@@ -33,10 +35,12 @@ it('can send traveller through pipelines', function () {
             ])
             ->andReturnSelf();
 
-        $mock->expects('then')->andReturnUsing(fn ($next) => $next($traveller));
+        $mock
+            ->expects('then')
+            ->andReturnUsing(fn ($next) => $next($traveller));
     });
 
-    $job = new CrawlTargetJob($subject);
+    $job = new CrawlTargetJob($traveller);
 
     $job->handle($pipeline);
 

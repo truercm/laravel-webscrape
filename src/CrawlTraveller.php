@@ -12,12 +12,6 @@ use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 class CrawlTraveller
 {
     /**
-     * An attempt to crawl the subject.
-     * @var \TrueRcm\LaravelWebscrape\Contracts\CrawlSubject
-     */
-    protected CrawlSubject $subject;
-
-    /**
      * An implementation for the browser client.
      * @var \TrueRcm\LaravelWebscrape\Contracts\BrowserClient|null
      */
@@ -29,13 +23,13 @@ class CrawlTraveller
     /**
      * Create new CrawlTraveller.
      */
-    public function __construct(CrawlSubject $subject)
-    {
-        $this->subject = $subject;
+    public function __construct(
+        protected CrawlSubject $subject
+    ) {
     }
 
     /**
-     * Statically create a new CralwTraveller.
+     * Statically create a new CrawlTraveller.
      */
     public static function make(CrawlSubject $subject): static
     {

@@ -11,7 +11,6 @@ use Illuminate\Queue\SerializesModels;
 use TrueRcm\LaravelWebscrape\CrawlTraveller;
 use TrueRcm\LaravelWebscrape\Events\CrawlCompleted;
 use TrueRcm\LaravelWebscrape\Events\CrawlStarted;
-use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
 use TrueRcm\LaravelWebscrape\Pipes\AuthenticateBrowser;
 use TrueRcm\LaravelWebscrape\Pipes\CrawlPages;
 use TrueRcm\LaravelWebscrape\Pipes\ParsePages;
@@ -25,25 +24,22 @@ class CrawlTargetJob implements ShouldQueue
     use SerializesModels;
 
     public function __construct(
-        protected CrawlSubject $subject
+        protected CrawlTraveller $traveller
     ) {
     }
 
-    /*
-     * "target" is remote site
-     * "subject" is a single crawler run for a given target, parsed by a specific job
-     * */
-
-    public function handle(Pipeline $pipeline)
+    /**
+     * Handle crawling the subject.
+     *
+     * @param \Illuminate\Pipeline\Pipeline $pipeline
+     * @return void
+     */
+    public function handle(Pipeline $pipeline): void
     {
-        $traveller = resolve(CrawlTraveller::class, ['subject' => $this->subject]);
-
-        CrawlStarted::dispatch($this->subject);
-
-        // \TrueRcm\LaravelWebscrape\Models\CrawlResult::where('id', '>', 12)->get()->each(fn($page) => $traveller->addCrawledPage($page));
+        CrawlStarted::dispatch($this->traveller->subject());
 
         $pipeline
-            ->send($traveller)
+            ->send($this->traveller)
             ->through([
                 AuthenticateBrowser::class,
                 CrawlPages::class,

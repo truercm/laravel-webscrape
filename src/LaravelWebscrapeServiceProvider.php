@@ -63,9 +63,12 @@ class LaravelWebscrapeServiceProvider extends PackageServiceProvider
         );
 
         $this->app->singleton(BrowserClient::class, function ($app) {
+            /* locate the selenium instance */
             $driver = $app['config']->get('webscrape.selenium_driver_url');
+            /* create a new client */
+            $client = Client::createSeleniumClient($driver);
 
-            return Client::createSeleniumClient($driver);
+            return new Browser($client);
         });
     }
 }
