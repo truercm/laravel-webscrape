@@ -8,6 +8,7 @@ use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlSubject;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlTargetUrl;
 use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
+use TrueRcm\LaravelWebscrape\Jobs\CrawlTargetJob;
 
 class CrawlTraveller
 {
@@ -34,6 +35,14 @@ class CrawlTraveller
     public static function make(CrawlSubject $subject): static
     {
         return new static($subject);
+    }
+
+    /**
+     * Begin crawling.
+     */
+    public function start(): void
+    {
+        CrawlTargetJob::dispatch($this);
     }
 
     /**

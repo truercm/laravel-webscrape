@@ -5,7 +5,7 @@ namespace TrueRcm\LaravelWebscrape\Actions;
 use Fls\Actions\Action;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlTarget;
 
-class RegisterCrawlTarget extends Action
+class StoreCrawlTarget extends Action
 {
     public function __construct(
         protected CrawlTarget $target
@@ -18,7 +18,7 @@ class RegisterCrawlTarget extends Action
     public function rules(): array
     {
         return [
-            'url' =>'required|url|unique:crawl_targets,url',
+            'url' => 'required|url|unique:crawl_targets,url',
             'name' => 'required|string|max:255',
             'auth_url' => 'required|url',
             'auth_button_text' => 'required|string|max:255',
@@ -27,7 +27,7 @@ class RegisterCrawlTarget extends Action
     }
 
     /**
-     * Handle registering a new crawl target
+     * Handle registering a new crawl target.
      *
      * @param array $attributes
      * @return \TrueRcm\LaravelWebscrape\Contracts\CrawlTarget
