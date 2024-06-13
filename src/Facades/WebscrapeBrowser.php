@@ -3,14 +3,15 @@
 namespace TrueRcm\LaravelWebscrape\Facades;
 
 use Illuminate\Support\Facades\Facade;
+use TrueRcm\LaravelWebscrape\Contracts\BrowserClient;
 
 /**
  * @see \TrueRcm\LaravelWebscrape\LaravelWebscrape
  */
-class LaravelWebscrape extends Facade
+class WebscrapeBrowser extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \TrueRcm\LaravelWebscrape\LaravelWebscrape::class;
+        return BrowserClient::class;
     }
 }

@@ -13,7 +13,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'TrueRcm\\LaravelWebscrape\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            fn (string $modelName) => 'TrueRcm\\LaravelWebscrape\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
         );
     }
 
@@ -28,9 +28,16 @@ class TestCase extends Orchestra
     {
         config()->set('database.default', 'testing');
 
-        /*
-        $migration = include __DIR__.'/../database/migrations/create_laravel-webscrape_table.php.stub';
-        $migration->up();
-        */
+        $migrations = [
+            __DIR__ . '/../database/migrations/create_crawl_results_table.php.stub',
+            __DIR__ . '/../database/migrations/create_crawl_subjects_table.php.stub',
+            __DIR__ . '/../database/migrations/create_crawl_target_urls_table.php.stub',
+            __DIR__ . '/../database/migrations/create_crawl_targets_table.php.stub',
+        ];
+
+        foreach ($migrations as $migration) {
+            $migration = include $migration;
+            $migration->up();
+        }
     }
 }
