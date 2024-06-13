@@ -47,3 +47,18 @@ it('will handle parse failed exception', function () {
         $stub->getMessage()
     );
 });
+
+it('will handle parsing job not found exception', function () {
+    $crawlResult = CrawlResult::factory()->create(['url' => 'http:://some.site']);
+
+    $stub = CrawlException::parsingJobNotFound($crawlResult);
+
+    $this->assertInstanceOf(CrawlException::class, $stub);
+
+    $this->assertEquals(
+        'Parsing job not found for the page with url http:://some.site',
+        $stub->getMessage()
+    );
+});
+
+

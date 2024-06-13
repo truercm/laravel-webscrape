@@ -1,16 +1,16 @@
 <?php
 
-namespace TrueRcm\LaravelWebscrape\Jobs;
+namespace TrueRcm\LaravelWebscrape\Tests\Fixtures;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
+use TrueRcm\LaravelWebscrape\Contracts\ParsePage;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
-class ParseCrawledPage implements ShouldQueue
+class ParseHtmlJob implements ShouldQueue, ParsePage
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -24,11 +24,6 @@ class ParseCrawledPage implements ShouldQueue
 
     public function handle()
     {
-        throw_unless(
-            class_exists($this->crawlResult->handler),
-            CrawlException::parsingJobNotFound($this->crawlResult)
-        );
 
-        resolve($this->crawlResult->handler)->dispatch($this->crawlResult);
     }
 }

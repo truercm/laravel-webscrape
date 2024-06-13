@@ -56,4 +56,17 @@ class CrawlException extends \Exception
 
         return new static($message);
     }
+
+    /**
+     * @param \TrueRcm\LaravelWebscrape\Contracts\CrawlResult $crawlResult
+     * @return static
+     */
+    public static function parsingJobNotFound(CrawlResult $crawlResult): static
+    {
+        $message = __('Parsing job not found for the page with url :url', [
+            'url' => $crawlResult->url,
+        ]);
+
+        return new static($message);
+    }
 }
