@@ -9,7 +9,6 @@ final class CrawlException extends \Exception
 {
     /**
      * @param \TrueRcm\LaravelWebscrape\CrawlTraveller $traveller
-     * @param \Throwable $throwable
      * @return static
      */
     public static function noBrowserSetUp(CrawlTraveller $traveller): static
@@ -21,7 +20,6 @@ final class CrawlException extends \Exception
 
     /**
      * @param \TrueRcm\LaravelWebscrape\CrawlTraveller $traveller
-     * @param \Throwable $throwable
      * @return static
      */
     public static function browsingFailed(CrawlTraveller $traveller): static

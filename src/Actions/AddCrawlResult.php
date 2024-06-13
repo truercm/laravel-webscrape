@@ -12,7 +12,7 @@ class AddCrawlResult extends Action
     /**
      * @param \TrueRcm\LaravelWebscrape\Contracts\CrawlSubject $subject
      * @param \TrueRcm\LaravelWebscrape\Contracts\CrawlTargetUrl $target
-     * @param array $attributes
+     * @param array <string, mixed>$attributes
      * @return \TrueRcm\LaravelWebscrape\Contracts\CrawlResult
      */
     public function handle(CrawlSubject $subject, CrawlTargetUrl $target, array $attributes): CrawlResult

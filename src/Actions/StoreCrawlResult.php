@@ -3,7 +3,7 @@
 namespace TrueRcm\LaravelWebscrape\Actions;
 
 use Fls\Actions\Action;
-use TrueRcm\LaravelWebscrape\Models\CrawlResult;
+use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
 
 class StoreCrawlResult extends Action
 {
