@@ -30,6 +30,21 @@ HTML;
     $this->assertCount(3, $elements);
 });
 
+it('filters elements with xpath when empty', function () {
+    $html = <<<HTML
+<html><body></body></html>
+HTML;
+
+    $crawler = new Crawler($html);
+
+    $node = $crawler->filterXPath('//body');
+
+    $textExtractor = new TextExtractorService();
+    $elements = $textExtractor->filterXPath($node, 'input', 'name', 'myField');
+
+    $this->assertCount(0, $elements);
+});
+
 it('extracts text from input field', function () {
     $html = <<<HTML
 <html>
@@ -42,10 +57,24 @@ HTML;
     $crawler = new Crawler($html);
 
     $node = $crawler->filterXPath('//body');
-    $fieldName = 'myField';
 
     $textExtractor = new TextExtractorService();
-    $extractedText = $textExtractor->getTextInput($node, $fieldName);
+    $extractedText = $textExtractor->getTextInput($node, 'myField');
+
+    $this->assertEquals(null, $extractedText);
+});
+
+it('extracts text from input field when not found', function () {
+    $html = <<<HTML
+<html><body></body></html>
+HTML;
+
+    $crawler = new Crawler($html);
+
+    $node = $crawler->filterXPath('//body');
+
+    $textExtractor = new TextExtractorService();
+    $extractedText = $textExtractor->getTextInput($node, 'foo');
 
     $this->assertEquals(null, $extractedText);
 });
