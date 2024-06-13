@@ -24,6 +24,5 @@ class ParseHtmlJob implements ShouldQueue, ParsePage
 
     public function handle()
     {
-
     }
 }

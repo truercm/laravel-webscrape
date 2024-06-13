@@ -60,5 +60,3 @@ it('will handle parsing job not found exception', function () {
         $stub->getMessage()
     );
 });
-
-

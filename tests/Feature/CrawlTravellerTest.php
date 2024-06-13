@@ -1,12 +1,12 @@
 <?php
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Bus;
 use TrueRcm\LaravelWebscrape\Contracts\BrowserClient;
 use TrueRcm\LaravelWebscrape\CrawlTraveller;
 use TrueRcm\LaravelWebscrape\Jobs\CrawlTargetJob;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
-use Illuminate\Support\Facades\Bus;
 
 it('can create a crawl traveller', function () {
     $subject = CrawlSubject::factory()->make();
