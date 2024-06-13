@@ -22,7 +22,7 @@ class UpdateCrawlSubject extends Action
     /**
      * @param \TrueRcm\LaravelWebscrape\Contracts\CrawlSubject $crawlSubject
      * @param array $attributes
-     * @return \TrueRcm\LaravelWebscrape\Contracts\CrawlResult
+     * @return \TrueRcm\LaravelWebscrape\Contracts\CrawlSubject
      */
     public function handle(CrawlSubject $crawlSubject, array $attributes): CrawlSubject
     {

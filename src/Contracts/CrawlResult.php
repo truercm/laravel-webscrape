@@ -4,8 +4,15 @@ namespace TrueRcm\LaravelWebscrape\Contracts;
 
 /**
  * @mixin \Illuminate\Database\Eloquent\Model
- * @property-read string $handler
+ * @property string $handler
+ * @property \TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus $process_status
  */
 interface CrawlResult
 {
+    /**
+     * Defer to the status to identify if the status is final.
+     *
+     * @return bool
+     */
+    public function isComplete(): bool;
 }

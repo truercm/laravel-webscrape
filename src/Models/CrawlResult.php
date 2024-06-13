@@ -47,4 +47,14 @@ class CrawlResult extends Model implements Contract
     {
         return $this->belongsTo(config('webscrape.models.target_url'));
     }
+
+    /**
+     * Defer to the status to identify if the status is final.
+     *
+     * @return bool
+     */
+    public function isComplete(): bool
+    {
+        return $this->process_status->isComplete();
+    }
 }

@@ -10,7 +10,7 @@ use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
 class ParseFinalResult extends Action
 {
     /**
-     * @param \Illuminate\Support\Collection $crawledPages
+     * @param \Illuminate\Support\Collection<\TrueRcm\LaravelWebscrape\Contracts\CrawlResult> $crawledPages
      * @return \Illuminate\Support\Collection
      */
     public function handle(Collection $crawledPages): Collection
@@ -18,7 +18,7 @@ class ParseFinalResult extends Action
         $finalResult = collect();
 
         $crawledPages
-            ->filter(fn (CrawlResult $page) => $page->fresh()->process_status->isComplete())
+            ->filter(fn (CrawlResult $page) => $page->fresh()->isComplete())
             ->reject(fn (CrawlResult $page) => empty($page->crawlTargetUrl->result_fields))
             ->each(function (CrawlResult $page) use ($finalResult) {
                 $resultFields = $page->crawlTargetUrl->result_fields;
