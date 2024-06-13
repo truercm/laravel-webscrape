@@ -1,4 +1,4 @@
-![](https://banners.beyondco.de/Webscrape.png?theme=light&packageManager=composer+require&packageName=truercm%2Flaravel-webscrape&pattern=diagonalLines&style=style_1&description=Scrape+web+paged+within+Laravel+application&md=1&showWatermark=0&fontSize=100px&images=cloud-download)
+![](https://banners.beyondco.de/Webscrape.png?theme=light&packageManager=composer+require&packageName=truercm%2Flaravel-webscrape&pattern=diagonalLines&style=style_1&description=Scrape+web+pages+within+Laravel+application&md=1&showWatermark=0&fontSize=100px&images=cloud-download)
 
 # Webscrape 
 
