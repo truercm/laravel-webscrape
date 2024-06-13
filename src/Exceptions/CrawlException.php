@@ -5,7 +5,7 @@ namespace TrueRcm\LaravelWebscrape\Exceptions;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
 use TrueRcm\LaravelWebscrape\CrawlTraveller;
 
-class CrawlException extends \Exception
+final class CrawlException extends \Exception
 {
     /**
      * @param \TrueRcm\LaravelWebscrape\CrawlTraveller $traveller

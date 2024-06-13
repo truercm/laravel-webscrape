@@ -10,6 +10,7 @@ use TrueRcm\LaravelWebscrape\Contracts\CrawlTargetUrl;
 use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 use TrueRcm\LaravelWebscrape\Jobs\CrawlTargetJob;
 
+/** @phpstan-consistent-constructor */
 class CrawlTraveller
 {
     /**
@@ -24,7 +25,7 @@ class CrawlTraveller
     /**
      * Create new CrawlTraveller.
      */
-    public function __construct(
+    final public function __construct(
         protected CrawlSubject $subject
     ) {
     }
