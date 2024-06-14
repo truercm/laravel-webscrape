@@ -25,6 +25,7 @@ class ParseCrawledPage implements ShouldQueue
 
     /**
      * Handle parsing of the crawled page.
+     * @throws \Throwable
      */
     public function handle(): void
     {

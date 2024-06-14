@@ -1,7 +1,7 @@
 <?php
 
-use TrueRcm\LaravelWebscrape\Models\CrawlTargetUrl;
 use TrueRcm\LaravelWebscrape\Actions\StoreCrawlTargetUrl;
+use TrueRcm\LaravelWebscrape\Models\CrawlTargetUrl;
 
 it('will persist a crawl result', function () {
     $attributes = [
@@ -11,7 +11,7 @@ it('will persist a crawl result', function () {
         'result_fields' => [
             'name',
             'email',
-        ]
+        ],
     ];
 
     $result = StoreCrawlTargetUrl::run($attributes);

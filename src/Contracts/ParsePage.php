@@ -4,5 +4,8 @@ namespace TrueRcm\LaravelWebscrape\Contracts;
 
 interface ParsePage
 {
-    public function handle();
+    /**
+     * Handle the page parsing.
+     */
+    public function handle(): void;
 }
