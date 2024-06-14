@@ -5,7 +5,7 @@ namespace TrueRcm\LaravelWebscrape\Events;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
+use TrueRcm\LaravelWebscrape\Contracts\CrawlSubject;
 
 class CrawlStarted
 {
