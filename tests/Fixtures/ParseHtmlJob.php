@@ -22,7 +22,10 @@ class ParseHtmlJob implements ShouldQueue, ParsePage
     ) {
     }
 
-    public function handle()
+    /**
+     * Execute the job.
+     */
+    public function handle(): void
     {
     }
 }

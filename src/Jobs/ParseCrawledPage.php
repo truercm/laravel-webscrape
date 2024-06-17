@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
+use TrueRcm\LaravelWebscrape\Contracts\ParsePage;
 use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 
 class ParseCrawledPage implements ShouldQueue
@@ -24,6 +25,7 @@ class ParseCrawledPage implements ShouldQueue
 
     /**
      * Handle parsing of the crawled page.
+     * @throws \Throwable
      */
     public function handle(): void
     {
@@ -32,10 +34,10 @@ class ParseCrawledPage implements ShouldQueue
     }
 
     /**
-     * @return \Illuminate\Foundation\Bus\Dispatchable
+     * @return \TrueRcm\LaravelWebscrape\Contracts\ParsePage
      * @throws \Throwable
      */
-    protected function handler()
+    protected function handler(): ParsePage
     {
         throw_unless(
             class_exists($this->crawlResult->handler),
