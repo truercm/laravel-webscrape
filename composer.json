@@ -45,22 +45,22 @@
     },
     "scripts": {
         "post-autoload-dump": "@composer run prepare",
-        "clear": "@php vendor/bin/testbench package:purge-laravel-webscrape --ansi",
-        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "clear": "@php ./vendor/bin/testbench package:purge-laravel-webscrape --ansi",
+        "prepare": "@php ./vendor/bin/testbench package:discover --ansi",
         "build": [
             "@composer run prepare",
-            "@php vendor/bin/testbench workbench:build --ansi"
+            "@php ./vendor/bin/testbench workbench:build --ansi"
         ],
         "start": [
             "Composer\\Config::disableProcessTimeout",
             "@composer run build",
-            "@php vendor/bin/testbench serve"
+            "@php ./vendor/bin/testbench serve"
         ],
-        "analyse": "vendor/bin/phpstan analyse",
-        "pest": "vendor/bin/pest",
-        "test": "docker run --rm -v $(pwd):/app jitesoft/phpunit vendor/bin/pest",
+        "analyse": "./vendor/bin/phpstan analyse",
+        "pest": "./vendor/bin/pest",
+        "test": "docker run --rm -v $(pwd):/app jitesoft/phpunit ./vendor/bin/pest",
         "test-coverage": "docker run --rm -e XDEBUG_MODE=coverage -v $(pwd):/app jitesoft/phpunit -d xdebug.mode=coverage vendor/bin/pest --coverage-html build",
-        "format": "vendor/bin/pint"
+        "format": "./vendor/bin/pint"
     },
     "config": {
         "sort-packages": true,
