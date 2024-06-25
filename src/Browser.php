@@ -11,6 +11,8 @@ class Browser implements BrowserClient
     use ForwardsCalls;
 
     /**
+     * Create a new instance of a Browser proxy.
+     *
      * @param \Symfony\Component\Panther\Client $client
      */
     public function __construct(
@@ -19,7 +21,7 @@ class Browser implements BrowserClient
     }
 
     /**
-     * Dynamically pass missing methods to the Symfony instance.
+     * Dynamically pass missing methods to the Symfony Panther Client instance.
      *
      * @param string $method
      * @param array $parameters
