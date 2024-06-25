@@ -3,15 +3,15 @@
 use Symfony\Component\Panther\Client;
 use TrueRcm\LaravelWebscrape\Browser;
 
-it('will forward calls to client from browser proxy', function () {
-    $client = $this->mock(Client::class);
+it('forwards method calls to the Symfony Panther Client', function () {
+    $client = \Mockery::mock(Client::class);
+    $browser = new Browser($client);
 
-    $client
-        ->expects('whatever')
-        ->with('foo')
-        ->andReturnTrue();
+    // Assume `visit` is a method provided by Symfony Panther Client
+    $client->shouldReceive('visit')
+        ->once()
+        ->with('http://example.com')
+        ->andReturn('Visited http://example.com');
 
-    $stub = new Browser($client);
-
-    $this->assertTrue($stub->whatever('foo'));
+    expect($browser->visit('http://example.com'))->toBe('Visited http://example.com');
 });
