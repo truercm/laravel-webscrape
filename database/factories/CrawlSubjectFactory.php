@@ -21,6 +21,8 @@ class CrawlSubjectFactory extends Factory
     public function definition(): array
     {
         return [
+            'model_type' => 'App\Models\User',
+            'model_id' => 1,
             'crawl_target_id' => CrawlTarget::factory(),
             'credentials' => [],
             'authenticated_at' => null,
