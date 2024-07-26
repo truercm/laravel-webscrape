@@ -2,15 +2,31 @@
 
 namespace TrueRcm\LaravelWebscrape\Models\Concerns;
 
-use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 trait InteractsWithHasWebscrapes
 {
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\MorphOne
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
-    public function crawlSubject(): MorphOne
+    public function crawlSubjects(): MorphMany
     {
-        return $this->morphOne(config('webscrape.models.subject'), 'model');
+        return $this->morphMany(config('webscrape.models.subject'), 'model');
+    }
+
+    /**
+     * @return string|null
+     */
+    public function crawlUserName(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function crawlPassword(): ?string
+    {
+        return null;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace TrueRcm\LaravelWebscrape\Contracts;
 
-use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  * @mixin \Illuminate\Database\Eloquent\Model
@@ -10,9 +10,11 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 interface HasWebscrapes
 {
     /**
-     * Model has Cancellation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphOne
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
-    public function crawlSubject(): MorphOne;
+    public function crawlSubjects(): MorphMany;
+
+    public function crawlUserName(): ?string;
+
+    public function crawlPassword(): ?string;
 }
