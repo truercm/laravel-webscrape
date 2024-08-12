@@ -40,7 +40,7 @@ it('will parse final result from result pages', function () {
             [
                 'id' => 1,
                 'crawl_target_url_id' => 1,
-                'process_status' => CrawlResultStatus::COMPLETED->value,
+                'process_status' => CrawlResultStatus::COMPLETED,
                 'result' => [
                     'name' => 'Aman',
                     'gender' => 'Male',
@@ -50,7 +50,7 @@ it('will parse final result from result pages', function () {
             [
                 'id' => 2,
                 'crawl_target_url_id' => 2,
-                'process_status' => CrawlResultStatus::COMPLETED->value,
+                'process_status' => CrawlResultStatus::COMPLETED,
                 'result' => [
                     'medicaid' => [11, 22],
                     'medicare' => [33, 44],
@@ -60,7 +60,7 @@ it('will parse final result from result pages', function () {
             [
                 'id' => 3,
                 'crawl_target_url_id' => 3,
-                'process_status' => CrawlResultStatus::PENDING->value,
+                'process_status' => CrawlResultStatus::PENDING,
                 'result' => [
                     'university' => 'Amsterdan',
                     'degree' => 'MD',

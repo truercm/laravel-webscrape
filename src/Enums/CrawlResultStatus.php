@@ -2,15 +2,11 @@
 
 namespace TrueRcm\LaravelWebscrape\Enums;
 
-enum CrawlResultStatus: string
-{
-    case PENDING = 'pending';
-    case IN_PROCESS = 'in_process';
-    case ERROR = 'error';
-    case COMPLETED = 'completed';
 
-    public function isComplete(): bool
-    {
-        return self::COMPLETED === $this;
-    }
+class CrawlResultStatus
+{
+    public const PENDING = 'pending';
+    public const IN_PROCESS = 'in_process';
+    public const ERROR = 'error';
+    public const COMPLETED = 'completed';
 }

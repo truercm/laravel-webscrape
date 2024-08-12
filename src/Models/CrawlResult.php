@@ -29,7 +29,6 @@ class CrawlResult extends Model implements Contract
     protected $casts = [
         'processed_at' => 'datetime',
         'result' => 'array',
-        'process_status' => CrawlResultStatus::class,
     ];
 
     /**
@@ -55,6 +54,6 @@ class CrawlResult extends Model implements Contract
      */
     public function isComplete(): bool
     {
-        return $this->process_status->isComplete();
+        return $this->process_status == CrawlResultStatus::COMPLETED;
     }
 }
