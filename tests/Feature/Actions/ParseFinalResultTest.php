@@ -31,6 +31,10 @@ it('will parse final result from result pages', function () {
                     'degree',
                 ],
             ],
+            [
+                'id' => 4,
+                'result_fields' => ['*'],
+            ],
         ))
         ->count($items->count())
         ->create();
@@ -66,6 +70,15 @@ it('will parse final result from result pages', function () {
                     'degree' => 'MD',
                 ],
             ],
+            [
+                'id' => 4,
+                'crawl_target_url_id' => 4,
+                'process_status' => CrawlResultStatus::COMPLETED,
+                'result' => [
+                    'university' => 'Amsterdan-4',
+                    'degree' => 'MD-4',
+                ],
+            ],
         ))
         ->count($items->count())
         ->create();
@@ -78,5 +91,7 @@ it('will parse final result from result pages', function () {
         'gender' => 'Male',
         'medicaid' => [11, 22],
         'medicare' => [33, 44],
+        'university' => 'Amsterdan-4',
+        'degree' => 'MD-4',
     ]), $result->collapse());
 });
