@@ -15,7 +15,7 @@ trait InteractsWithHasWebscrapes
     }
 
     /**
-     * @return string|null
+     * @return array
      */
     public function crawlCredentials(): array
     {
