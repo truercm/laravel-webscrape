@@ -14,7 +14,5 @@ interface HasWebscrapes
      */
     public function crawlSubjects(): MorphMany;
 
-    public function crawlUserName(): ?string;
-
-    public function crawlPassword(): ?string;
+    public function crawlCredentials(): array;
 }

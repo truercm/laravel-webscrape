@@ -17,16 +17,8 @@ trait InteractsWithHasWebscrapes
     /**
      * @return string|null
      */
-    public function crawlUserName(): ?string
+    public function crawlCredentials(): array
     {
-        return null;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function crawlPassword(): ?string
-    {
-        return null;
+        return [];
     }
 }
