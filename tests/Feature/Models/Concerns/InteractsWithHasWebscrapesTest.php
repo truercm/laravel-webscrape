@@ -15,7 +15,7 @@ class InteractsWithHasWebscrapesTest extends TestCase
     }
 
     /** @test */
-    public function it_will_check_function_implementation_in_subject_container_model(): void
+    public function it_will_check_contract_implementation_in_subject_container_model(): void
     {
         $hasWebscrapes = new SubjectContainerModel();
 
