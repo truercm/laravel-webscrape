@@ -54,6 +54,6 @@ class CrawlResult extends Model implements Contract
      */
     public function isComplete(): bool
     {
-        return $this->process_status == CrawlResultStatus::COMPLETED;
+        return CrawlResultStatus::COMPLETED === $this->process_status;
     }
 }

@@ -25,7 +25,7 @@ class ParseFinalResult extends Action
                 $result = $page->fresh()->result;
                 $finalResult->push(Arr::only($result, $resultFields));
 
-                if('*' === head($resultFields)){
+                if ('*' === head($resultFields)) {
                     $finalResult->push($result);
                 }
             });
@@ -33,4 +33,3 @@ class ParseFinalResult extends Action
         return $finalResult;
     }
 }
-

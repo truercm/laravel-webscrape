@@ -2,8 +2,11 @@
 
 namespace TrueRcm\LaravelWebscrape\Enums;
 
-//TODO: Implement php enum
-Interface CrawlResultStatus
+/**
+ * @todo Convert to Enum
+ * @deprecated after migrating to laravel:^9.0
+ */
+interface CrawlResultStatus
 {
     public const PENDING = 'pending';
     public const IN_PROCESS = 'in_process';
