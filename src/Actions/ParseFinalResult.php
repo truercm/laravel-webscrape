@@ -24,6 +24,10 @@ class ParseFinalResult extends Action
                 $resultFields = $page->crawlTargetUrl->result_fields;
                 $result = $page->fresh()->result;
                 $finalResult->push(Arr::only($result, $resultFields));
+
+                if ('*' === head($resultFields)) {
+                    $finalResult->push($result);
+                }
             });
 
         return $finalResult;

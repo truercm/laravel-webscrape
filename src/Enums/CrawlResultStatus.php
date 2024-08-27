@@ -2,15 +2,14 @@
 
 namespace TrueRcm\LaravelWebscrape\Enums;
 
-enum CrawlResultStatus: string
+/**
+ * @todo Convert to Enum
+ * @deprecated after migrating to laravel:^9.0
+ */
+interface CrawlResultStatus
 {
-    case PENDING = 'pending';
-    case IN_PROCESS = 'in_process';
-    case ERROR = 'error';
-    case COMPLETED = 'completed';
-
-    public function isComplete(): bool
-    {
-        return self::COMPLETED === $this;
-    }
+    public const PENDING = 'pending';
+    public const IN_PROCESS = 'in_process';
+    public const ERROR = 'error';
+    public const COMPLETED = 'completed';
 }

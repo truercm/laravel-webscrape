@@ -13,6 +13,7 @@ return new class extends Migration
     {
             Schema::create('crawl_subjects', static function (Blueprint $table) {
                 $table->id();
+                $table->morphs('model');
                 $table->unsignedBigInteger('crawl_target_id')->index();
                 $table->json('credentials')->nullable();
                 $table->dateTime('authenticated_at')->nullable();

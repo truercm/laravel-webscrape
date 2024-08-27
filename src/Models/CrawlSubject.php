@@ -5,6 +5,7 @@ namespace TrueRcm\LaravelWebscrape\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlSubject as Contract;
 
@@ -26,6 +27,14 @@ class CrawlSubject extends Model implements Contract
         'authenticated_at' => 'datetime',
         'result' => 'array',
     ];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     */
+    public function model(): MorphTo
+    {
+        return $this->morphTo();
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
