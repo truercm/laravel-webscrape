@@ -2,8 +2,10 @@
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Bus;
+use Mockery\MockInterface;
 use TrueRcm\LaravelWebscrape\Contracts\BrowserClient;
 use TrueRcm\LaravelWebscrape\CrawlTraveller;
+use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 use TrueRcm\LaravelWebscrape\Jobs\CrawlTargetJob;
 use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
@@ -64,6 +66,26 @@ it('can add crawl result page to traveller', function () {
 
     $this->assertSame($traveller, $stub);
     $this->assertInstanceOf(Collection::class, $traveller->getCrawledPages());
+});
+
+it('can clear the browser in traveller', function () {
+    $this->expectException(CrawlException::class);
+
+    $traveller = resolve(CrawlTraveller::class);
+
+    $browser = $this->mock(BrowserClient::class, function (MockInterface $mock) {
+        $mock->shouldReceive('quit')
+            ->andReturnNull();
+    });
+
+    $traveller->setBrowser($browser);
+
+    $this->assertSame($browser, $traveller->getBrowser());
+
+    $stub = $traveller->clearBrowser();
+
+    $this->assertSame($traveller, $stub);
+    $this->assertNull($traveller->getBrowser());
 });
 
 dataset('subject', [

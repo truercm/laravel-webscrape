@@ -13,7 +13,7 @@ it('will add a crawl result', function () {
     $crawledResult = CrawlResult::factory()->create();
 
     $storeCrawlResultMock = $this->mock(StoreCrawlResult::class, function (MockInterface $mock) use ($crawledResult) {
-        $mock->shouldReceive('run')
+        $mock->expects('handle')
             ->once()
             ->with([
                 'crawl_subject_id' => 111,
