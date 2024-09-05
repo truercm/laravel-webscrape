@@ -2,6 +2,7 @@
 
 namespace TrueRcm\LaravelWebscrape\Pipes;
 
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\DomCrawler\Crawler;
 use TrueRcm\LaravelWebscrape\Actions\AddCrawlResult;
 use TrueRcm\LaravelWebscrape\CrawlTraveller;
@@ -16,7 +17,11 @@ class CrawlPages
      */
     public function handle(CrawlTraveller $traveller, \Closure $next)
     {
+        Log::info('Webscrape: enter-crawling');
+
         foreach ($traveller->targets() as $target) {
+            Log::info("Webscrape: started-crawling {$target->url}");
+
             /* it cannot be try/catch as we want to continue on fail to @todo extract into a sync job, possibly, if it does not serialize the browser */
             $traveller->getBrowser()->request('GET', $target->url);
             $crawler = $traveller->getBrowser()->waitForInvisibility('div#loading');
@@ -33,6 +38,8 @@ class CrawlPages
 
             $traveller->addCrawledPage($page);
         }
+
+        Log::info('Webscrape: finished-crawling');
 
         return $next($traveller);
     }
