@@ -24,6 +24,6 @@ class AddCrawlResult extends Action
                 'crawl_target_url_id' => $target->getKey(),
             ]);
 
-        return resolve(StoreCrawlResult::class)->run($this->all());
+        return StoreCrawlResult::run($this->all());
     }
 }

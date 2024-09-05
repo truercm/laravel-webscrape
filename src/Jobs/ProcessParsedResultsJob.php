@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Log;
 use TrueRcm\LaravelWebscrape\Actions\ParseFinalResult;
 use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlSubject;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlSubject;
-use TrueRcm\LaravelWebscrape\CrawlTraveller;
 
 class ProcessParsedResultsJob implements ShouldQueue
 {
@@ -34,19 +33,17 @@ class ProcessParsedResultsJob implements ShouldQueue
      */
     public function handle(): void
     {
-        Log::error('Webscrape: initiate-final-parser-job');
+        Log::info('Webscrape: initiate-final-parser-job');
 
-        $finalResult = resolve(ParseFinalResult::class)
-            ->run($this->pages)
+        $finalResult = ParseFinalResult::run($this->pages)
             ->collapse()
             ->toArray();
 
-        resolve(UpdateCrawlSubject::class)
-            ->run($this->subject, [
+        UpdateCrawlSubject::run($this->subject, [
                 'result' => $finalResult
             ]);
 
-        Log::error('Webscrape: finished-final-parser-job');
+        Log::info('Webscrape: finished-final-parser-job');
     }
 }
 

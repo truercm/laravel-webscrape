@@ -38,6 +38,8 @@ class CrawlTargetJob implements ShouldQueue
      */
     public function handle(Pipeline $pipeline): void
     {
+        Log::info("Webscrape: initiated");
+
         CrawlStarted::dispatch($this->traveller->subject());
 
         $pipeline

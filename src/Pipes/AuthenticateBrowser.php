@@ -38,7 +38,7 @@ class AuthenticateBrowser
 
         $traveller->setBrowser($this->browser);
 
-        Log::info('Webscrape: finish-authentication');
+        Log::info('Webscrape: finished-authentication');
 
         return $next($traveller);
     }
