@@ -54,7 +54,7 @@ HTML;
     $stub = (new CrawlTraveller($subject))->setBrowser($mock);
 
     $addCrawlResultMock = $this->mock(AddCrawlResult::class, function (MockInterface $mock) use ($crawlResult) {
-        $mock->shouldReceive('run')
+        $mock->expects('handle')
             ->once()
             ->andReturn($crawlResult);
     });

@@ -75,6 +75,18 @@ class CrawlTraveller
     }
 
     /**
+     * Clear the browser on traveller
+     */
+    public function clearBrowser(): self
+    {
+        $this->browser->quit();
+
+        $this->browser = null;
+
+        return $this;
+    }
+
+    /**
      * Collect targets to crawl.
      */
     public function targets(): Collection

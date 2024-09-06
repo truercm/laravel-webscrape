@@ -2,6 +2,7 @@
 
 namespace TrueRcm\LaravelWebscrape\Pipes;
 
+use Illuminate\Support\Facades\Log;
 use TrueRcm\LaravelWebscrape\Contracts\BrowserClient;
 use TrueRcm\LaravelWebscrape\CrawlTraveller;
 use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
@@ -20,6 +21,8 @@ class AuthenticateBrowser
      */
     public function handle(CrawlTraveller $traveller, \Closure $next)
     {
+        Log::info('Webscrape: enter-authentication');
+
         $this->browser
             ->request('GET', $traveller->authUrl());
 
@@ -31,9 +34,11 @@ class AuthenticateBrowser
             CrawlException::authenticationFailed($traveller)
         );
 
-        $traveller->subject()->touch('authenticated_at');
+        $traveller->subject()->touch();
 
         $traveller->setBrowser($this->browser);
+
+        Log::info('Webscrape: finished-authentication');
 
         return $next($traveller);
     }

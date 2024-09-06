@@ -2,11 +2,9 @@
 
 namespace TrueRcm\LaravelWebscrape\Pipes;
 
-use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
 use TrueRcm\LaravelWebscrape\CrawlTraveller;
-use TrueRcm\LaravelWebscrape\Jobs\ParseCrawledPage;
 
-class ParsePages
+class CloseBrowser
 {
     /**
      * @param \TrueRcm\LaravelWebscrape\CrawlTraveller $traveller
@@ -15,8 +13,7 @@ class ParsePages
      */
     public function handle(CrawlTraveller $traveller, \Closure $next)
     {
-        $traveller->getCrawledPages()
-            ->each(fn (CrawlResult $page) => ParseCrawledPage::dispatch($page));
+        $traveller->clearBrowser();
 
         return $next($traveller);
     }
