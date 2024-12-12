@@ -11,8 +11,10 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
+use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlSubject;
 use TrueRcm\LaravelWebscrape\CrawlTraveller;
 use TrueRcm\LaravelWebscrape\Events\CrawlCompleted;
+use TrueRcm\LaravelWebscrape\Events\CrawlFailed;
 use TrueRcm\LaravelWebscrape\Events\CrawlStarted;
 use TrueRcm\LaravelWebscrape\Pipes\AuthenticateBrowser;
 use TrueRcm\LaravelWebscrape\Pipes\CloseBrowser;
@@ -60,6 +62,11 @@ class CrawlTargetJob implements ShouldQueue
                     ->then(fn($batch) => ProcessParsedResultsJob::dispatch($subject, $pages))
                     ->finally(fn($batch) => CrawlCompleted::dispatch($subject));
 
+                /* define the bus batch */
+//                $batch = Bus::batch([])
+//                    ->then(fn($batch) => ProcessParsedResultsJob::dispatch($subject, $pages))
+//                    ->finally(fn($batch) => CrawlCompleted::dispatch($subject));
+
                 /* prepare the batches */
                 $pages->mapInto(ParseCrawledPage::class)
                     ->pipe(fn(Collection $all) => $batch->add($all));
@@ -68,5 +75,21 @@ class CrawlTargetJob implements ShouldQueue
 
                 Log::info('Webscrape: bus dispatched');
             });
+    }
+
+    public function failed(\Throwable $exception): void
+    {
+        $subject = $this->traveller->subject();
+
+        UpdateCrawlSubject::run($subject, [
+            'result' => []
+        ]);
+
+        Log::error("CrawlTargetJob Error: Job failed for subject {$subject->id}", [
+            'error' => $exception->getMessage(),
+            'trace' => $exception->getTraceAsString()
+        ]);
+
+        CrawlFailed::dispatch($subject);
     }
 }
