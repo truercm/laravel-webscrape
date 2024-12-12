@@ -9,9 +9,10 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
+//use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
 use TrueRcm\LaravelWebscrape\Contracts\ParsePage;
 use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
+use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
 class ParseCrawledPage implements ShouldQueue
 {
@@ -21,9 +22,11 @@ class ParseCrawledPage implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public function __construct(
-        protected CrawlResult $crawlResult
-    ) {
+    protected int $crawlResultId; // Holds the ID of the CrawlResult
+
+    public function __construct(int $crawlResultId)
+    {
+        $this->crawlResultId = $crawlResultId; // Store the ID
     }
 
     /**
@@ -32,12 +35,31 @@ class ParseCrawledPage implements ShouldQueue
      */
     public function handle(): void
     {
-        Log::info("Webscrape: enter-parsing-result-job {$this->crawlResult->id}");
+        // Retrieve the CrawlResult object from the database or any other data source
+        $crawlResult = $this->getCrawlResult();
+
+        if (!$crawlResult) {
+            Log::error("Webscrape: CrawlResult not found for ID {$this->crawlResultId}");
+            return;
+        }
+
+        Log::info("Webscrape: enter-parsing-result-job {$crawlResult->id}");
 
         $this->handler()
-            ->dispatch($this->crawlResult);
+            ->dispatch($crawlResult);
 
-        Log::info("Webscrape: dispatched-parsing-result-job {$this->crawlResult->handler}");
+        Log::info("Webscrape: dispatched-parsing-result-job {$crawlResult->handler}");
+    }
+
+    /**
+     * Retrieve the CrawlResult by ID.
+     *
+     * @return \TrueRcm\LaravelWebscrape\Contracts\CrawlResult|null
+     */
+    protected function getCrawlResult(): ?CrawlResult
+    {
+        // Assuming CrawlResult is an Eloquent model or a repository method
+        return CrawlResult::find($this->crawlResultId);
     }
 
     /**
@@ -47,10 +69,10 @@ class ParseCrawledPage implements ShouldQueue
     protected function handler(): ParsePage
     {
         throw_unless(
-            class_exists($this->crawlResult->handler),
-            CrawlException::parsingJobNotFound($this->crawlResult)
+            class_exists($this->getCrawlResult()->handler),
+            CrawlException::parsingJobNotFound($this->getCrawlResult())
         );
 
-        return resolve($this->crawlResult->handler);
+        return resolve($this->getCrawlResult()->handler);
     }
 }
