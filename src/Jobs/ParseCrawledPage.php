@@ -84,6 +84,12 @@ class ParseCrawledPage implements ShouldQueue
     protected function getCrawlResult(): ?CrawlResult
     {
         // Assuming CrawlResult is an Eloquent model or a repository method
-        return app(CrawlResult::class)->find($this->crawlResultId);
+        $crawlResult = app(CrawlResult::class)->find($this->crawlResultId);
+
+        if (!$crawlResult) {
+            Log::error("CrawlResult not found for ID {$this->crawlResultId}");
+        }
+
+        return $crawlResult;
     }
 }
