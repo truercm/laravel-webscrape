@@ -73,7 +73,7 @@ class ParseCrawledPage implements ShouldQueue
             CrawlException::parsingJobNotFound($this->getCrawlResult())
         );
 
-        return resolve($this->getCrawlResult()->handler);
+        return resolve($this->getCrawlResult()->handler,['crawlResultId' => $this->crawlResultId]);
     }
 
     /**
