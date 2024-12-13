@@ -48,7 +48,7 @@ class ParseCrawledPage implements ShouldQueue
         $this->handler()
             ->dispatch($this->crawlResultId);
 
-//        Log::info("Webscrape: dispatched-parsing-result-job {$crawlResult->handler}");
+        Log::info("Webscrape: dispatched-parsing-result-job {$this->getCrawlResult()->handler}");
     }
 
     /**
@@ -74,5 +74,16 @@ class ParseCrawledPage implements ShouldQueue
         );
 
         return resolve($this->getCrawlResult()->handler);
+    }
+
+    /**
+     * Retrieve the CrawlResult by ID.
+     *
+     * @return \TrueRcm\LaravelWebscrape\Contracts\CrawlResult|null
+     */
+    protected function getCrawlResult(): ?CrawlResult
+    {
+        // Assuming CrawlResult is an Eloquent model or a repository method
+        return app(CrawlResult::class)->find($this->crawlResultId);
     }
 }
