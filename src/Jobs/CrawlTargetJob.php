@@ -63,13 +63,14 @@ class CrawlTargetJob implements ShouldQueue
                     ->finally(fn($batch) => CrawlCompleted::dispatch($subject));
 
                 /* define the bus batch */
-//                $batch = Bus::batch([])
-//                    ->then(fn($batch) => ProcessParsedResultsJob::dispatch($subject, $pages))
-//                    ->finally(fn($batch) => CrawlCompleted::dispatch($subject));
+                $pages->pluck('id') // Extracts the IDs from the $pages collection
+                ->map(fn($id) => new ParseCrawledPage($id)) // Creates ParseCrawledPage jobs with IDs
+                ->pipe(fn(Collection $all) => $batch->add($all)); // Adds jobs to the batch
+
 
                 /* prepare the batches */
-                $pages->mapInto(ParseCrawledPage::class)
-                    ->pipe(fn(Collection $all) => $batch->add($all));
+//                $pages->mapInto(ParseCrawledPage::class)
+//                    ->pipe(fn(Collection $all) => $batch->add($all));
 
                 $batch->dispatch();
 
