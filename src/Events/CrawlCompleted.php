@@ -13,8 +13,11 @@ class CrawlCompleted
     use InteractsWithSockets;
     use SerializesModels;
 
+    public CrawlSubject $subject;
+
     public function __construct(
-        public CrawlSubject $subject
+        public int $subjectId
     ) {
+        $this->subject = app(CrawlSubject::class)->find($this->subjectId);
     }
 }

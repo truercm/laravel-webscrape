@@ -8,13 +8,13 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlResult;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
-use TrueRcm\LaravelWebscrape\Contracts\ParsePage;
-use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
+use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
 
-class ParseCrawledPage implements ShouldQueue
+class PersistParseResult implements ShouldQueue
 {
     use Batchable;
     use Dispatchable;
@@ -23,6 +23,7 @@ class ParseCrawledPage implements ShouldQueue
     use SerializesModels;
 
     protected int $crawlResultId; // Holds the ID of the CrawlResult
+    protected CrawlResult $crawlResult;
 
     public function __construct(int $crawlResultId)
     {
@@ -35,25 +36,24 @@ class ParseCrawledPage implements ShouldQueue
      */
     public function handle(): void
     {
-        Log::info("Webscrape: enter-parsing-result-job {$this->crawlResultId}");
+        $this->crawlResult = $this->getCrawlResult();
 
-        $this->batch()->add([$this->handler()]);
+        Log::info("Webscrape: enter-persist-parse-result-job for crawl-result {$this->crawlResult->id}");
 
-        Log::info("Webscrape: dispatched-parsing-result-job {$this->getCrawlResult()->handler}");
+        UpdateCrawlResult::run($this->crawlResult, $this->toArray());
+
+        Cache::forget($this->cacheKey());
+
+        Log::info("Webscrape: finished-persist-parse-result-job for crawl-result {$this->crawlResult->id}");
     }
 
-    /**
-     * @return \TrueRcm\LaravelWebscrape\Contracts\ParsePage
-     * @throws \Throwable
-     */
-    protected function handler(): ParsePage
+    protected function toArray(): array
     {
-        throw_unless(
-            class_exists($this->getCrawlResult()->handler),
-            CrawlException::parsingJobNotFound($this->getCrawlResult())
-        );
-
-        return resolve($this->getCrawlResult()->handler,['crawlResultId' => $this->crawlResultId]);
+        return [
+            'processed_at' => now(),
+            'result' => Cache::get($this->cacheKey()),
+            'process_status' => CrawlResultStatus::COMPLETED,
+        ];
     }
 
     /**
@@ -71,5 +71,10 @@ class ParseCrawledPage implements ShouldQueue
         }
 
         return $crawlResult;
+    }
+
+    public function cacheKey(): string
+    {
+        return 'App.CrawlResult.'.$this->crawlResult->getKey().'.parsed';
     }
 }

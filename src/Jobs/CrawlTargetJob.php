@@ -52,27 +52,32 @@ class CrawlTargetJob implements ShouldQueue
                 CloseBrowser::class,
             ])->then(function (CrawlTraveller $traveller) {
 
-                $pages = $traveller->getCrawledPages();
-                $subject = $traveller->subject();
+                //Extracts the IDs to fix serialization issue
+                $pages = $traveller->getCrawledPages()->pluck('id');
+                $subjectKey = $traveller->subject()->getKey();
 
                 Log::info("Webscrape: {$pages->count()} Pages crawled");
 
                 /* define the bus batch */
                 $batch = Bus::batch([])
-                    ->then(fn($batch) => ProcessParsedResultsJob::dispatch($subject, $pages))
-                    ->finally(fn($batch) => CrawlCompleted::dispatch($subject));
+                    ->then(function($batch) use($subjectKey, $pages){
+                        $batch2 = Bus::batch([]);
+                        /* add jobs to the batch */
+                        $pages
+                        ->map(fn($id) => new PersistParseResult($id)) // Persist Parse result with Result IDs
+                        ->pipe(fn(Collection $all) => $batch2->add($all));
 
-                /* define the bus batch */
-                $pages->pluck('id') // Extracts the IDs from the $pages collection
+                        $batch2->add([new ProcessParsedResultsJob($subjectKey, $pages)])
+                            ->dispatch();
+                    })
+                    ->finally(fn($batch) => CrawlCompleted::dispatch($subjectKey));
+
+                /* add jobs to the batch */
+                $pages
                 ->map(fn($id) => new ParseCrawledPage($id)) // Creates ParseCrawledPage jobs with IDs
                 ->pipe(fn(Collection $all) => $batch->add($all)); // Adds jobs to the batch
 
-
-                /* prepare the batches */
-//                $pages->mapInto(ParseCrawledPage::class)
-//                    ->pipe(fn(Collection $all) => $batch->add($all));
-
-                $batch->dispatch();
+                $batch->allowFailures()->dispatch();
 
                 Log::info('Webscrape: bus dispatched');
             });
