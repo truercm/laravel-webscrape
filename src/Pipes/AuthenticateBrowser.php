@@ -5,6 +5,7 @@ namespace TrueRcm\LaravelWebscrape\Pipes;
 use Illuminate\Support\Facades\Log;
 use TrueRcm\LaravelWebscrape\Contracts\BrowserClient;
 use TrueRcm\LaravelWebscrape\CrawlTraveller;
+use TrueRcm\LaravelWebscrape\Events\CrawlAuthFailed;
 use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 
 class AuthenticateBrowser
@@ -23,20 +24,22 @@ class AuthenticateBrowser
     {
         Log::info('Webscrape: enter-authentication');
 
-        $this->browser
-            ->request('GET', $traveller->authUrl());
+        if($traveller->doNotCrawlOldPages()){
+            $this->browser
+                ->request('GET', $traveller->authUrl());
 
-        $crawler = $this->browser
-            ->submitForm($traveller->authButtonIdentifier(), $traveller->getCrawlingCredentials());
+            $crawler = $this->browser
+                ->submitForm($traveller->authButtonIdentifier(), $traveller->getCrawlingCredentials());
 
-        throw_if(
-            $crawler->getUri() == $traveller->authUrl() /* is not good */,
-            CrawlException::authenticationFailed($traveller)
-        );
+            if($crawler->getUri() == 'https://proview.caqh.org/Login?Type=PR'){
+                CrawlAuthFailed::dispatch($traveller->subject()->id);
+                throw CrawlException::authenticationFailed($traveller);
+            }
 
-        $traveller->subject()->touch();
+            $traveller->subject()->update(['authenticated_at' => now()]);
 
-        $traveller->setBrowser($this->browser);
+            $traveller->setBrowser($this->browser);
+        }
 
         Log::info('Webscrape: finished-authentication');
 

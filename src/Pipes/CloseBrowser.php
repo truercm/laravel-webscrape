@@ -13,7 +13,9 @@ class CloseBrowser
      */
     public function handle(CrawlTraveller $traveller, \Closure $next)
     {
-        $traveller->clearBrowser();
+        if($traveller->doNotCrawlOldPages()) {
+            $traveller->clearBrowser();
+        }
 
         return $next($traveller);
     }

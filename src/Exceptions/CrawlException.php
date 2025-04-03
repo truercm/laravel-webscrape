@@ -37,7 +37,9 @@ final class CrawlException extends \Exception
      */
     public static function authenticationFailed(CrawlTraveller $traveller): static
     {
-        $message = __('Authentication failed for given credentials');
+        $message = __('Authentication failed for subject Id :id', [
+            'id' => $traveller->subject()->id,
+        ]);
 
         return new static($message);
     }

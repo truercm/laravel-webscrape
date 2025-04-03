@@ -22,6 +22,9 @@ class CrawlTraveller
     /** @var \TrueRcm\LaravelWebscrape\Contracts\CrawlResult[] */
     protected array $crawledPages = [];
 
+    /** @var bool */
+    protected bool $crawlOldPages = false;
+
     /**
      * Create new CrawlTraveller.
      */
@@ -141,6 +144,24 @@ class CrawlTraveller
      */
     public function getCrawledPages(): Collection
     {
+        if($this->crawlOldPages){
+            $this->subject()
+                ->crawlResults
+                ->each(fn(CrawlResult $page) => $this->addCrawledPage($page));
+        }
+
         return collect($this->crawledPages);
+    }
+
+    public function crawlOldPages()
+    {
+        $this->crawlOldPages = true;
+
+        return $this;
+    }
+
+    public function doNotCrawlOldPages(): bool
+    {
+        return !$this->crawlOldPages;
     }
 }
