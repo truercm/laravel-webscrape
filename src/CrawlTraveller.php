@@ -82,9 +82,11 @@ class CrawlTraveller
      */
     public function clearBrowser(): self
     {
-        $this->browser->quit();
+        if($this->browser){
+            $this->browser->quit();
 
-        $this->browser = null;
+            $this->browser = null;
+        }
 
         return $this;
     }

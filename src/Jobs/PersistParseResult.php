@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlResult;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
@@ -75,6 +76,8 @@ class PersistParseResult implements ShouldQueue
 
     public function cacheKey(): string
     {
-        return 'App.CrawlResult.'.$this->crawlResult->getKey().'.parsed';
+        $key = 'App.CrawlResult.'.$this->crawlResult->getKey().'.parsed';
+        $sitePrefix = Str::slug(config('app.name', 'default-site'), '_');
+        return $sitePrefix. ':' . $key;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace TrueRcm\LaravelWebscrape\Jobs;
 
+use Illuminate\Bus\Batch;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -40,50 +41,65 @@ class CrawlTargetJob implements ShouldQueue
      */
     public function handle(Pipeline $pipeline): void
     {
-        Log::info("Webscrape: initiated");
+        Log::info("Webscrape: initiated for subject ID: {$this->traveller->subject()->getKey()}");
 
         CrawlStarted::dispatch($this->traveller->subject());
 
-        $pipeline
-            ->send($this->traveller)
-            ->through([
-                AuthenticateBrowser::class,
-                CrawlPages::class,
-                CloseBrowser::class,
-            ])->then(function (CrawlTraveller $traveller) {
+        try {
+            $pipeline
+                ->send($this->traveller)
+                ->through([
+                    AuthenticateBrowser::class,
+                    CrawlPages::class,
+                    CloseBrowser::class,
+                ])
+                ->then(function (CrawlTraveller $traveller) {
+                    $this->dispatchPostCrawlJobs($traveller);
+                });
+        } catch (\Throwable $exception) {
+            $this->handleCrawlFailure($exception);
+        } finally {
+            $this->traveller->clearBrowser();
+        }
+    }
 
-                //Extracts the IDs to fix serialization issue
-                $pages = $traveller->getCrawledPages()->pluck('id');
-                $subjectKey = $traveller->subject()->getKey();
+    /**
+     * Dispatch the jobs that should run after crawling is complete.
+     */
+    protected function dispatchPostCrawlJobs(CrawlTraveller $traveller): void
+    {
+        $pages = $traveller->getCrawledPages()->pluck('id');
+        $subjectKey = $traveller->subject()->getKey();
 
-                Log::info("Webscrape: {$pages->count()} Pages crawled");
+        Log::info("Webscrape: {$pages->count()} Pages crawled for subject ID: {$subjectKey}");
 
-                /* define the bus batch */
-                $batch = Bus::batch([])
-                    ->then(function($batch) use($subjectKey, $pages){
-                        $batch2 = Bus::batch([]);
-                        /* add jobs to the batch */
-                        $pages
-                        ->map(fn($id) => new PersistParseResult($id)) // Persist Parse result with Result IDs
-                        ->pipe(fn(Collection $all) => $batch2->add($all));
+        Bus::batch([
+            // Create jobs for parsing
+            $pages->map(fn($id) => new ParseCrawledPage($id)),
+        ])
+        ->then(function(Batch $batch) use($subjectKey, $pages) { // Use type hint Batch
+            // Create jobs for persisting parse results and processing them
+            Bus::batch([
+                $pages->map(fn($id) => new PersistParseResult($id)),
+                [new ProcessParsedResultsJob($subjectKey, $pages)],
+            ])->dispatch();
+        })
+        ->finally(fn(Batch $batch) => CrawlCompleted::dispatch($subjectKey)) // Use type hint Batch
+        ->allowFailures()
+        ->dispatch();
 
-                        $batch2->add([new ProcessParsedResultsJob($subjectKey, $pages)])
-                            ->dispatch();
-                    })
-                    ->finally(fn($batch) => CrawlCompleted::dispatch($subjectKey));
-
-                /* add jobs to the batch */
-                $pages
-                ->map(fn($id) => new ParseCrawledPage($id)) // Creates ParseCrawledPage jobs with IDs
-                ->pipe(fn(Collection $all) => $batch->add($all)); // Adds jobs to the batch
-
-                $batch->allowFailures()->dispatch();
-
-                Log::info('Webscrape: bus dispatched');
-            });
+        Log::info('Webscrape: batch dispatched');
     }
 
     public function failed(\Throwable $exception): void
+    {
+        $this->handleCrawlFailure($exception);
+    }
+
+    /**
+     * Centralized crawl failure handling.
+     */
+    protected function handleCrawlFailure(\Throwable $exception): void
     {
         $subject = $this->traveller->subject();
 
@@ -91,7 +107,7 @@ class CrawlTargetJob implements ShouldQueue
             'result' => []
         ]);
 
-        Log::error("CrawlTargetJob Error: Job failed for subject {$subject->id}", [
+        Log::error("CrawlTargetJob Error: Job failed for subject {$subject->getKey()}", [
             'error' => $exception->getMessage(),
             'trace' => $exception->getTraceAsString()
         ]);
