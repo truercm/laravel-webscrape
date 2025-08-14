@@ -73,22 +73,28 @@ class CrawlTargetJob implements ShouldQueue
 
         Log::info("Webscrape: {$pages->count()} Pages crawled for subject ID: {$subjectKey}");
 
-        Bus::batch([
-            // Create jobs for parsing
-            $pages->map(fn($id) => new ParseCrawledPage($id)),
-        ])
-        ->then(function(Batch $batch) use($subjectKey, $pages) { // Use type hint Batch
-            // Create jobs for persisting parse results and processing them
-            Bus::batch([
-                $pages->map(fn($id) => new PersistParseResult($id)),
-                [new ProcessParsedResultsJob($subjectKey, $pages)],
-            ])->dispatch();
-        })
-        ->finally(fn(Batch $batch) => CrawlCompleted::dispatch($subjectKey)) // Use type hint Batch
-        ->allowFailures()
-        ->dispatch();
+        /* define the bus batch */
+        $batch = Bus::batch([])
+            ->then(function(Batch $batch) use($subjectKey, $pages){
+                $batch2 = Bus::batch([]);
+                /* add jobs to the batch */
+                $pages
+                    ->map(fn($id) => new PersistParseResult($id)) // Persist Parse result with Result IDs
+                    ->pipe(fn(Collection $all) => $batch2->add($all));
 
-        Log::info('Webscrape: batch dispatched');
+                $batch2->add([new ProcessParsedResultsJob($subjectKey, $pages)])
+                    ->dispatch();
+            })
+            ->finally(fn(Batch $batch) => CrawlCompleted::dispatch($subjectKey));
+
+        /* add jobs to the batch */
+        $pages
+            ->map(fn($id) => new ParseCrawledPage($id)) // Creates ParseCrawledPage jobs with IDs
+            ->pipe(fn(Collection $all) => $batch->add($all)); // Adds jobs to the batch
+
+        $batch->allowFailures()->dispatch();
+
+        Log::info('Webscrape: batch dispatched for subject ID: {$subjectKey}');
     }
 
     public function failed(\Throwable $exception): void
