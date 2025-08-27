@@ -4,6 +4,7 @@ namespace TrueRcm\LaravelWebscrape\Jobs;
 
 use Illuminate\Bus\Batch;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Pipeline\Pipeline;
@@ -12,6 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlSubject;
 use TrueRcm\LaravelWebscrape\CrawlTraveller;
 use TrueRcm\LaravelWebscrape\Events\CrawlCompleted;
@@ -21,7 +23,7 @@ use TrueRcm\LaravelWebscrape\Pipes\AuthenticateBrowser;
 use TrueRcm\LaravelWebscrape\Pipes\CloseBrowser;
 use TrueRcm\LaravelWebscrape\Pipes\CrawlPages;
 
-class CrawlTargetJob implements ShouldQueue
+class CrawlTargetJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -119,5 +121,12 @@ class CrawlTargetJob implements ShouldQueue
         ]);
 
         CrawlFailed::dispatch($subject);
+    }
+
+    public function uniqueId()
+    {
+        $sitePrefix = Str::slug(config('app.name', 'default-site'), '_');
+        return $sitePrefix. ':' .$this->traveller->subject()
+                ->model_id;
     }
 }
