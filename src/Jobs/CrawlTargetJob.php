@@ -103,7 +103,7 @@ class CrawlTargetJob implements ShouldQueue, ShouldBeUnique
 
         $batch->allowFailures()->dispatch();
 
-        Log::info('Webscrape: batch dispatched for subject ID: {$subjectKey}');
+        Log::info("Webscrape: batch dispatched for subject ID: {$subjectKey}");
     }
 
     public function failed(\Throwable $exception): void
