@@ -69,4 +69,17 @@ final class CrawlException extends \Exception
 
         return new static($message);
     }
+
+    /**
+     * @param int $crawlResultId
+     * @return static
+     */
+    public static function crawlResultNotFound(int $crawlResultId): static
+    {
+        $message = __('CrawlResult not found for Id :id', [
+            'id' => $crawlResultId,
+        ]);
+
+        return new static($message);
+    }
 }

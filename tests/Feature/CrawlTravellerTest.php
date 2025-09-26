@@ -30,6 +30,23 @@ it('can set and get browser on traveller', function () {
     $this->assertSame($browser, $traveller->getBrowser());
 });
 
+it('can set to crawl old pages', closure: function ($subject) {
+    $crawlResults = CrawlResult::factory()
+        ->for($subject)
+        ->count(2)
+        ->create();
+
+    $stub = CrawlTraveller::make($subject);
+
+    $result = $stub->crawlOldPages();
+    $this->assertSame($result, $stub);
+    $this->assertFalse($stub->doNotCrawlOldPages());
+
+    $pages = $stub->getCrawledPages();
+    $this->assertCount(2, $pages);
+    $this->assertTrue($pages->pluck('id')->diff($crawlResults->pluck('id'))->isEmpty());
+})->with('subject');
+
 it('can get target urls from traveller', function ($subject) {
     $traveller = CrawlTraveller::make($subject);
 

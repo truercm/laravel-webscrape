@@ -2,6 +2,7 @@
 
 namespace TrueRcm\LaravelWebscrape\Tests\Feature\Jobs;
 
+use Mockery;
 use Mockery\MockInterface;
 use TrueRcm\LaravelWebscrape\Actions\ParseFinalResult;
 use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlSubject;
@@ -18,27 +19,41 @@ class ProcessParsedResultsJobTest extends TestCase
         $subject = CrawlSubject::factory()->create(['id' => 111]);
 
         $crawledResults = CrawlResult::factory()
+            ->sequence(
+                [
+                    'id' => 222,
+                ],
+                [
+                    'id' => 333,
+                ]
+            )
             ->count(2)
             ->create();
 
         $this->mock(ParseFinalResult::class, function (MockInterface $mock) use ($crawledResults) {
             $mock->expects('handle')
                 ->once()
-                ->with($crawledResults)
+                ->with(Mockery::on(function ($arg) use ($crawledResults) {
+                    return $arg->count() === $crawledResults->count()
+                        && $arg->pluck('id')->diff($crawledResults->pluck('id'))->isEmpty();
+                }))
                 ->andReturn(collect([['name' => 'abc'],['email' => 'test@test.com']]));
         });
 
         $this->mock(UpdateCrawlSubject::class, function (MockInterface $mock) use ($subject) {
             $mock->expects('handle')
                 ->once()
-                ->with($subject, ['result' => [
-                    "name" => "abc",
-                    "email" => "test@test.com",
-                ]])
+                ->with(
+                    Mockery::on(fn($arg) => $arg->is($subject)), // same DB row
+                    ['result' => [
+                        "name" => "abc",
+                        "email" => "test@test.com",
+                    ]]
+                )
                 ->andReturn($subject);
         });
 
-        $job = new ProcessParsedResultsJob($subject, $crawledResults);
+        $job = new ProcessParsedResultsJob(111, collect([222, 333]));
 
         $job->handle();
     }

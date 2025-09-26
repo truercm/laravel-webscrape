@@ -33,7 +33,7 @@ class ParsePagesJob implements ShouldQueue
     {
         Log::info('Webscrape: enter-parser-job');
 
-        $this->pages->each(fn (CrawlResult $page) => ParseCrawledPage::dispatch($page));
+        $this->pages->each(fn (CrawlResult $page) => ParseCrawledPage::dispatch($page->getKey()));
     }
 }
 

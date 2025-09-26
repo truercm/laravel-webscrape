@@ -37,23 +37,38 @@ class ParseCrawledPage implements ShouldQueue
     {
         Log::info("Webscrape: enter-parsing-result-job {$this->crawlResultId}");
 
-        $this->batch()->add([$this->handler()]);
+        $crawlResult = $this->getCrawlResult();
 
-        Log::info("Webscrape: dispatched-parsing-result-job {$this->getCrawlResult()->handler}");
+        if (!$crawlResult) {
+            Log::error("CrawlResult not found for ID {$this->crawlResultId} in handler()");
+            throw CrawlException::crawlResultNotFound($this->crawlResultId);
+        }
+
+        $batch = $this->batch() ?: Bus::batch([]);
+
+        $batch->add([$this->handler($crawlResult)]);
+
+        if($batch->jobs->count() == 1 AND  $batch->jobs->first() instanceof $crawlResult->handler){
+            $batch
+                ->dispatch();
+        }
+
+        Log::info("Webscrape: dispatched-parsing-result-job {$crawlResult->handler}");
     }
 
     /**
+     * @param \TrueRcm\LaravelWebscrape\Contracts\CrawlResult $crawlResult
      * @return \TrueRcm\LaravelWebscrape\Contracts\ParsePage
      * @throws \Throwable
      */
-    protected function handler(): ParsePage
+    protected function handler(CrawlResult $crawlResult): ParsePage
     {
         throw_unless(
-            class_exists($this->getCrawlResult()->handler),
-            CrawlException::parsingJobNotFound($this->getCrawlResult())
+            class_exists($crawlResult->handler),
+            CrawlException::parsingJobNotFound($crawlResult)
         );
 
-        return resolve($this->getCrawlResult()->handler,['crawlResultId' => $this->crawlResultId]);
+        return resolve($crawlResult->handler, ['crawlResultId' => $this->crawlResultId]);
     }
 
     /**
@@ -64,12 +79,6 @@ class ParseCrawledPage implements ShouldQueue
     protected function getCrawlResult(): ?CrawlResult
     {
         // Assuming CrawlResult is an Eloquent model or a repository method
-        $crawlResult = app(CrawlResult::class)->find($this->crawlResultId);
-
-        if (!$crawlResult) {
-            Log::error("CrawlResult not found for ID {$this->crawlResultId}");
-        }
-
-        return $crawlResult;
+        return app(CrawlResult::class)->find($this->crawlResultId);
     }
 }

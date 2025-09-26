@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 use TrueRcm\LaravelWebscrape\Actions\UpdateCrawlResult;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlResult;
 use TrueRcm\LaravelWebscrape\Enums\CrawlResultStatus;
+use TrueRcm\LaravelWebscrape\Exceptions\CrawlException;
 
 class PersistParseResult implements ShouldQueue
 {
@@ -69,6 +70,7 @@ class PersistParseResult implements ShouldQueue
 
         if (!$crawlResult) {
             Log::error("CrawlResult not found for ID {$this->crawlResultId}");
+            throw CrawlException::crawlResultNotFound($this->crawlResultId);
         }
 
         return $crawlResult;

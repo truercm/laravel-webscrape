@@ -84,7 +84,7 @@ class CrawlTargetJob implements ShouldQueue, ShouldBeUnique
 
         /* define the bus batch */
         $batch = Bus::batch([])
-            ->then(function(Batch $batch) use($subjectKey, $pages){
+            ->then(function($batch) use($subjectKey, $pages){
                 $batch2 = Bus::batch([]);
                 /* add jobs to the batch */
                 $pages
@@ -94,7 +94,7 @@ class CrawlTargetJob implements ShouldQueue, ShouldBeUnique
                 $batch2->add([new ProcessParsedResultsJob($subjectKey, $pages)])
                     ->dispatch();
             })
-            ->finally(fn(Batch $batch) => CrawlCompleted::dispatch($subjectKey));
+            ->finally(fn($batch) => CrawlCompleted::dispatch($subjectKey));
 
         /* add jobs to the batch */
         $pages

@@ -16,6 +16,8 @@ class CloseBrowserTest extends TestCase
                     $mock->expects('clearBrowser')
                         ->once()
                         ->andReturnSelf();
+
+                    $mock->shouldReceive('doNotCrawlOldPages')->andReturn(true);
                 });
 
     app(CloseBrowser::class)
