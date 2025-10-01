@@ -48,7 +48,7 @@ class ParseCrawledPage implements ShouldQueue
 
         $batch->add([$this->handler($crawlResult)]);
 
-        if($batch->jobs->count() == 1 AND  $batch->jobs->first() instanceof $crawlResult->handler){
+        if($batch->jobs AND $batch->jobs->count() == 1 AND  $batch->jobs->first() instanceof $crawlResult->handler){
             $batch
                 ->dispatch();
         }
