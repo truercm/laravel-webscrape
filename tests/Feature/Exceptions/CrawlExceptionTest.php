@@ -30,7 +30,7 @@ it('will handle authenticationFailed exception', function () {
     $this->assertInstanceOf(CrawlException::class, $stub);
 
     $this->assertEquals(
-        'Authentication failed for given credentials',
+        'Authentication failed for subject Id ',
         $stub->getMessage()
     );
 });
@@ -60,3 +60,16 @@ it('will handle parsing job not found exception', function () {
         $stub->getMessage()
     );
 });
+
+it('will handle crawl result not found exception', function () {
+    $stub = CrawlException::crawlResultNotFound(11);
+
+    $this->assertInstanceOf(CrawlException::class, $stub);
+
+    $this->assertEquals(
+        'CrawlResult not found for Id 11',
+        $stub->getMessage()
+    );
+});
+
+

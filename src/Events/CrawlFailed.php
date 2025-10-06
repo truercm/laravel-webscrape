@@ -7,17 +7,14 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlSubject;
 
-class CrawlCompleted
+class CrawlFailed
 {
     use Dispatchable;
     use InteractsWithSockets;
     use SerializesModels;
 
-    public CrawlSubject $subject;
-
     public function __construct(
-        public int $subjectId
+        public CrawlSubject $subject
     ) {
-        $this->subject = app(CrawlSubject::class)->find($this->subjectId);
     }
 }

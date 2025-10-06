@@ -54,7 +54,7 @@ it('will throw exception if invalid credential', function () {
 </html>
 HTML;
 
-    $crawler = new Crawler($html, 'http:://authenticate.test');
+    $crawler = new Crawler($html, 'https://proview.caqh.org/Login?Type=PR');
 
     $this->mock(BrowserClient::class, function (MockInterface $mock) use ($crawler) {
         $mock->shouldReceive('request')

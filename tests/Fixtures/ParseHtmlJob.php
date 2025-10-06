@@ -2,6 +2,7 @@
 
 namespace TrueRcm\LaravelWebscrape\Tests\Fixtures;
 
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -12,6 +13,7 @@ use TrueRcm\LaravelWebscrape\Models\CrawlResult;
 
 class ParseHtmlJob implements ShouldQueue, ParsePage
 {
+    use Batchable;
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;

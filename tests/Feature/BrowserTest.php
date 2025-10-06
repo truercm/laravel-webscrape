@@ -4,7 +4,7 @@ use Symfony\Component\Panther\Client;
 use TrueRcm\LaravelWebscrape\Browser;
 
 it('will forward calls to client from browser proxy', function () {
-    $client = $this->mock(Client::class);
+    $client = Mockery::mock(Client::class);
 
     $client
         ->expects('whatever')

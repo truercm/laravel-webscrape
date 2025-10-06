@@ -6,7 +6,7 @@ use TrueRcm\LaravelWebscrape\Models\CrawlSubject;
 it('will create new CrawlCompleted event instance', function () {
     $subject = CrawlSubject::factory()->create(['id' => 111]);
 
-    $event = new CrawlCompleted($subject);
+    $event = new CrawlCompleted(111);
 
-    $this->assertSame($subject, $event->subject);
+    $this->assertTrue($subject->is($event->subject));
 });

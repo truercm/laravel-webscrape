@@ -2,12 +2,13 @@
 
 namespace TrueRcm\LaravelWebscrape\Events;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use TrueRcm\LaravelWebscrape\Contracts\CrawlSubject;
 
-class CrawlCompleted
+class CrawlAuthFailed
 {
     use Dispatchable;
     use InteractsWithSockets;

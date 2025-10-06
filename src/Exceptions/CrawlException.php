@@ -37,7 +37,9 @@ final class CrawlException extends \Exception
      */
     public static function authenticationFailed(CrawlTraveller $traveller): static
     {
-        $message = __('Authentication failed for given credentials');
+        $message = __('Authentication failed for subject Id :id', [
+            'id' => $traveller->subject()->id,
+        ]);
 
         return new static($message);
     }
@@ -63,6 +65,19 @@ final class CrawlException extends \Exception
     {
         $message = __('Parsing job not found for the page with url :url', [
             'url' => $crawlResult->url,
+        ]);
+
+        return new static($message);
+    }
+
+    /**
+     * @param int $crawlResultId
+     * @return static
+     */
+    public static function crawlResultNotFound(int $crawlResultId): static
+    {
+        $message = __('CrawlResult not found for Id :id', [
+            'id' => $crawlResultId,
         ]);
 
         return new static($message);
