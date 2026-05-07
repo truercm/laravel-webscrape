@@ -16,20 +16,20 @@
         }
     ],
     "require": {
-        "php": "^8.0",
+        "php": "^8.4",
         "dbrekelmans/bdi": "^1.2",
-        "frictionlessdigital/actions": "^9.0|^10.0|^11.0",
-        "illuminate/contracts": "^8.0|^9.0|^10.0|^11.0|^12.0",
-        "spatie/laravel-package-tools": "^1.12|^1.20",
-        "symfony/browser-kit": "^6.0|^7.0",
-        "symfony/http-client": "^6.0|^7.0",
+        "frictionlessdigital/actions": "^12.0|^13.0",
+        "illuminate/contracts": "^12.0|^13.0",
+        "spatie/laravel-package-tools": "^1.20",
+        "symfony/browser-kit": "^7.0|^8.0",
+        "symfony/http-client": "^7.0|^8.0",
         "symfony/panther": "^2.1"
     },
     "require-dev": {
         "dg/bypass-finals": "^1.7",
-        "nunomaduro/collision": "^5.0|^6.0|^7.0|^8.0",
-        "orchestra/testbench": "^6.0|^7.0|^8.0|^9.0|^10.0",
-        "pestphp/pest": "^1.0|^2.0|^3.0",
+        "nunomaduro/collision": "^8.0|^9.0",
+        "orchestra/testbench": "^9.0|^10.0|^11.0",
+        "pestphp/pest": "^2.0|^3.0",
         "phpspec/prophecy": "~1.0"
     },
     "autoload": {
